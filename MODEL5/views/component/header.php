@@ -1,87 +1,38 @@
+
 <!DOCTYPE html>
-
 <html lang="id">
-
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Aplikasi Rumah Sakit Ahmadi">
+    <meta name="author" content="Ahmadi Muslim, M.P">
+    <title><?= $judul ?? 'Rumah Sakit Ahmadi'; ?></title>
 
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/images/logo.png">
 
-<meta charset="UTF-8">
+    <!-- Google Font -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700">
 
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="assets/plugins/fontawesome-free/css/all.min.css">
 
-<meta
-    name="description"
-    content="Aplikasi Koperasi Ahmadi">
+    <!-- AdminLTE -->
+    <link rel="stylesheet" href="assets/css/adminlte.min.css">
 
-<meta
-    name="author"
-    content="Ahmadi Muslim, M.P">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="assets/css/style.css">
 
-<title>
-    <?= $judul ?? 'Koperasi Ahmadi'; ?>
-</title>
-
-
-<!-- =====================================================
-     FAVICON
-====================================================== -->
-<link
-    rel="icon"
-    type="image/png"
-    href="assets/images/logo.png">
-
-
-<!-- =====================================================
-     GOOGLE FONT
-====================================================== -->
-<link
-    rel="stylesheet"
-    href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700">
-
-
-<!-- =====================================================
-     FONT AWESOME
-====================================================== -->
-<link
-    rel="stylesheet"
-    href="assets/plugins/fontawesome-free/css/all.min.css">
-
-
-<!-- =====================================================
-     ADMIN LTE
-====================================================== -->
-<link
-    rel="stylesheet"
-    href="assets/css/adminlte.min.css">
-
-
-<!-- =====================================================
-     CUSTOM CSS
-====================================================== -->
-<link
-    rel="stylesheet"
-    href="assets/css/style.css">
-
-
-<!-- =====================================================
-     GLOBAL LAYOUT
-====================================================== -->
-<style>
-
-    /* Lebarkan container pada layar besar,
-       tetapi tetap memiliki margin kiri dan kanan */
-    @media (min-width: 1200px) {
-
-        .container {
-            max-width: 1360px !important;
-            width: 85% !important;
+    <!-- Global Layout -->
+    <style>
+        @media (min-width: 1200px) {
+            .container {
+                max-width: 1360px !important;
+                width: 90% !important;
+            }
         }
-
-    }
-
-</style>
-
-
+    </style>
 </head>
+<body class="<?= $bodyClass ?? 'hold-transition layout-top-nav' ?>">
+</body>
+</html>

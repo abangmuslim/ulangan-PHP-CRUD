@@ -124,6 +124,7 @@ rumahsakitahmadi5/
 │   │   ├── daftardokter.php
 │   │   ├── detildokter.php
 │   │   ├── daftarobat.php
+│   │   ├── detilobat.php
 │   │   ├── tentang.php
 │   │   ├── layanan.php
 │   │   └── kontak.php
@@ -199,7 +200,8 @@ CREATE TABLE dokter (
     password VARCHAR(255),
     spesialis VARCHAR(100),
     nohp VARCHAR(15),
-    alamat TEXT
+    alamat TEXT,
+    foto VARCHAR(25)
 ) ENGINE=InnoDB;
 
 CREATE TABLE merk (
@@ -341,6 +343,7 @@ mysql> desc dokter;
 | spesialis  | varchar(100) | YES  |     | NULL    |                |
 | nohp       | varchar(15)  | YES  |     | NULL    |                |
 | alamat     | text         | YES  |     | NULL    |                |
+| foto       | varchar(250) | NO   |     | NULL    |                |
 +------------+--------------+------+-----+---------+----------------+
 
 mysql> desc jadwaldokter;
