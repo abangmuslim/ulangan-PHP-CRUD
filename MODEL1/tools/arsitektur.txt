@@ -1,0 +1,20 @@
+STRUKTUR APK
+
+RumahSakitAhmadi/
+├── index.php
+├── konrksi.php
+└── proses.php
+
+
+STRUKTUR DB
+mysql> desc pasien;
++--------------+--------------+------+-----+---------+----------------+
+| Field        | Type         | Null | Key | Default | Extra          |
++--------------+--------------+------+-----+---------+----------------+
+| idpasien     | int          | NO   | PRI | NULL    | auto_increment |
+| namapasien   | varchar(100) | NO   |     | NULL    |                |
+| jeniskelamin | varchar(20)  | YES  |     | NULL    |                |
+| alamat       | text         | YES  |     | NULL    |                |
+| nohp         | varchar(15)  | YES  |     | NULL    |                |
++--------------+--------------+------+-----+---------+----------------+
+5 rows in set (0.03 sec)

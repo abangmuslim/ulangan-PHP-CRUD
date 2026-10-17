@@ -1,0 +1,120 @@
+STRUKTUR APK
+
+RumahSakitAhmadi/
+├── index.php
+├── views/
+│   ├── Auth/
+│   │   └── login.php
+│   ├── User/
+│   │   ├── index.php
+│   │   ├── create.php
+│   │   ├── edit.php
+│   │   └── show.php
+│   ├── Pasien/
+│   │   ├── index.php
+│   │   ├── create.php
+│   │   ├── edit.php
+│   │   └── show.php
+│   ├── Dokter/
+│   │   ├── index.php
+│   │   ├── create.php
+│   │   ├── edit.php
+│   │   └── show.php
+│   ├── Obat/
+│   │   ├── index.php
+│   │   ├── create.php
+│   │   ├── edit.php
+│   │   └── show.php
+│   └── Kunjungan/
+│       ├── index.php
+│       ├── create.php
+│       ├── edit.php
+│       └── show.php
+└── proses/
+    ├── koneksi.php
+    ├── proseslogin.php
+    ├── logout.php
+    ├── prosesuser.php
+    ├── prosespasien.php
+    ├── prosesdokter.php
+    ├── prosesobat.php
+    └── proseskunjungan.php
+
+
+
+
+STRUKTUR DB
+mysql> desc pasien;
++--------------+--------------+------+-----+---------+----------------+
+| Field        | Type         | Null | Key | Default | Extra          |
++--------------+--------------+------+-----+---------+----------------+
+| idpasien     | int          | NO   | PRI | NULL    | auto_increment |
+| namapasien   | varchar(100) | NO   |     | NULL    |                |
+| jeniskelamin | varchar(20)  | YES  |     | NULL    |                |
+| alamat       | text         | YES  |     | NULL    |                |
+| nohp         | varchar(15)  | YES  |     | NULL    |                |
++--------------+--------------+------+-----+---------+----------------+
+5 rows in set (0.03 sec)
+
+mysql> desc user;
++----------+--------------+------+-----+---------+----------------+
+| Field    | Type         | Null | Key | Default | Extra          |
++----------+--------------+------+-----+---------+----------------+
+| iduser   | int          | NO   | PRI | NULL    | auto_increment |
+| namauser | varchar(100) | NO   |     | NULL    |                |
+| username | varchar(50)  | NO   | UNI | NULL    |                |
+| password | varchar(255) | NO   |     | NULL    |                |
++----------+--------------+------+-----+---------+----------------+
+4 rows in set (0.00 sec)
+
+mysql> desc obat;
++-----------+--------------+------+-----+---------+----------------+
+| Field     | Type         | Null | Key | Default | Extra          |
++-----------+--------------+------+-----+---------+----------------+
+| idobat    | int          | NO   | PRI | NULL    | auto_increment |
+| namaobat  | varchar(100) | NO   |     | NULL    |                |
+| jenisobat | varchar(50)  | YES  |     | NULL    |                |
+| stok      | int          | YES  |     | 0       |                |
+| harga     | int          | YES  |     | 0       |                |
++-----------+--------------+------+-----+---------+----------------+
+5 rows in set (0.00 sec)
+
+mysql> desc dokter;
++------------+--------------+------+-----+---------+----------------+
+| Field      | Type         | Null | Key | Default | Extra          |
++------------+--------------+------+-----+---------+----------------+
+| iddokter   | int          | NO   | PRI | NULL    | auto_increment |
+| namadokter | varchar(100) | NO   |     | NULL    |                |
+| spesialis  | varchar(100) | YES  |     | NULL    |                |
+| nohp       | varchar(15)  | YES  |     | NULL    |                |
++------------+--------------+------+-----+---------+----------------+
+4 rows in set (0.00 sec)
+
+mysql> desc kunjungan;
++-------------+------+------+-----+---------+----------------+
+| Field       | Type | Null | Key | Default | Extra          |
++-------------+------+------+-----+---------+----------------+
+| idkunjungan | int  | NO   | PRI | NULL    | auto_increment |
+| idpasien    | int  | NO   | MUL | NULL    |                |
+| iduser      | int  | NO   | MUL | NULL    |                |
+| iddokter    | int  | NO   | MUL | NULL    |                |
+| idobat      | int  | NO   | MUL | NULL    |                |
+| tanggal     | date | NO   |     | NULL    |                |
+| keluhan     | text | YES  |     | NULL    |                |
+| biaya       | int  | YES  |     | 0       |                |
++-------------+------+------+-----+---------+----------------+
+8 rows in set (0.00 sec)
+
+mysql> show tables;
++-----------------------------+
+| Tables_in_rumahsakitahmadi4 |
++-----------------------------+
+| dokter                      |
+| kunjungan                   |
+| obat                        |
+| pasien                      |
+| user                        |
++-----------------------------+
+5 rows in set (0.02 sec)
+
+mysql>

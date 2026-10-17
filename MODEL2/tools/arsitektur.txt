@@ -1,0 +1,61 @@
+STRUKTUR APK
+
+RumahSakitAhmadi/
+├── index.php
+├── views/
+│   ├── Pasien/
+│   │   ├── index.php
+│   │   ├── create.php
+│   │   ├── edit.php
+│   │   └── show.php
+│   └── Kunjungan/
+│       ├── index.php
+│       ├── create.php
+│       ├── edit.php
+│       └── show.php
+└── proses/
+    ├── koneksi.php
+    ├── prosespasien.php
+    └── proseskunjungan.php
+
+
+
+
+STRUKTUR DB
+mysql> desc pasien;
++--------------+--------------+------+-----+---------+----------------+
+| Field        | Type         | Null | Key | Default | Extra          |
++--------------+--------------+------+-----+---------+----------------+
+| idpasien     | int          | NO   | PRI | NULL    | auto_increment |
+| namapasien   | varchar(100) | NO   |     | NULL    |                |
+| jeniskelamin | varchar(20)  | YES  |     | NULL    |                |
+| alamat       | text         | YES  |     | NULL    |                |
+| nohp         | varchar(15)  | YES  |     | NULL    |                |
++--------------+--------------+------+-----+---------+----------------+
+5 rows in set (0.03 sec)
+
+mysql> desc kunjungan;
++-------------+------+------+-----+---------+----------------+
+| Field       | Type | Null | Key | Default | Extra          |
++-------------+------+------+-----+---------+----------------+
+| idkunjungan | int  | NO   | PRI | NULL    | auto_increment |
+| idpasien    | int  | NO   | MUL | NULL    |                |
+| iduser      | int  | NO   | MUL | NULL    |                |
+| iddokter    | int  | NO   | MUL | NULL    |                |
+| idobat      | int  | NO   | MUL | NULL    |                |
+| tanggal     | date | NO   |     | NULL    |                |
+| keluhan     | text | YES  |     | NULL    |                |
+| biaya       | int  | YES  |     | 0       |                |
++-------------+------+------+-----+---------+----------------+
+8 rows in set (0.00 sec)
+
+mysql> show tables;
++-----------------------------+
+| Tables_in_rumahsakitahmadi4 |
++-----------------------------+
+| kunjungan                   |
+| pasien                      |
++-----------------------------+
+5 rows in set (0.02 sec)
+
+mysql>
