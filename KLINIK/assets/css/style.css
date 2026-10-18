@@ -1,0 +1,16 @@
+/* Menu navbar aktif */
+.main-header.navbar .navbar-nav .nav-link.active {
+    background-color: #007bff !important;
+    color: #fff !important;
+    border-radius: 5px;
+}
+
+.main-header.navbar .navbar-nav .nav-link.active i {
+    color: #fff !important;
+}
+
+/* Menu dropdown aktif */
+.main-header.navbar .dropdown-item.active {
+    background-color: #007bff !important;
+    color: #fff !important;
+}

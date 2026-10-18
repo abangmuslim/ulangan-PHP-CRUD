@@ -1,0 +1,162 @@
+klinik/
+│
+├── index.php
+│
+├── assets/
+│   ├── css/
+│   ├── js/
+│   ├── plugins/
+│   └── images/
+│       ├── slider/
+│       ├── obat/
+│       ├── pasien/
+│       ├── dokter/
+│       └── user/
+│
+├── views/
+│   │
+│   ├── component/
+│   │   ├── tamu/
+│   │   │   ├── navbar.php
+│   │   │   └── footer.php
+│   │   ├── user/
+│   │   │   ├── navbar.php
+│   │   │   ├── sidebaradmin.php
+│   │   │   ├── sidebarpetugas.php
+│   │   │   └── footer.php
+│   │   ├── pasien/
+│   │   │   ├── navbar.php
+│   │   │   ├── sidebar.php
+│   │   │   └── footer.php
+│   │   ├── dokter/
+│   │   │   ├── navbar.php
+│   │   │   ├── sidebar.php
+│   │   │   └── footer.php
+│   │   ├── header.php
+│   │   └── footerjs.php
+│   │
+│   ├── user/                         ← ZONA ADMIN & PETUGAS
+│   │   ├── dashboard/
+│   │   │   ├── dashboardadmin.php
+│   │   │   └── dashboardpetugas.php
+│   │   ├── user/
+│   │   │   ├── index.php
+│   │   │   ├── create.php
+│   │   │   ├── edit.php
+│   │   │   └── show.php
+│   │   ├── pasien/
+│   │   │   ├── index.php
+│   │   │   ├── create.php
+│   │   │   ├── edit.php
+│   │   │   └── show.php
+│   │   ├── dokter/
+│   │   │   ├── index.php
+│   │   │   ├── create.php
+│   │   │   ├── edit.php
+│   │   │   └── show.php
+│   │   ├── merk/
+│   │   │   ├── index.php
+│   │   │   ├── create.php
+│   │   │   ├── edit.php
+│   │   │   └── show.php
+│   │   ├── kategori/
+│   │   │   ├── index.php
+│   │   │   ├── create.php
+│   │   │   ├── edit.php
+│   │   │   └── show.php
+│   │   ├── obat/
+│   │   │   ├── index.php
+│   │   │   ├── create.php
+│   │   │   ├── edit.php
+│   │   │   └── show.php
+│   │   ├── jadwaldokter/
+│   │   │   ├── index.php
+│   │   │   ├── create.php
+│   │   │   ├── edit.php
+│   │   │   └── show.php
+│   │   ├── kunjungan/
+│   │   │   ├── index.php
+│   │   │   ├── create.php
+│   │   │   ├── edit.php
+│   │   │   └── show.php
+│   │   ├── detilkunjungan/
+│   │   │   ├── index.php
+│   │   │   ├── create.php
+│   │   │   ├── edit.php
+│   │   │   └── show.php
+│   │   ├── antrian/
+│   │   │   ├── index.php
+│   │   │   ├── create.php
+│   │   │   ├── edit.php
+│   │   │   └── show.php
+│   │   └── laporan/
+│   │       ├── laporanharian.php
+│   │       ├── cetaklaporanharian.php
+│   │       ├── laporanbulanan.php
+│   │       ├── cetaklaporanbulanan.php
+│   │       ├── laporantahunan.php
+│   │       ├── cetaklaporantahunan.php
+│   │       ├── laporanobat.php
+│   │       ├── cetaklaporanobat.php
+│   │       ├── laporanantrian.php
+│   │       └── cetaklaporanantrian.php
+│   │
+│   ├── pasien/                       ← ZONA LOGIN PASIEN
+│   │   ├── dashboardpasien.php
+│   │   ├── profil.php
+│   │   ├── editprofil.php
+│   │   ├── antrian.php
+│   │   ├── riwayatkunjungan.php
+│   │   └── detailkunjungan.php
+│   │
+│   ├── dokter/                       ← ZONA LOGIN DOKTER
+│   │   ├── dashboarddokter.php
+│   │   ├── profil.php
+│   │   ├── jadwalkunjungan.php
+│   │   ├── antrianpasien.php
+│   │   └── detailkunjungan.php
+│   │
+│   ├── landing/                      ← ZONA TAMU / PUBLIK
+│   │   ├── home.php
+│   │   ├── daftardokter.php
+│   │   ├── detildokter.php
+│   │   ├── daftarobat.php
+│   │   ├── detilobat.php
+│   │   ├── daftarkategori.php
+│   │   ├── detilkategori.php
+│   │   ├── tentang.php
+│   │   ├── layanan.php
+│   │   └── kontak.php
+│   │
+│   ├── auth/
+│   │   ├── loginuser.php
+│   │   ├── loginpasien.php
+│   │   ├── logindokter.php
+│   │   ├── registerpasien.php
+│   │   └── logout.php
+│   │
+│   └── errors/
+│       ├── 403.php
+│       ├── 404.php
+│       └── 500.php
+│
+└── proses/
+    ├── koneksi.php
+    ├── session.php
+    ├── helper.php
+    ├── proseslogout.php
+    ├── prosesloginuser.php
+    ├── prosesloginpasien.php
+    ├── proseslogindokter.php
+    ├── prosesregisterpasien.php
+    ├── prosesuser.php
+    ├── prosespasien.php
+    ├── prosesdokter.php
+    ├── prosesmerk.php
+    ├── proseskategori.php
+    ├── prosesobat.php
+    ├── prosesjadwaldokter.php
+    ├── proseskunjungan.php
+    ├── prosesantrian.php
+    └── proseslaporan.php
+

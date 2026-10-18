@@ -1,446 +1,588 @@
 
 <?php
+ob_start();
+error_reporting(E_ALL);
+ini_set('display_errors', '0');
+ini_set('display_startup_errors', '0');
+ini_set('log_errors', '1');
+
 session_start();
-include "proses/koneksi.php";
 
-$page = $_GET['page'] ?? 'home';
+/* =========================================================
+   1. KONFIGURASI DASAR
+   ========================================================= */
 
-// Halaman yang boleh dibuka tanpa login
-$halamanPublik = [
-    'home', 'daftardokter', 'detildokter', 'daftarobat', 'detilobat', 'daftarkategori', 'detilkategori',
-    'tentang', 'layanan', 'kontak',
-    'loginuser', 'loginpasien', 'logindokter', 'registerpasien'
-];
+define('APP_ROOT', __DIR__);
+define('APP_NAME', 'RumahSakitAhmadi5');
 
-// Tentukan role yang sedang login
+function catatError($pesan)
+{
+    error_log('[' . APP_NAME . '] ' . $pesan);
+}
+
+function redirectHalaman($halaman)
+{
+    header('Location: index.php?page=' . rawurlencode($halaman));
+    exit;
+}
+
+function tampilkanErrorHalaman($kode)
+{
+    http_response_code($kode);
+    $file = APP_ROOT . '/views/errors/' . $kode . '.php';
+
+    if (is_file($file)) {
+        include $file;
+    } else {
+        echo '<div class="container mt-4">';
+        echo '<div class="alert alert-warning">';
+        echo '<h4>Halaman ' . (int) $kode . '</h4>';
+        echo '<p>Halaman tidak dapat ditampilkan.</p>';
+        echo '<a href="index.php?page=home">Kembali ke Beranda</a>';
+        echo '</div></div>';
+    }
+}
+
+/* =========================================================
+   2. MEMUAT SESSION, KONEKSI, HELPER, DAN AUTH
+   ========================================================= */
+
+if (is_file(APP_ROOT . '/proses/session.php')) {
+    require_once APP_ROOT . '/proses/session.php';
+} else {
+    catatError('File proses/session.php tidak ditemukan.');
+}
+
+if (is_file(APP_ROOT . '/proses/koneksi.php')) {
+    require_once APP_ROOT . '/proses/koneksi.php';
+} else {
+    catatError('File proses/koneksi.php tidak ditemukan.');
+}
+
+if (is_file(APP_ROOT . '/proses/helper.php')) {
+    require_once APP_ROOT . '/proses/helper.php';
+} else {
+    catatError('File proses/helper.php tidak ditemukan.');
+}
+
+if (is_file(APP_ROOT . '/proses/auth.php')) {
+    require_once APP_ROOT . '/proses/auth.php';
+} else {
+    catatError('File proses/auth.php tidak ditemukan.');
+}
+
+/* =========================================================
+   3. MEMBACA PARAMETER PAGE
+   ========================================================= */
+
+$page = 'home';
+
+if (isset($_GET['page']) && is_string($_GET['page'])) {
+    $inputPage = trim($_GET['page']);
+
+    if (preg_match('/^[a-zA-Z0-9_-]{1,80}$/', $inputPage)) {
+        $page = strtolower($inputPage);
+    } else {
+        $page = '404';
+    }
+}
+
+/* =========================================================
+   4. MENENTUKAN ROLE SESSION
+   ========================================================= */
+
 $role = '';
 
-if (isset($_SESSION['iduser'])) {
-    $role = $_SESSION['role'] ?? '';
-} elseif (isset($_SESSION['idpasien'])) {
+if (!empty($_SESSION['iduser'])) {
+    $roleSesi = strtolower((string) ($_SESSION['role'] ?? ''));
+
+    if (in_array($roleSesi, ['admin', 'petugas'], true)) {
+        $role = $roleSesi;
+    }
+} elseif (!empty($_SESSION['idpasien'])) {
     $role = 'pasien';
-} elseif (isset($_SESSION['iddokter'])) {
+} elseif (!empty($_SESSION['iddokter'])) {
     $role = 'dokter';
 }
 
-// Jika belum login, hanya halaman publik yang boleh dibuka
-if ($role == '' && !in_array($page, $halamanPublik)) {
-    header("location:index.php?page=loginuser");
-    exit;
-}
+$sedangLogin = ($role !== '');
 
-// Jika sudah login, arahkan halaman login ke dashboard masing-masing
-if ($role != '' && in_array($page, [
-    'loginuser', 'loginpasien', 'logindokter', 'registerpasien'
-])) {
-    if ($role == 'admin') {
-        header("location:index.php?page=dashboardadmin");
-    } elseif ($role == 'petugas') {
-        header("location:index.php?page=dashboardpetugas");
-    } elseif ($role == 'pasien') {
-        header("location:index.php?page=dashboardpasien");
-    } elseif ($role == 'dokter') {
-        header("location:index.php?page=dashboarddokter");
-    } else {
-        header("location:index.php?page=403");
-    }
-    exit;
-}
+/* =========================================================
+   5. DAFTAR HALAMAN PUBLIK
+   ========================================================= */
 
-// Tentukan zona halaman berdasarkan role
-$halamanUser = [
-    'dashboardadmin', 'dashboardpetugas',
-    'user', 'createuser', 'edituser', 'showuser',
-    'pasien', 'createpasien', 'editpasien', 'showpasien',
-    'dokter', 'createdokter', 'editdokter', 'showdokter',
-    'merk', 'createmerk', 'editmerk', 'showmerk',
-    'kategori', 'createkategori', 'editkategori', 'showkategori',
-    'obat', 'createobat', 'editobat', 'showobat',
-    'jadwaldokter', 'createjadwaldokter',
-    'editjadwaldokter', 'showjadwaldokter',
-    'kunjungan', 'createkunjungan', 'editkunjungan', 'showkunjungan',
-    'detilkunjungan', 'createdetilkunjungan',
-    'editdetilkunjungan', 'showdetilkunjungan',
-    'antrian', 'createantrian', 'editantrian', 'showantrian',
-    'laporanharian', 'cetaklaporanharian',
-    'laporanbulanan', 'cetaklaporanbulanan',
-    'laporantahunan', 'cetaklaporantahunan',
-    'laporanobat', 'cetaklaporanobat',
-    'laporanantrian', 'cetaklaporanantrian'
+$halamanPublik = [
+    'home',
+    'daftardokter',
+    'detildokter',
+    'daftarobat',
+    'detilobat',
+    'daftarkategori',
+    'detilkategori',
+    'tentang',
+    'layanan',
+    'kontak',
+    'loginuser',
+    'loginpasien',
+    'logindokter',
+    'registerpasien',
+    '403',
+    '404',
+    '500'
 ];
 
+/* =========================================================
+   6. DAFTAR HALAMAN ADMIN DAN PETUGAS
+   ========================================================= */
+
+$halamanUser = [
+    'dashboardadmin',
+    'dashboardpetugas',
+    'user',
+    'createuser',
+    'edituser',
+    'showuser',
+    'pasien',
+    'createpasien',
+    'editpasien',
+    'showpasien',
+    'dokter',
+    'createdokter',
+    'editdokter',
+    'showdokter',
+    'merk',
+    'createmerk',
+    'editmerk',
+    'showmerk',
+    'kategori',
+    'createkategori',
+    'editkategori',
+    'showkategori',
+    'obat',
+    'createobat',
+    'editobat',
+    'showobat',
+    'jadwaldokter',
+    'createjadwaldokter',
+    'editjadwaldokter',
+    'showjadwaldokter',
+    'kunjungan',
+    'createkunjungan',
+    'editkunjungan',
+    'showkunjungan',
+    'detilkunjungan',
+    'createdetilkunjungan',
+    'editdetilkunjungan',
+    'showdetilkunjungan',
+    'antrian',
+    'createantrian',
+    'editantrian',
+    'showantrian',
+    'laporanharian',
+    'cetaklaporanharian',
+    'laporanbulanan',
+    'cetaklaporanbulanan',
+    'laporantahunan',
+    'cetaklaporantahunan',
+    'laporanobat',
+    'cetaklaporanobat',
+    'laporanantrian',
+    'cetaklaporanantrian'
+];
+
+/* Hanya admin yang boleh mengelola akun user */
+$halamanKhususAdmin = [
+    'user',
+    'createuser',
+    'edituser',
+    'showuser'
+];
+
+/* =========================================================
+   7. DAFTAR HALAMAN PASIEN DAN DOKTER
+   ========================================================= */
+
 $halamanPasien = [
-    'dashboardpasien', 'profilpasien', 'editprofilpasien',
-    'antrianpasien', 'riwayatkunjunganpasien',
+    'dashboardpasien',
+    'profilpasien',
+    'editprofilpasien',
+    'antrianpasien',
+    'riwayatkunjunganpasien',
     'detailkunjunganpasien'
 ];
 
 $halamanDokter = [
-    'dashboarddokter', 'profildokter',
-    'jadwalkunjungan', 'antrianpasiendokter',
+    'dashboarddokter',
+    'profildokter',
+    'jadwalkunjungan',
+    'antrianpasiendokter',
     'detailkunjungandokter'
 ];
 
-// Tentukan class body berdasarkan jenis halaman
-$isPublic =
-    in_array($page, $halamanPublik) ||
-    $page === 'logout';
+/* =========================================================
+   8. PENGALIHAN DASHBOARD SESUAI ROLE
+   ========================================================= */
 
-if ($isPublic) {
-    $bodyClass = 'hold-transition layout-top-nav';
-} else {
-    $bodyClass = 'hold-transition sidebar-mini layout-fixed';
-}
-
-// Batasi akses halaman zona user
-if (in_array($page, $halamanUser)) {
-    if (!in_array($role, ['admin', 'petugas'])) {
-        header("location:index.php?page=403");
-        exit;
+if ($sedangLogin) {
+    if ($page === 'dashboardadmin' && $role === 'petugas') {
+        redirectHalaman('dashboardpetugas');
     }
 
-    // Manajemen user hanya boleh diakses admin
-    if (in_array($page, [
-        'user', 'createuser', 'edituser', 'showuser'
-    ]) && $role != 'admin') {
-        header("location:index.php?page=403");
-        exit;
+    if ($page === 'dashboardpetugas' && $role === 'admin') {
+        redirectHalaman('dashboardadmin');
+    }
+
+    if (
+        in_array($page, [
+            'loginuser',
+            'loginpasien',
+            'logindokter',
+            'registerpasien'
+        ], true)
+    ) {
+        if ($role === 'admin') {
+            redirectHalaman('dashboardadmin');
+        } elseif ($role === 'petugas') {
+            redirectHalaman('dashboardpetugas');
+        } elseif ($role === 'pasien') {
+            redirectHalaman('dashboardpasien');
+        } elseif ($role === 'dokter') {
+            redirectHalaman('dashboarddokter');
+        }
     }
 }
 
-// Batasi akses zona pasien
-if (in_array($page, $halamanPasien) && $role != 'pasien') {
-    header("location:index.php?page=403");
-    exit;
+/* =========================================================
+   9. VALIDASI HALAMAN DAN HAK AKSES
+   ========================================================= */
+
+/* Halaman tidak dikenal diarahkan ke 404 */
+$semuaHalamanTerdaftar = array_merge(
+    $halamanPublik,
+    $halamanUser,
+    $halamanPasien,
+    $halamanDokter,
+    ['logout']
+);
+
+if (!in_array($page, $semuaHalamanTerdaftar, true)) {
+    $page = '404';
 }
 
-// Batasi akses zona dokter
-if (in_array($page, $halamanDokter) && $role != 'dokter') {
-    header("location:index.php?page=403");
-    exit;
+/* Pengguna yang belum login tidak boleh membuka halaman privat */
+$semuaHalamanPrivat = array_merge(
+    $halamanUser,
+    $halamanPasien,
+    $halamanDokter
+);
+
+if (!$sedangLogin && in_array($page, $semuaHalamanPrivat, true)) {
+    redirectHalaman('loginuser');
 }
 
-// Tentukan komponen tampilan
-if ($role == 'admin' || $role == 'petugas') {
-    include "views/component/header.php";
-    include "views/component/user/navbar.php";
+/* Hak akses admin dan petugas */
+if (in_array($page, $halamanUser, true)) {
+    if (!in_array($role, ['admin', 'petugas'], true)) {
+        $page = '403';
+    } elseif (
+        in_array($page, $halamanKhususAdmin, true) &&
+        $role !== 'admin'
+    ) {
+        $page = '403';
+    }
+}
 
-    if ($role == 'admin') {
-        include "views/component/user/sidebaradmin.php";
+/* Hak akses pasien */
+if (in_array($page, $halamanPasien, true) && $role !== 'pasien') {
+    $page = '403';
+}
+
+/* Hak akses dokter */
+if (in_array($page, $halamanDokter, true) && $role !== 'dokter') {
+    $page = '403';
+}
+
+/* =========================================================
+   10. DAFTAR ROUTING
+   ========================================================= */
+
+$routes = [
+    /* Landing page */
+    'home' => 'views/landing/home.php',
+    'daftardokter' => 'views/landing/daftardokter.php',
+    'detildokter' => 'views/landing/detildokter.php',
+    'daftarobat' => 'views/landing/daftarobat.php',
+    'detilobat' => 'views/landing/detilobat.php',
+    'daftarkategori' => 'views/landing/daftarkategori.php',
+    'detilkategori' => 'views/landing/detilkategori.php',
+    'tentang' => 'views/landing/tentang.php',
+    'layanan' => 'views/landing/layanan.php',
+    'kontak' => 'views/landing/kontak.php',
+
+    /* Autentikasi */
+    'loginuser' => 'views/auth/loginuser.php',
+    'loginpasien' => 'views/auth/loginpasien.php',
+    'logindokter' => 'views/auth/logindokter.php',
+    'registerpasien' => 'views/auth/registerpasien.php',
+    'logout' => 'views/auth/logout.php',
+
+    /* Dashboard */
+    'dashboardadmin' => 'views/user/dashboard/dashboardadmin.php',
+    'dashboardpetugas' => 'views/user/dashboard/dashboardpetugas.php',
+    'dashboardpasien' => 'views/pasien/dashboardpasien.php',
+    'dashboarddokter' => 'views/dokter/dashboarddokter.php',
+
+    /* CRUD User */
+    'user' => 'views/user/user/index.php',
+    'createuser' => 'views/user/user/create.php',
+    'edituser' => 'views/user/user/edit.php',
+    'showuser' => 'views/user/user/show.php',
+
+    /* CRUD Pasien */
+    'pasien' => 'views/user/pasien/index.php',
+    'createpasien' => 'views/user/pasien/create.php',
+    'editpasien' => 'views/user/pasien/edit.php',
+    'showpasien' => 'views/user/pasien/show.php',
+
+    /* CRUD Dokter */
+    'dokter' => 'views/user/dokter/index.php',
+    'createdokter' => 'views/user/dokter/create.php',
+    'editdokter' => 'views/user/dokter/edit.php',
+    'showdokter' => 'views/user/dokter/show.php',
+
+    /* CRUD Merk */
+    'merk' => 'views/user/merk/index.php',
+    'createmerk' => 'views/user/merk/create.php',
+    'editmerk' => 'views/user/merk/edit.php',
+    'showmerk' => 'views/user/merk/show.php',
+
+    /* CRUD Kategori */
+    'kategori' => 'views/user/kategori/index.php',
+    'createkategori' => 'views/user/kategori/create.php',
+    'editkategori' => 'views/user/kategori/edit.php',
+    'showkategori' => 'views/user/kategori/show.php',
+
+    /* CRUD Obat */
+    'obat' => 'views/user/obat/index.php',
+    'createobat' => 'views/user/obat/create.php',
+    'editobat' => 'views/user/obat/edit.php',
+    'showobat' => 'views/user/obat/show.php',
+
+    /* CRUD Jadwal Dokter */
+    'jadwaldokter' => 'views/user/jadwaldokter/index.php',
+    'createjadwaldokter' => 'views/user/jadwaldokter/create.php',
+    'editjadwaldokter' => 'views/user/jadwaldokter/edit.php',
+    'showjadwaldokter' => 'views/user/jadwaldokter/show.php',
+
+    /* CRUD Kunjungan */
+    'kunjungan' => 'views/user/kunjungan/index.php',
+    'createkunjungan' => 'views/user/kunjungan/create.php',
+    'editkunjungan' => 'views/user/kunjungan/edit.php',
+    'showkunjungan' => 'views/user/kunjungan/show.php',
+
+    /* CRUD Detail Kunjungan */
+    'detilkunjungan' => 'views/user/detilkunjungan/index.php',
+    'createdetilkunjungan' => 'views/user/detilkunjungan/create.php',
+    'editdetilkunjungan' => 'views/user/detilkunjungan/edit.php',
+    'showdetilkunjungan' => 'views/user/detilkunjungan/show.php',
+
+    /* CRUD Antrian */
+    'antrian' => 'views/user/antrian/index.php',
+    'createantrian' => 'views/user/antrian/create.php',
+    'editantrian' => 'views/user/antrian/edit.php',
+    'showantrian' => 'views/user/antrian/show.php',
+
+    /* Laporan */
+    'laporanharian' => 'views/user/laporan/laporanharian.php',
+    'cetaklaporanharian' => 'views/user/laporan/cetaklaporanharian.php',
+    'laporanbulanan' => 'views/user/laporan/laporanbulanan.php',
+    'cetaklaporanbulanan' => 'views/user/laporan/cetaklaporanbulanan.php',
+    'laporantahunan' => 'views/user/laporan/laporantahunan.php',
+    'cetaklaporantahunan' => 'views/user/laporan/cetaklaporantahunan.php',
+    'laporanobat' => 'views/user/laporan/laporanobat.php',
+    'cetaklaporanobat' => 'views/user/laporan/cetaklaporanobat.php',
+    'laporanantrian' => 'views/user/laporan/laporanantrian.php',
+    'cetaklaporanantrian' => 'views/user/laporan/cetaklaporanantrian.php',
+
+    /* Zona pasien */
+    'profilpasien' => 'views/pasien/profil.php',
+    'editprofilpasien' => 'views/pasien/editprofil.php',
+    'antrianpasien' => 'views/pasien/antrian.php',
+    'riwayatkunjunganpasien' => 'views/pasien/riwayatkunjungan.php',
+    'detailkunjunganpasien' => 'views/pasien/detailkunjungan.php',
+
+    /* Zona dokter */
+    'profildokter' => 'views/dokter/profil.php',
+    'jadwalkunjungan' => 'views/dokter/jadwalkunjungan.php',
+    'antrianpasiendokter' => 'views/dokter/antrianpasien.php',
+    'detailkunjungandokter' => 'views/dokter/detailkunjungan.php',
+
+    /* Halaman error */
+    '403' => 'views/errors/403.php',
+    '404' => 'views/errors/404.php',
+    '500' => 'views/errors/500.php'
+];
+
+/* =========================================================
+   11. MEMERIKSA FILE TUJUAN
+   ========================================================= */
+
+if (!isset($routes[$page])) {
+    $page = '404';
+}
+
+$fileHalaman = APP_ROOT . '/' . $routes[$page];
+
+if (!is_file($fileHalaman)) {
+    catatError('File halaman tidak ditemukan: ' . $routes[$page]);
+    $page = '404';
+    $fileHalaman = APP_ROOT . '/' . $routes[$page];
+}
+
+/* =========================================================
+   12. MENENTUKAN LAYOUT
+   ========================================================= */
+
+$isPublic = (
+    in_array($page, $halamanPublik, true) ||
+    $page === 'logout'
+);
+
+$bodyClass = $isPublic
+    ? 'hold-transition layout-top-nav'
+    : 'hold-transition sidebar-mini layout-fixed';
+
+$navbarFile = 'views/component/tamu/navbar.php';
+$sidebarFile = null;
+$footerFile = 'views/component/tamu/footer.php';
+
+if ($role === 'admin' || $role === 'petugas') {
+    $navbarFile = 'views/component/user/navbar.php';
+    $sidebarFile = $role === 'admin'
+        ? 'views/component/user/sidebaradmin.php'
+        : 'views/component/user/sidebarpetugas.php';
+    $footerFile = 'views/component/user/footer.php';
+} elseif ($role === 'pasien') {
+    $navbarFile = 'views/component/pasien/navbar.php';
+    $sidebarFile = 'views/component/pasien/sidebar.php';
+    $footerFile = 'views/component/pasien/footer.php';
+} elseif ($role === 'dokter') {
+    $navbarFile = 'views/component/dokter/navbar.php';
+    $sidebarFile = 'views/component/dokter/sidebar.php';
+    $footerFile = 'views/component/dokter/footer.php';
+}
+
+/* Halaman cetak dibuat tanpa layout utama */
+$halamanCetak = [
+    'cetaklaporanharian',
+    'cetaklaporanbulanan',
+    'cetaklaporantahunan',
+    'cetaklaporanobat',
+    'cetaklaporanantrian'
+];
+
+$tanpaLayout = in_array($page, $halamanCetak, true);
+
+/* =========================================================
+   13. MEMUAT KOMPONEN DAN HALAMAN
+   ========================================================= */
+
+if (!$tanpaLayout) {
+    $fileHeader = APP_ROOT . '/views/component/header.php';
+
+    if (is_file($fileHeader)) {
+        try {
+            include $fileHeader;
+        } catch (Throwable $e) {
+            catatError('Header gagal dimuat: ' . $e->getMessage());
+        }
     } else {
-        include "views/component/user/sidebarpetugas.php";
+        catatError('views/component/header.php tidak ditemukan.');
     }
-} elseif ($role == 'pasien') {
-    include "views/component/header.php";
-    include "views/component/pasien/navbar.php";
-    include "views/component/pasien/sidebar.php";
-} elseif ($role == 'dokter') {
-    include "views/component/header.php";
-    include "views/component/dokter/navbar.php";
-    include "views/component/dokter/sidebar.php";
+
+    $fileNavbar = APP_ROOT . '/' . $navbarFile;
+
+    if (is_file($fileNavbar)) {
+        try {
+            include $fileNavbar;
+        } catch (Throwable $e) {
+            catatError('Navbar gagal dimuat: ' . $e->getMessage());
+        }
+    } else {
+        catatError('File navbar tidak ditemukan: ' . $navbarFile);
+    }
+
+    if ($sidebarFile !== null) {
+        $fileSidebar = APP_ROOT . '/' . $sidebarFile;
+
+        if (is_file($fileSidebar)) {
+            try {
+                include $fileSidebar;
+            } catch (Throwable $e) {
+                catatError('Sidebar gagal dimuat: ' . $e->getMessage());
+            }
+        } else {
+            catatError('File sidebar tidak ditemukan: ' . $sidebarFile);
+        }
+    }
+
+    echo '<div class="content-wrapper">';
+
+    try {
+        include $fileHalaman;
+    } catch (Throwable $e) {
+        catatError(
+            'Halaman ' . $page . ' gagal dimuat: ' . $e->getMessage()
+        );
+
+        http_response_code(500);
+        echo '<section class="content"><div class="container-fluid pt-3">';
+        echo '<div class="alert alert-danger">';
+        echo '<h5>Halaman tidak dapat ditampilkan.</h5>';
+        echo 'Terjadi kesalahan saat memuat halaman. Periksa log PHP.';
+        echo '</div></div></section>';
+    }
+
+    echo '</div>';
+
+    $fileFooter = APP_ROOT . '/' . $footerFile;
+
+    if (is_file($fileFooter)) {
+        try {
+            include $fileFooter;
+        } catch (Throwable $e) {
+            catatError('Footer gagal dimuat: ' . $e->getMessage());
+        }
+    } else {
+        catatError('File footer tidak ditemukan: ' . $footerFile);
+    }
+
+    $fileFooterJS = APP_ROOT . '/views/component/footerjs.php';
+
+    if (is_file($fileFooterJS)) {
+        try {
+            include $fileFooterJS;
+        } catch (Throwable $e) {
+            catatError('Footer JS gagal dimuat: ' . $e->getMessage());
+        }
+    } else {
+        catatError('views/component/footerjs.php tidak ditemukan.');
+    }
 } else {
-    include "views/component/header.php";
-    include "views/component/tamu/navbar.php";
-}
-?>
+    try {
+        include $fileHalaman;
+    } catch (Throwable $e) {
+        catatError(
+            'Halaman cetak ' . $page . ' gagal dimuat: ' . $e->getMessage()
+        );
 
-<?php
-switch ($page) {
-
-    // HALAMAN PUBLIK
-    case 'home':
-        include "views/landing/home.php";
-        break;
-    case 'daftardokter':
-        include "views/landing/daftardokter.php";
-        break;
-    case 'detildokter':
-        include "views/landing/detildokter.php";
-        break;
-    case 'daftarobat':
-        include "views/landing/daftarobat.php";
-        break;
-    case 'detilobat':
-        include "views/landing/detilobat.php";
-        break;
-    case 'daftarkategori':
-        include "views/landing/daftarkategori.php";
-        break;
-    case 'detilkategori':
-        include "views/landing/detilkategori.php";
-        break;
-    case 'tentang':
-        include "views/landing/tentang.php";
-        break;
-    case 'layanan':
-        include "views/landing/layanan.php";
-        break;
-    case 'kontak':
-        include "views/landing/kontak.php";
-        break;
-
-    // AUTENTIKASI
-    case 'loginuser':
-        include "views/auth/loginuser.php";
-        break;
-    case 'loginpasien':
-        include "views/auth/loginpasien.php";
-        break;
-    case 'logindokter':
-        include "views/auth/logindokter.php";
-        break;
-    case 'registerpasien':
-        include "views/auth/registerpasien.php";
-        break;
-    case 'logout':
-        include "views/auth/logout.php";
-        break;
-
-    // DASHBOARD ADMIN DAN PETUGAS
-    case 'dashboardadmin':
-        include "views/user/dashboard/dashboardadmin.php";
-        break;
-    case 'dashboardpetugas':
-        include "views/user/dashboard/dashboardpetugas.php";
-        break;
-
-    // CRUD USER
-    case 'user':
-        include "views/user/user/index.php";
-        break;
-    case 'createuser':
-        include "views/user/user/create.php";
-        break;
-    case 'edituser':
-        include "views/user/user/edit.php";
-        break;
-    case 'showuser':
-        include "views/user/user/show.php";
-        break;
-
-    // CRUD PASIEN
-    case 'pasien':
-        include "views/user/pasien/index.php";
-        break;
-    case 'createpasien':
-        include "views/user/pasien/create.php";
-        break;
-    case 'editpasien':
-        include "views/user/pasien/edit.php";
-        break;
-    case 'showpasien':
-        include "views/user/pasien/show.php";
-        break;
-
-    // CRUD DOKTER
-    case 'dokter':
-        include "views/user/dokter/index.php";
-        break;
-    case 'createdokter':
-        include "views/user/dokter/create.php";
-        break;
-    case 'editdokter':
-        include "views/user/dokter/edit.php";
-        break;
-    case 'showdokter':
-        include "views/user/dokter/show.php";
-        break;
-
-    // CRUD MERK
-    case 'merk':
-        include "views/user/merk/index.php";
-        break;
-    case 'createmerk':
-        include "views/user/merk/create.php";
-        break;
-    case 'editmerk':
-        include "views/user/merk/edit.php";
-        break;
-    case 'showmerk':
-        include "views/user/merk/show.php";
-        break;
-
-    // CRUD KATEGORI
-    case 'kategori':
-        include "views/user/kategori/index.php";
-        break;
-    case 'createkategori':
-        include "views/user/kategori/create.php";
-        break;
-    case 'editkategori':
-        include "views/user/kategori/edit.php";
-        break;
-    case 'showkategori':
-        include "views/user/kategori/show.php";
-        break;
-
-    // CRUD OBAT
-    case 'obat':
-        include "views/user/obat/index.php";
-        break;
-    case 'createobat':
-        include "views/user/obat/create.php";
-        break;
-    case 'editobat':
-        include "views/user/obat/edit.php";
-        break;
-    case 'showobat':
-        include "views/user/obat/show.php";
-        break;
-
-    // CRUD JADWAL DOKTER
-    case 'jadwaldokter':
-        include "views/user/jadwaldokter/index.php";
-        break;
-    case 'createjadwaldokter':
-        include "views/user/jadwaldokter/create.php";
-        break;
-    case 'editjadwaldokter':
-        include "views/user/jadwaldokter/edit.php";
-        break;
-    case 'showjadwaldokter':
-        include "views/user/jadwaldokter/show.php";
-        break;
-
-    // CRUD KUNJUNGAN
-    case 'kunjungan':
-        include "views/user/kunjungan/index.php";
-        break;
-    case 'createkunjungan':
-        include "views/user/kunjungan/create.php";
-        break;
-    case 'editkunjungan':
-        include "views/user/kunjungan/edit.php";
-        break;
-    case 'showkunjungan':
-        include "views/user/kunjungan/show.php";
-        break;
-
-    // CRUD DETAIL KUNJUNGAN
-    case 'detilkunjungan':
-        include "views/user/detilkunjungan/index.php";
-        break;
-    case 'createdetilkunjungan':
-        include "views/user/detilkunjungan/create.php";
-        break;
-    case 'editdetilkunjungan':
-        include "views/user/detilkunjungan/edit.php";
-        break;
-    case 'showdetilkunjungan':
-        include "views/user/detilkunjungan/show.php";
-        break;
-
-    // CRUD ANTRIAN
-    case 'antrian':
-        include "views/user/antrian/index.php";
-        break;
-    case 'createantrian':
-        include "views/user/antrian/create.php";
-        break;
-    case 'editantrian':
-        include "views/user/antrian/edit.php";
-        break;
-    case 'showantrian':
-        include "views/user/antrian/show.php";
-        break;
-
-    // LAPORAN
-    case 'laporanharian':
-        include "views/user/laporan/laporanharian.php";
-        break;
-    case 'cetaklaporanharian':
-        include "views/user/laporan/cetaklaporanharian.php";
-        break;
-    case 'laporanbulanan':
-        include "views/user/laporan/laporanbulanan.php";
-        break;
-    case 'cetaklaporanbulanan':
-        include "views/user/laporan/cetaklaporanbulanan.php";
-        break;
-    case 'laporantahunan':
-        include "views/user/laporan/laporantahunan.php";
-        break;
-    case 'cetaklaporantahunan':
-        include "views/user/laporan/cetaklaporantahunan.php";
-        break;
-    case 'laporanobat':
-        include "views/user/laporan/laporanobat.php";
-        break;
-    case 'cetaklaporanobat':
-        include "views/user/laporan/cetaklaporanobat.php";
-        break;
-    case 'laporanantrian':
-        include "views/user/laporan/laporanantrian.php";
-        break;
-    case 'cetaklaporanantrian':
-        include "views/user/laporan/cetaklaporanantrian.php";
-        break;
-
-    // ZONA PASIEN
-    case 'dashboardpasien':
-        include "views/pasien/dashboardpasien.php";
-        break;
-    case 'profilpasien':
-        include "views/pasien/profil.php";
-        break;
-    case 'editprofilpasien':
-        include "views/pasien/editprofil.php";
-        break;
-    case 'antrianpasien':
-        include "views/pasien/antrian.php";
-        break;
-    case 'riwayatkunjunganpasien':
-        include "views/pasien/riwayatkunjungan.php";
-        break;
-    case 'detailkunjunganpasien':
-        include "views/pasien/detailkunjungan.php";
-        break;
-
-    // ZONA DOKTER
-    case 'dashboarddokter':
-        include "views/dokter/dashboarddokter.php";
-        break;
-    case 'profildokter':
-        include "views/dokter/profil.php";
-        break;
-    case 'jadwalkunjungan':
-        include "views/dokter/jadwalkunjungan.php";
-        break;
-    case 'antrianpasiendokter':
-        include "views/dokter/antrianpasien.php";
-        break;
-    case 'detailkunjungandokter':
-        include "views/dokter/detailkunjungan.php";
-        break;
-
-    // HALAMAN ERROR
-    case '403':
-        include "views/errors/403.php";
-        break;
-    case '404':
-        include "views/errors/404.php";
-        break;
-    case '500':
-        include "views/errors/500.php";
-        break;
-
-    default:
-        include "views/errors/404.php";
-        break;
-}
-?>
-
-<?php
-// Komponen penutup berdasarkan zona
-if ($role == 'admin' || $role == 'petugas') {
-    include "views/component/user/footer.php";
-} elseif ($role == 'pasien') {
-    include "views/component/pasien/footer.php";
-} elseif ($role == 'dokter') {
-    include "views/component/dokter/footer.php";
-} else {
-    include "views/component/tamu/footer.php";
+        http_response_code(500);
+        echo 'Halaman cetak gagal dimuat. Periksa log PHP.';
+    }
 }
 
-include "views/component/footerjs.php";
-?>
+/* =========================================================
+   14. SELESAI
+   ========================================================= */
+
+ob_end_flush();

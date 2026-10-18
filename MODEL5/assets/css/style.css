@@ -1,0 +1,113 @@
+
+/* ==========================================
+   RUMAH SAKIT AHMADI 5
+   CSS tambahan aplikasi
+   AdminLTE 3.2 + Bootstrap 4
+========================================== */
+
+:root {
+    --rsa-primary: #007bff;
+    --rsa-dark: #343a40;
+    --rsa-bg: #f4f6f9;
+    --rsa-radius: 8px;
+}
+
+/* Tampilan dasar */
+body {
+    font-family: "Source Sans Pro", sans-serif;
+    font-size: 14px;
+    background-color: var(--rsa-bg);
+}
+
+/* Pastikan wrapper mengikuti struktur AdminLTE */
+.wrapper {
+    min-height: 100vh;
+}
+
+/* Area konten utama */
+.content-wrapper {
+    min-height: calc(100vh - 57px);
+}
+
+/* Judul halaman */
+.content-header h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+/* Kartu */
+.card {
+    border-radius: var(--rsa-radius);
+}
+
+.card-header {
+    padding: 0.75rem 1rem;
+}
+
+.card-body {
+    padding: 1rem;
+}
+
+/* Kotak ringkasan dashboard */
+.small-box {
+    border-radius: var(--rsa-radius);
+    overflow: hidden;
+}
+
+.small-box .inner h3 {
+    font-size: 2rem;
+}
+
+/* Tabel */
+.table th,
+.table td {
+    vertical-align: middle;
+}
+
+.table thead th {
+    white-space: nowrap;
+}
+
+/* Form */
+.form-control,
+.custom-select {
+    border-radius: 5px;
+}
+
+label {
+    font-weight: 600;
+}
+
+/* Gambar */
+.img-preview {
+    width: 100%;
+    max-width: 180px;
+    height: 180px;
+    object-fit: cover;
+    border-radius: var(--rsa-radius);
+}
+
+/* Footer */
+.main-footer {
+    font-size: 13px;
+}
+
+/* Layar kecil */
+@media (max-width: 767.98px) {
+    .content-header h1 {
+        font-size: 1.25rem;
+    }
+
+    .content {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .card-body {
+        padding: 0.75rem;
+    }
+
+    .table-responsive {
+        font-size: 12px;
+    }
+}

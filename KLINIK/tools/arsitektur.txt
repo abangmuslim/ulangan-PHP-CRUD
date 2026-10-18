@@ -1,0 +1,288 @@
+STRUKTUR APK
+
+
+klinik/
+│
+├── index.php
+│
+├── assets/
+│   ├── css/
+│   ├── js/
+│   ├── plugins/
+│   └── images/
+│       ├── slider/
+│       ├── obat/
+│       ├── pasien/
+│       ├── dokter/
+│       └── user/
+│
+├── views/
+│   │
+│   ├── component/
+│   │   ├── tamu/
+│   │   │   ├── navbar.php
+│   │   │   └── footer.php  <- memuat footer halaman case tertentu dalam wrapper
+│   │   ├── user/
+│   │   │   ├── navbaradmin.php
+│   │   │   ├── navbarpetugas.php
+│   │   │   ├── sidebaradmin.php
+│   │   │   ├── sidebarpetugas.php
+│   │   │   └── footer.php  <- memuat footer halaman case tertentu dalam wrapper
+│   │   ├── pasien/
+│   │   │   ├── navbar.php
+│   │   │   ├── sidebar.php
+│   │   │   └── footer.php  <- memuat footer halaman case tertentu dalam wrapper
+│   │   ├── dokter/
+│   │   │   ├── navbar.php
+│   │   │   ├── sidebar.php
+│   │   │   └── footer.php  <- memuat footer halaman case tertentu dalam wrapper
+│   │   ├── header.php      <- memuat header awal doc html yang berisi asset css
+│   │   └── footerjs.php    <- memuat footer yang berisi asset js
+│   │
+│   ├── user/                         ← ZONA ADMIN & PETUGAS
+│   │   ├── dashboard/
+│   │   │   ├── dashboardadmin.php
+│   │   │   └── dashboardpetugas.php
+│   │   ├── user/
+│   │   │   ├── index.php
+│   │   │   ├── create.php
+│   │   │   ├── edit.php
+│   │   │   └── show.php
+│   │   ├── pasien/
+│   │   │   ├── index.php
+│   │   │   ├── create.php
+│   │   │   ├── edit.php
+│   │   │   └── show.php
+│   │   ├── dokter/
+│   │   │   ├── index.php
+│   │   │   ├── create.php
+│   │   │   ├── edit.php
+│   │   │   └── show.php
+│   │   ├── merk/
+│   │   │   ├── index.php
+│   │   │   ├── create.php
+│   │   │   ├── edit.php
+│   │   │   └── show.php
+│   │   ├── kategori/
+│   │   │   ├── index.php
+│   │   │   ├── create.php
+│   │   │   ├── edit.php
+│   │   │   └── show.php
+│   │   ├── obat/
+│   │   │   ├── index.php
+│   │   │   ├── create.php
+│   │   │   ├── edit.php
+│   │   │   └── show.php
+│   │   ├── jadwaldokter/
+│   │   │   ├── index.php
+│   │   │   ├── create.php
+│   │   │   ├── edit.php
+│   │   │   └── show.php
+│   │   ├── kunjungan/
+│   │   │   ├── index.php
+│   │   │   ├── create.php
+│   │   │   ├── edit.php
+│   │   │   └── show.php
+│   │   ├── detilkunjungan/
+│   │   │   ├── index.php
+│   │   │   ├── create.php
+│   │   │   ├── edit.php
+│   │   │   └── show.php
+│   │   ├── antrian/
+│   │   │   ├── index.php
+│   │   │   ├── create.php
+│   │   │   ├── edit.php
+│   │   │   └── show.php
+│   │   └── laporan/
+│   │       ├── laporanharian.php
+│   │       ├── cetaklaporanharian.php
+│   │       ├── laporanbulanan.php
+│   │       ├── cetaklaporanbulanan.php
+│   │       ├── laporantahunan.php
+│   │       ├── cetaklaporantahunan.php
+│   │       ├── laporanobat.php
+│   │       ├── cetaklaporanobat.php
+│   │       ├── laporanantrian.php
+│   │       └── cetaklaporanantrian.php
+│   │
+│   ├── pasien/                       ← ZONA LOGIN PASIEN
+│   │   ├── dashboardpasien.php
+│   │   ├── profil.php
+│   │   ├── editprofil.php
+│   │   ├── antrian.php
+│   │   ├── riwayatkunjungan.php
+│   │   └── detailkunjungan.php
+│   │
+│   ├── dokter/                       ← ZONA LOGIN DOKTER
+│   │   ├── dashboarddokter.php
+│   │   ├── profil.php
+│   │   ├── jadwalkunjungan.php
+│   │   ├── antrianpasien.php
+│   │   └── detailkunjungan.php
+│   │
+│   ├── landing/                      ← ZONA TAMU / PUBLIK
+│   │   ├── home.php
+│   │   ├── daftardokter.php
+│   │   ├── detildokter.php
+│   │   ├── daftarobat.php
+│   │   ├── detilobat.php
+│   │   ├── daftarkategori.php
+│   │   ├── detilkategori.php
+│   │   ├── tentang.php
+│   │   ├── layanan.php
+│   │   └── kontak.php
+│   │
+│   ├── auth/
+│   │   ├── loginuser.php
+│   │   ├── loginpasien.php
+│   │   ├── logindokter.php
+│   │   ├── registerpasien.php
+│   │   └── logout.php
+│   │
+│   └── errors/
+│       ├── 403.php
+│       ├── 404.php
+│       └── 500.php
+│
+└── proses/
+    ├── koneksi.php
+    ├── session.php
+    ├── helper.php
+    ├── proseslogout.php
+    ├── prosesdashboarduser.php
+    ├── prosesdashboardpasien.php
+    ├── prosesdashboarddokter.php
+    ├── prosesloginuser.php
+    ├── prosesloginpasien.php
+    ├── proseslogindokter.php
+    ├── prosesregisterpasien.php
+    ├── prosesuser.php
+    ├── prosespasien.php
+    ├── prosesdokter.php
+    ├── prosesmerk.php
+    ├── proseskategori.php
+    ├── prosesobat.php
+    ├── prosesjadwaldokter.php
+    ├── proseskunjungan.php
+    ├── prosesantrian.php
+    └── proseslaporan.php
+
+
+STRUKTUR DB
+
+CREATE DATABASE IF NOT EXISTS rumahsakitahmadi5;
+USE rumahsakitahmadi5;
+
+CREATE TABLE `user` (
+    iduser INT AUTO_INCREMENT PRIMARY KEY,
+    namauser VARCHAR(100) NOT NULL,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    nohp VARCHAR(15),
+    alamat TEXT,
+    foto VARCHAR(255),
+    role ENUM('admin', 'petugas') NOT NULL DEFAULT 'petugas'
+) ENGINE=InnoDB;
+
+CREATE TABLE pasien (
+    idpasien INT AUTO_INCREMENT PRIMARY KEY,
+    namapasien VARCHAR(100) NOT NULL,
+    username VARCHAR(50) UNIQUE,
+    password VARCHAR(255),
+    nohp VARCHAR(15),
+    alamat TEXT,
+    foto VARCHAR(255)
+) ENGINE=InnoDB;
+
+CREATE TABLE dokter (
+    iddokter INT AUTO_INCREMENT PRIMARY KEY,
+    namadokter VARCHAR(100) NOT NULL,
+    username VARCHAR(50) UNIQUE,
+    password VARCHAR(255),
+    spesialis VARCHAR(100),
+    nohp VARCHAR(15),
+    alamat TEXT,
+    foto VARCHAR(25)
+) ENGINE=InnoDB;
+
+CREATE TABLE merk (
+    idmerk INT AUTO_INCREMENT PRIMARY KEY,
+    namamerk VARCHAR(100) NOT NULL
+) ENGINE=InnoDB;
+
+CREATE TABLE kategori (
+    idkategori INT AUTO_INCREMENT PRIMARY KEY,
+    namakategori VARCHAR(100) NOT NULL
+) ENGINE=InnoDB;
+
+CREATE TABLE obat (
+    idobat INT AUTO_INCREMENT PRIMARY KEY,
+    idmerk INT NOT NULL,
+    idkategori INT NOT NULL,
+    namaobat VARCHAR(100) NOT NULL,
+    harga INT DEFAULT 0,
+    tanggalstok DATE,
+    stok INT DEFAULT 0,
+    foto VARCHAR(255),
+    FOREIGN KEY (idmerk) REFERENCES merk(idmerk)
+        ON UPDATE CASCADE ON DELETE RESTRICT,
+    FOREIGN KEY (idkategori) REFERENCES kategori(idkategori)
+        ON UPDATE CASCADE ON DELETE RESTRICT
+) ENGINE=InnoDB;
+
+CREATE TABLE jadwaldokter (
+    idjadwal INT AUTO_INCREMENT PRIMARY KEY,
+    iddokter INT NOT NULL,
+    haripraktik VARCHAR(10) NOT NULL,
+    jam_mulai TIME NOT NULL,
+    jam_selesai TIME NOT NULL,
+    FOREIGN KEY (iddokter) REFERENCES dokter(iddokter)
+        ON UPDATE CASCADE ON DELETE RESTRICT
+) ENGINE=InnoDB;
+
+CREATE TABLE kunjungan (
+    idkunjungan INT AUTO_INCREMENT PRIMARY KEY,
+    iduser INT NOT NULL,
+    idpasien INT NOT NULL,
+    iddokter INT NOT NULL,
+    idjadwal INT NOT NULL,
+    tanggalkunjungan DATE NOT NULL,
+    keluhan TEXT,
+    diagnosis TEXT,
+    totalkunjungan INT DEFAULT 0,
+    FOREIGN KEY (iduser) REFERENCES `user`(iduser)
+        ON UPDATE CASCADE ON DELETE RESTRICT,
+    FOREIGN KEY (idpasien) REFERENCES pasien(idpasien)
+        ON UPDATE CASCADE ON DELETE RESTRICT,
+    FOREIGN KEY (iddokter) REFERENCES dokter(iddokter)
+        ON UPDATE CASCADE ON DELETE RESTRICT,
+    FOREIGN KEY (idjadwal) REFERENCES jadwaldokter(idjadwal)
+        ON UPDATE CASCADE ON DELETE RESTRICT
+) ENGINE=InnoDB;
+
+CREATE TABLE detilkunjungan (
+    iddetilkunjungan INT AUTO_INCREMENT PRIMARY KEY,
+    idkunjungan INT NOT NULL,
+    idobat INT NOT NULL,
+    jumlah INT NOT NULL DEFAULT 1,
+    harga INT NOT NULL DEFAULT 0,
+    subtotal INT NOT NULL DEFAULT 0,
+    aturanpakai VARCHAR(255),
+    FOREIGN KEY (idkunjungan) REFERENCES kunjungan(idkunjungan)
+        ON UPDATE CASCADE ON DELETE RESTRICT,
+    FOREIGN KEY (idobat) REFERENCES obat(idobat)
+        ON UPDATE CASCADE ON DELETE RESTRICT
+) ENGINE=InnoDB;
+
+CREATE TABLE antrian (
+    idantrian INT AUTO_INCREMENT PRIMARY KEY,
+    idkunjungan INT NOT NULL UNIQUE,
+    nomorantrian INT NOT NULL,
+    tanggalantrian DATE NOT NULL,
+    statusantrian ENUM(
+        'menunggu', 'dipanggil', 'dilayani', 'selesai', 'batal'
+    ) NOT NULL DEFAULT 'menunggu',
+    FOREIGN KEY (idkunjungan) REFERENCES kunjungan(idkunjungan)
+        ON UPDATE CASCADE ON DELETE RESTRICT
+) ENGINE=InnoDB;
+

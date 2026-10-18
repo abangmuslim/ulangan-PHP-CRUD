@@ -1,0 +1,68 @@
+CASE ADMIN
+│
+├── component/header.php
+│   ├── <!DOCTYPE html>
+│   ├── <html>
+│   ├── <head>
+│   └── <body>
+│
+├── index.php
+│   └── <div class="wrapper">
+│       │
+│       ├── component/user/navbar.php
+│       │   └── <nav>
+│       │
+│       ├── component/user/sidebaradmin.php
+│       │   └── <aside>
+│       │
+│       ├── <div class="content-wrapper">
+│       │   └── file halaman berdasarkan route (harusnya halaman dashboardadmin diatur disini ya)
+│       │
+│       ├── component/user/footer.php
+│       │   └── <footer>
+│       │
+│       └── </div>  ← penutup .wrapper
+│
+└── component/footerjs.php
+    ├── script jQuery
+    ├── script Bootstrap
+    ├── script AdminLTE
+    ├── script tambahan
+    ├── </body>
+    └── </html>
+
+
+    CASE ADMIN
+│
+├── views/component/header.php
+│   ├── <!DOCTYPE html>
+│   ├── <html>
+│   ├── <head>
+│   └── <body>
+│
+├── index.php
+│   └── <div class="wrapper">
+│       │
+│       ├── views/component/user/navbar.php
+│       │   └── <nav class="main-header">
+│       │
+│       ├── views/component/user/sidebaradmin.php
+│       │   └── <aside class="main-sidebar">
+│       │
+│       ├── <div class="content-wrapper">
+│       │   ├── [Routing halaman]
+│       │   └── views/user/dashboard/dashboardadmin.php
+│       │       (ketika page=dashboardadmin)
+│       │
+│       ├── views/component/user/footer.php
+│       │   └── <footer class="main-footer">
+│       │
+│       └── </div>  ← penutup .wrapper
+│
+└── views/component/footerjs.php
+    ├── jQuery
+    ├── Bootstrap
+    ├── AdminLTE
+    ├── script.js
+    ├── </body>
+    └── </html>
