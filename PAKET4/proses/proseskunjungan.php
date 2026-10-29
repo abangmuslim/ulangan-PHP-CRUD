@@ -10,9 +10,6 @@ if ($proses == 'insert') {
 
     mysqli_query($koneksi, "INSERT INTO kunjungan SET
         idpasien='$idpasien',
-        iduser='1',
-        iddokter='1',
-        idobat='1',
         tanggal='$tanggal',
         keluhan='$keluhan',
         biaya='$biaya'");

@@ -3,9 +3,6 @@ rumahsakitahmadi5/
 ├── index.php
 │
 ├── assets/
-│   ├── css/
-│   ├── js/
-│   ├── plugins/
 │   └── images/
 │       ├── slider/
 │       ├── obat/
@@ -21,24 +18,18 @@ rumahsakitahmadi5/
 │   │   │   └── footer.php
 │   │   ├── user/
 │   │   │   ├── navbar.php
-│   │   │   ├── sidebaradmin.php
-│   │   │   ├── sidebarpetugas.php
-│   │   │   └── footer.php
-│   │   ├── pasien/
-│   │   │   ├── navbar.php
 │   │   │   ├── sidebar.php
 │   │   │   └── footer.php
-│   │   ├── dokter/
+│   │   ├── pasien/
 │   │   │   ├── navbar.php
 │   │   │   ├── sidebar.php
 │   │   │   └── footer.php
 │   │   ├── header.php
 │   │   └── footerjs.php
 │   │
-│   ├── user/                         ← ZONA ADMIN & PETUGAS
+│   ├── user/                         ← ZONA ADMIN
 │   │   ├── dashboard/
-│   │   │   ├── dashboardadmin.php
-│   │   │   └── dashboardpetugas.php
+│   │   │   ├── dashboaruser.php
 │   │   ├── user/
 │   │   │   ├── index.php
 │   │   │   ├── create.php
@@ -54,6 +45,11 @@ rumahsakitahmadi5/
 │   │   │   ├── create.php
 │   │   │   ├── edit.php
 │   │   │   └── show.php
+│   │   ├── jadwaldokter/
+│   │   │   ├── index.php
+│   │   │   ├── create.php
+│   │   │   ├── edit.php
+│   │   │   └── show.php
 │   │   ├── merk/
 │   │   │   ├── index.php
 │   │   │   ├── create.php
@@ -65,11 +61,6 @@ rumahsakitahmadi5/
 │   │   │   ├── edit.php
 │   │   │   └── show.php
 │   │   ├── obat/
-│   │   │   ├── index.php
-│   │   │   ├── create.php
-│   │   │   ├── edit.php
-│   │   │   └── show.php
-│   │   ├── jadwaldokter/
 │   │   │   ├── index.php
 │   │   │   ├── create.php
 │   │   │   ├── edit.php
@@ -109,13 +100,6 @@ rumahsakitahmadi5/
 │   │   ├── riwayatkunjungan.php
 │   │   └── detailkunjungan.php
 │   │
-│   ├── dokter/                       ← ZONA LOGIN DOKTER
-│   │   ├── dashboarddokter.php
-│   │   ├── profil.php
-│   │   ├── jadwalkunjungan.php
-│   │   ├── antrianpasien.php
-│   │   └── detailkunjungan.php
-│   │
 │   ├── landing/                      ← ZONA TAMU / PUBLIK
 │   │   ├── home.php
 │   │   ├── daftardokter.php
@@ -131,7 +115,6 @@ rumahsakitahmadi5/
 │   ├── auth/
 │   │   ├── loginuser.php
 │   │   ├── loginpasien.php
-│   │   ├── logindokter.php
 │   │   ├── registerpasien.php
 │   │   └── logout.php
 │   │
@@ -148,7 +131,6 @@ rumahsakitahmadi5/
     ├── proseslogout.php
     ├── prosesloginuser.php
     ├── prosesloginpasien.php
-    ├── proseslogindokter.php
     ├── prosesregisterpasien.php
     ├── prosesuser.php
     ├── prosespasien.php
@@ -165,36 +147,3 @@ rumahsakitahmadi5/
     ├── prosesdashboarddokter.php
     └── proseslaporan.php
 
-
-    plain structure
-
-    .wrapper
-├── navbar
-├── sidebar (khusus area login)
-├── .content-wrapper
-│   └── isi halaman
-├── footer
-└── penutup .wrapper
-
-
-index.php
-├── views/component/header.php
-│   └── <body>
-│       └── .wrapper
-│           ├── views/component/tamu/navbar.php
-│           ├── .content-wrapper
-│           │   └── Konten halaman
-│           └── views/component/tamu/footer.php
-└── views/component/footerjs.php
-
-[case admin]
-head            : component/header.php
-body            : index.php
-    buka.wrapper: index.php
-        navbar  : component/user/sidebaradmin.php
-        sidebar : component/user/sidebaradmin.php
-            .content-wrapper
-            isi halaman
-        footer
-    penutup.wrapper
-footer : footer.js

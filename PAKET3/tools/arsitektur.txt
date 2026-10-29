@@ -2,6 +2,7 @@ STRUKTUR APK
 
 RumahSakitAhmadi/
 ├── index.php
+├── koneksi.php
 ├── views/
 │   ├── Pasien/
 │   │   ├── index.php
@@ -14,10 +15,8 @@ RumahSakitAhmadi/
 │       ├── edit.php
 │       └── show.php
 └── proses/
-    ├── koneksi.php
     ├── prosespasien.php
     └── proseskunjungan.php
-
 
 
 

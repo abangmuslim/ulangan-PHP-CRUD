@@ -10,6 +10,11 @@ $users = [
         "password" => "admin123"
     ],
     [
+        "nama" => "ahmadiuser",
+        "username" => "ahmadiuser",
+        "password" => "ahmadiuser"
+    ],
+    [
         "nama" => "Petugas Pendaftaran",
         "username" => "pendaftaran",
         "password" => "daftar123"
