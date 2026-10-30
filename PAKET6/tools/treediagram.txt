@@ -70,10 +70,6 @@ rumahsakitahmadi5/
 │   │   │   ├── create.php
 │   │   │   ├── edit.php
 │   │   │   └── show.php
-│   │   ├── antrian/
-│   │   │   ├── index.php
-│   │   │   ├── create.php
-│   │   │   └── show.php
 │   │   └── laporan/
 │   │       ├── laporanharian.php
 │   │       ├── cetaklaporanharian.php
@@ -82,18 +78,17 @@ rumahsakitahmadi5/
 │   │       ├── laporantahunan.php
 │   │       ├── cetaklaporantahunan.php
 │   │       ├── laporanobat.php
-│   │       ├── cetaklaporanobat.php
-│   │       ├── laporanantrian.php
-│   │       └── cetaklaporanantrian.php
+│   │       └── cetaklaporanobat.php
 │   │
 │   ├── pasien/                       ← ZONA LOGIN PASIEN
 │   │   ├── dashboardpasien.php
 │   │   ├── profil.php
 │   │   ├── editprofil.php
-│   │   ├── antrian.php
 │   │   ├── pendaftarancheckup.php
 │   │   ├── riwayatkunjungan.php
-│   │   └── detilkunjungan.php
+│   │   ├── detilkunjungan.php
+│   │   ├── daftardokter.php
+│   │   └── informasiobat.php
 │   │
 │   ├── landing/                      ← ZONA TAMU / PUBLIK
 │   │   ├── home.php
@@ -105,7 +100,6 @@ rumahsakitahmadi5/
 │   │   ├── detilkategori.php
 │   │   ├── tentang.php
 │   │   ├── layanan.php
-│   │   ├── antrian.php  <= penambahan fitur baru di zona publik untuk ditampilkan ke pengunjung agar tahu antriannya
 │   │   └── kontak.php
 │   │
 │   ├── auth/
@@ -123,7 +117,6 @@ rumahsakitahmadi5/
     ├── koneksi.php
     ├── session.php
     ├── helper.php
-    ├── auth.php
     ├── proseslogout.php
     ├── prosesloginuser.php
     ├── prosesloginpasien.php
@@ -137,7 +130,6 @@ rumahsakitahmadi5/
     ├── prosesjadwaldokter.php
     ├── proseskunjungan.php
     ├── prosesdetilkunjungan.php
-    ├── prosesantrian.php
     ├── prosesdashboarduser.php
     ├── prosesdashboardpasien.php
     ├── prosesdashboarddokter.php

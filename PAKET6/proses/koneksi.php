@@ -1,7 +1,7 @@
 <?php
-$koneksi = mysqli_connect("localhost", "root", "", "rumahsakitahmadi5");
+$koneksi = mysqli_connect("localhost", "root", "", "rumahsakitahmadi6");
 
 if (!$koneksi) {
-    die("Koneksi gagal: " . mysqli_connect_error());
+    die("Koneksi database gagal: " . mysqli_connect_error());
 }
 ?>

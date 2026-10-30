@@ -1,40 +1,47 @@
 <?php
-require_once __DIR__ . '/koneksi.php';
-require_once __DIR__ . '/session.php';
-require_once __DIR__ . '/helper.php';
+require_once "session.php";
+require_once "koneksi.php";
+require_once "helper.php";
 
-if (!isPost()) {
-    redirect('../index.php?page=loginpasien');
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    redirect("../index.php?page=loginpasien");
 }
 
-$username = ambilPost('username');
+$username = trim($_POST['username'] ?? '');
 $password = $_POST['password'] ?? '';
 
-if ($username === '' || !is_string($password) || $password === '') {
-    $_SESSION['error_login'] = 'Username dan password wajib diisi.';
-    redirect('../index.php?page=loginpasien');
+if ($username === '' || $password === '') {
+    redirect("../index.php?page=loginpasien&error=kosong");
 }
 
-$stmt = mysqli_prepare($koneksi, "SELECT idpasien, namapasien, username, password, foto FROM pasien WHERE username = ? LIMIT 1");
+$sql = "SELECT idpasien, namapasien, username, password
+        FROM pasien
+        WHERE username = ?
+        LIMIT 1";
+
+$stmt = mysqli_prepare($koneksi, $sql);
 mysqli_stmt_bind_param($stmt, "s", $username);
 mysqli_stmt_execute($stmt);
+
 $result = mysqli_stmt_get_result($stmt);
 $pasien = mysqli_fetch_assoc($result);
+
 mysqli_stmt_close($stmt);
 
-if (!$pasien || empty($pasien['password']) || !password_verify($password, $pasien['password'])) {
-    $_SESSION['error_login'] = 'Username atau password salah.';
-    redirect('../index.php?page=loginpasien');
+if (
+    $pasien &&
+    !empty($pasien['password']) &&
+    password_verify($password, $pasien['password'])
+) {
+    session_regenerate_id(true);
+
+    // Bersihkan identitas role sebelumnya.
+    unset($_SESSION['iduser'], $_SESSION['namauser']);
+
+    $_SESSION['idpasien'] = $pasien['idpasien'];
+    $_SESSION['namapasien'] = $pasien['namapasien'];
+
+    redirect("../index.php?page=dashboardpasien");
 }
 
-session_regenerate_id(true);
-
-unset($_SESSION['iduser'], $_SESSION['role'], $_SESSION['iddokter']);
-$_SESSION['idpasien'] = $pasien['idpasien'];
-$_SESSION['namapasien'] = $pasien['namapasien'];
-$_SESSION['username'] = $pasien['username'];
-$_SESSION['foto'] = $pasien['foto'] ?? 'default.png';
-$_SESSION['last_activity'] = time();
-
-redirect('../index.php?page=dashboardpasien');
-?>
+redirect("../index.php?page=loginpasien&error=gagal");

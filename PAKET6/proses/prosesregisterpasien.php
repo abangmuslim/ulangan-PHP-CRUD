@@ -1,104 +1,81 @@
 <?php
-require_once __DIR__ . '/koneksi.php';
-require_once __DIR__ . '/session.php';
-require_once __DIR__ . '/helper.php';
+require_once "session.php";
+require_once "koneksi.php";
+require_once "helper.php";
 
-if (!isPost()) {
-    redirect('../index.php?page=registerpasien');
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    redirect("../index.php?page=registerpasien");
 }
 
-$namapasien = ambilPost('namapasien');
-$username = ambilPost('username');
-$nohp = ambilPost('nohp');
-$alamat = ambilPost('alamat');
+$namapasien = trim($_POST['namapasien'] ?? '');
+$username = trim($_POST['username'] ?? '');
 $password = $_POST['password'] ?? '';
 $konfirmasi = $_POST['konfirmasi_password'] ?? '';
+$nohp = trim($_POST['nohp'] ?? '');
+$alamat = trim($_POST['alamat'] ?? '');
 
 if (
     $namapasien === '' ||
     $username === '' ||
-    !is_string($password) ||
-    !is_string($konfirmasi) ||
     $password === '' ||
     $konfirmasi === ''
 ) {
-    $_SESSION['error_register'] = 'Nama, username, dan password wajib diisi.';
-    redirect('../index.php?page=registerpasien');
+    redirect("../index.php?page=registerpasien&status=gagal");
 }
 
-if ($password !== $konfirmasi) {
-    $_SESSION['error_register'] = 'Konfirmasi password tidak sama.';
-    redirect('../index.php?page=registerpasien');
+if (
+    strlen($namapasien) > 100 ||
+    strlen($username) > 50 ||
+    strlen($nohp) > 15
+) {
+    redirect("../index.php?page=registerpasien&status=gagal");
 }
 
 if (strlen($password) < 8) {
-    $_SESSION['error_register'] = 'Password minimal 8 karakter.';
-    redirect('../index.php?page=registerpasien');
+    redirect("../index.php?page=registerpasien&status=gagal");
 }
 
-if (strlen($username) > 50 || strlen($namapasien) > 100) {
-    $_SESSION['error_register'] = 'Nama atau username melebihi batas karakter.';
-    redirect('../index.php?page=registerpasien');
+if ($password !== $konfirmasi) {
+    redirect("../index.php?page=registerpasien&status=password");
 }
 
-// Periksa apakah username sudah digunakan pasien lain
-$stmt = mysqli_prepare($koneksi, "SELECT idpasien FROM pasien WHERE username = ? LIMIT 1");
+// Periksa apakah username sudah digunakan.
+$sql = "SELECT idpasien FROM pasien WHERE username = ? LIMIT 1";
+$stmt = mysqli_prepare($koneksi, $sql);
 mysqli_stmt_bind_param($stmt, "s", $username);
 mysqli_stmt_execute($stmt);
+
 $result = mysqli_stmt_get_result($stmt);
-$usernameAda = mysqli_num_rows($result) > 0;
+$akunAda = mysqli_fetch_assoc($result);
+
 mysqli_stmt_close($stmt);
 
-if ($usernameAda) {
-    $_SESSION['error_register'] = 'Username sudah digunakan. Silakan pilih username lain.';
-    redirect('../index.php?page=registerpasien');
+if ($akunAda) {
+    redirect("../index.php?page=registerpasien&status=duplikat");
 }
 
-// Upload foto pasien jika ada
-$hasilUpload = uploadFoto(
-    $_FILES['foto'] ?? [],
-    'assets/images/pasien',
-    $username
-);
+// Password disimpan dalam bentuk hash.
+$hashPassword = password_hash($password, PASSWORD_DEFAULT);
 
-if (!$hasilUpload['success']) {
-    $_SESSION['error_register'] = $hasilUpload['message'];
-    redirect('../index.php?page=registerpasien');
-}
+$sql = "INSERT INTO pasien
+        (namapasien, username, password, nohp, alamat)
+        VALUES (?, ?, ?, ?, ?)";
 
-$foto = $hasilUpload['filename'] ?? 'default.png';
-$passwordHash = password_hash($password, PASSWORD_DEFAULT);
-
-$stmt = mysqli_prepare(
-    $koneksi,
-    "INSERT INTO pasien (namapasien, username, password, nohp, alamat, foto)
-     VALUES (?, ?, ?, ?, ?, ?)"
-);
-
+$stmt = mysqli_prepare($koneksi, $sql);
 mysqli_stmt_bind_param(
     $stmt,
-    "ssssss",
+    "sssss",
     $namapasien,
     $username,
-    $passwordHash,
+    $hashPassword,
     $nohp,
-    $alamat,
-    $foto
+    $alamat
 );
 
 if (mysqli_stmt_execute($stmt)) {
     mysqli_stmt_close($stmt);
-    $_SESSION['success_register'] = 'Registrasi berhasil. Silakan login menggunakan akun Anda.';
-    redirect('../index.php?page=loginpasien');
+    redirect("../index.php?page=registerpasien&status=berhasil");
 }
 
 mysqli_stmt_close($stmt);
-
-// Hapus foto yang telanjur diunggah jika penyimpanan data gagal
-if ($foto !== 'default.png') {
-    hapusFoto($foto, 'assets/images/pasien');
-}
-
-$_SESSION['error_register'] = 'Registrasi gagal. Silakan coba kembali.';
-redirect('../index.php?page=registerpasien');
-?>
+redirect("../index.php?page=registerpasien&status=gagal");

@@ -1,14 +1,6 @@
-<footer class="main-footer">
-
-    <strong>
-        Copyright &copy; <?= date('Y'); ?>
-        Koperasi Ahmadi.
-    </strong>
-
-    All rights reserved.
-
-    <div class="float-right d-none d-sm-inline-block">
-        <b>Version</b> 1.0
-    </div>
-
+<footer class="bg-white text-center p-3 border-top mt-auto">
+    <small>
+        &copy; <?= date('Y') ?> Rumah Sakit Ahmadi.
+        Halaman Pasien.
+    </small>
 </footer>

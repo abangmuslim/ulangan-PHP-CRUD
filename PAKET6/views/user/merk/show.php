@@ -1,94 +1,146 @@
-<?php
-$id = (int) ($_GET['id'] ?? 0);
-$data = mysqli_query($koneksi, "
-    SELECT k.*, p.namapasien, p.jeniskelamin, p.alamat, p.nohp AS nohppasien,
-           d.namadokter, d.spesialis, o.namaobat, o.jenisobat,
-           u.namauser
-    FROM kunjungan k
-    JOIN pasien p ON k.idpasien = p.idpasien
-    JOIN dokter d ON k.iddokter = d.iddokter
-    JOIN obat o ON k.idobat = o.idobat
-    JOIN user u ON k.iduser = u.iduser
-    WHERE k.idkunjungan='$id'
-");
-$kunjungan = mysqli_fetch_assoc($data);
 
-if (!$kunjungan) {
-    echo '<div class="alert alert-warning">Data kunjungan tidak ditemukan.</div>';
-    echo '<a href="index.php?page=kunjungan" class="btn btn-secondary">Kembali</a>';
-    return;
+<?php
+$id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+
+$query = mysqli_query($koneksi, "
+    SELECT 
+        m.idmerk,
+        m.namamerk,
+        COUNT(o.idobat) AS jumlahobat
+    FROM merk m
+    LEFT JOIN obat o ON m.idmerk = o.idmerk
+    WHERE m.idmerk = '$id'
+    GROUP BY m.idmerk, m.namamerk
+");
+
+$data = mysqli_fetch_assoc($query);
+
+if (!$data) {
+    echo "<script>window.location='index.php?page=merk';</script>";
+    exit;
 }
 ?>
-<div class="card shadow-sm">
-    <div class="card-header bg-info text-white">
-        <h5 class="mb-0">Detail Kunjungan Pasien</h5>
+
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+
+            <div class="col-sm-6">
+                <h1 class="m-0">
+                    <i class="bi bi-tags-fill"></i>
+                    Detail Merk Obat
+                </h1>
+            </div>
+
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item">
+                        <a href="index.php?page=dashboarduser">Dashboard</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="index.php?page=merk">Merk Obat</a>
+                    </li>
+                    <li class="breadcrumb-item active">Detail</li>
+                </ol>
+            </div>
+
+        </div>
     </div>
-    <div class="card-body">
-        <h6 class="text-primary mb-3">Informasi Kunjungan</h6>
-        <table class="table table-bordered">
-            <tr>
-                <th width="200">ID Kunjungan</th>
-                <td><?= $kunjungan['idkunjungan']; ?></td>
-            </tr>
-            <tr>
-                <th>Tanggal</th>
-                <td><?= date('d-m-Y', strtotime($kunjungan['tanggal'])); ?></td>
-            </tr>
-            <tr>
-                <th>Petugas Pencatat</th>
-                <td><?= $kunjungan['namauser']; ?></td>
-            </tr>
-            <tr>
-                <th>Biaya</th>
-                <td>Rp <?= number_format($kunjungan['biaya'], 0, ',', '.'); ?></td>
-            </tr>
-        </table>
+</div>
 
-        <h6 class="text-primary mt-4 mb-3">Informasi Pasien</h6>
-        <table class="table table-bordered">
-            <tr>
-                <th width="200">Nama Pasien</th>
-                <td><?= $kunjungan['namapasien']; ?></td>
-            </tr>
-            <tr>
-                <th>Jenis Kelamin</th>
-                <td><?= $kunjungan['jeniskelamin'] ?? '-'; ?></td>
-            </tr>
-            <tr>
-                <th>No. HP</th>
-                <td><?= $kunjungan['nohppasien'] ?? '-'; ?></td>
-            </tr>
-            <tr>
-                <th>Alamat</th>
-                <td><?= $kunjungan['alamat'] ?? '-'; ?></td>
-            </tr>
-            <tr>
-                <th>Keluhan</th>
-                <td><?= $kunjungan['keluhan'] ?? '-'; ?></td>
-            </tr>
-        </table>
+<div class="content">
+    <div class="container-fluid">
 
-        <h6 class="text-primary mt-4 mb-3">Informasi Dokter dan Obat</h6>
-        <table class="table table-bordered">
-            <tr>
-                <th width="200">Nama Dokter</th>
-                <td><?= $kunjungan['namadokter']; ?></td>
-            </tr>
-            <tr>
-                <th>Spesialis</th>
-                <td><?= $kunjungan['spesialis'] ?? '-'; ?></td>
-            </tr>
-            <tr>
-                <th>Nama Obat</th>
-                <td><?= $kunjungan['namaobat']; ?></td>
-            </tr>
-            <tr>
-                <th>Jenis Obat</th>
-                <td><?= $kunjungan['jenisobat'] ?? '-'; ?></td>
-            </tr>
-        </table>
+        <div class="card card-primary card-outline">
 
-        <a href="index.php?page=kunjungan" class="btn btn-secondary">Kembali</a>
-        <a href="index.php?page=editkunjungan&id=<?= $kunjungan['idkunjungan']; ?>" class="btn btn-warning">Edit Kunjungan</a>
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="bi bi-info-circle me-1"></i>
+                    Informasi Merk Obat
+                </h3>
+            </div>
+
+            <div class="card-body">
+
+                <div class="row">
+
+                    <!-- KOLOM KIRI -->
+                    <div class="col-md-4">
+
+                        <div class="border rounded text-center p-4">
+
+                            <i class="bi bi-tags-fill text-primary"
+                                style="font-size: 100px;"></i>
+
+                            <h4 class="mt-3">
+                                <?= htmlspecialchars($data['namamerk']); ?>
+                            </h4>
+
+                            <span class="badge bg-primary">
+                                Merk Obat
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                    <!-- KOLOM KANAN -->
+                    <div class="col-md-8">
+
+                        <table class="table table-bordered">
+
+                            <tr>
+                                <th width="35%">ID Merk</th>
+                                <td><?= $data['idmerk']; ?></td>
+                            </tr>
+
+                            <tr>
+                                <th>Nama Merk</th>
+                                <td>
+                                    <?= htmlspecialchars($data['namamerk']); ?>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <th>Jumlah Obat</th>
+                                <td>
+                                    <span class="badge bg-info">
+                                        <?= $data['jumlahobat']; ?> Obat
+                                    </span>
+                                </td>
+                            </tr>
+
+                        </table>
+
+                        <div class="alert alert-light border">
+                            <i class="bi bi-info-circle text-primary me-1"></i>
+                            Data merk ini digunakan sebagai identitas
+                            merek pada data obat.
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="card-footer">
+
+                <a href="index.php?page=merk"
+                    class="btn btn-secondary btn-sm">
+                    <i class="bi bi-arrow-left"></i>
+                    Kembali
+                </a>
+
+                <a href="index.php?page=editmerk&id=<?= $data['idmerk']; ?>"
+                    class="btn btn-warning btn-sm float-end">
+                    <i class="bi bi-pencil-square"></i>
+                    Edit Merk
+                </a>
+
+            </div>
+
+        </div>
+
     </div>
 </div>

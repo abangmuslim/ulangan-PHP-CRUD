@@ -1,117 +1,115 @@
-<!-- Main Sidebar Container -->
-<aside class="main-sidebar sidebar-dark-primary elevation-4">
 
-    <!-- Brand Logo -->
-    <a href="index.php?halaman=dashboardpelanggan" class="brand-link">
+<?php
+$menuAktif = $page ?? '';
+?>
 
-        <img
-            src="assets/images/logo.png"
-            alt="Logo"
-            class="brand-image img-circle elevation-3"
-            style="opacity: .8">
+<div class="sidebar-admin py-2">
 
-        <span class="brand-text font-weight-light">
-            Koperasi Ahmadi
-        </span>
+
+    <!-- =================================================
+         MENU UTAMA
+    ================================================== -->
+
+    <div class="menu-title">
+        Menu Utama
+    </div>
+
+
+    <!-- DASHBOARD -->
+    <a href="index.php?page=dashboardpasien"
+       class="nav-link <?= $menuAktif == 'dashboardpasien' ? 'active' : '' ?>">
+
+        <i class="bi bi-speedometer2"></i>
+        Dashboard
 
     </a>
 
-    <!-- Sidebar -->
-    <div class="sidebar">
 
-        <!-- User Panel -->
-        <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+    <!-- =================================================
+         LAYANAN PASIEN
+    ================================================== -->
 
-            <div class="image">
-                <img
-                    src="assets/images/pelanggan/<?=
-                        !empty($_SESSION['foto'])
-                        ? $_SESSION['foto']
-                        : 'default.png';
-                    ?>"
-                    class="img-circle elevation-2"
-                    alt="User Image">
-            </div>
-
-            <div class="info">
-
-                <a href="#" class="d-block">
-                    <?= $_SESSION['namapelanggan'] ?? 'Pelanggan'; ?>
-                </a>
-
-                <small class="text-light">
-                    Pelanggan
-                </small>
-
-            </div>
-
-        </div>
-
-        <!-- Menu -->
-        <nav class="mt-2">
-
-            <ul class="nav nav-pills nav-sidebar flex-column"
-                data-widget="treeview"
-                role="menu">
-
-                <li class="nav-item">
-
-                    <a href="index.php?halaman=dashboardpelanggan"
-                        class="nav-link">
-
-                        <i class="nav-icon fas fa-tachometer-alt"></i>
-
-                        <p>Dashboard</p>
-
-                    </a>
-
-                </li>
-
-                <li class="nav-item">
-
-                    <a href="index.php?halaman=profil"
-                        class="nav-link">
-
-                        <i class="nav-icon fas fa-user"></i>
-
-                        <p>Profil Saya</p>
-
-                    </a>
-
-                </li>
-
-                <li class="nav-item">
-
-                    <a href="index.php?halaman=riwayatpenjualan"
-                        class="nav-link">
-
-                        <i class="nav-icon fas fa-shopping-cart"></i>
-
-                        <p>Riwayat Pembelian</p>
-
-                    </a>
-
-                </li>
-
-                <li class="nav-item">
-
-                    <a href="index.php?halaman=logout"
-                        class="nav-link text-danger">
-
-                        <i class="nav-icon fas fa-sign-out-alt"></i>
-
-                        <p>Logout</p>
-
-                    </a>
-
-                </li>
-
-            </ul>
-
-        </nav>
-
+    <div class="menu-title">
+        Layanan Pasien
     </div>
-    <!-- /.sidebar -->
 
-</aside>
-<!-- /.main-sidebar -->
+
+    <!-- PENDAFTARAN CHECKUP -->
+    <a href="index.php?page=pendaftarancheckup"
+       class="nav-link <?= in_array($menuAktif, ['pendaftarancheckup']) ? 'active' : '' ?>">
+
+        <i class="bi bi-calendar2-plus"></i>
+        Pendaftaran Checkup
+
+    </a>
+
+
+    <!-- RIWAYAT KUNJUNGAN -->
+    <a href="index.php?page=riwayatkunjungan"
+       class="nav-link <?= in_array($menuAktif, ['riwayatkunjungan', 'detilkunjungan']) ? 'active' : '' ?>">
+
+        <i class="bi bi-clock-history"></i>
+        Riwayat Kunjungan
+
+    </a>
+
+
+    <!-- =================================================
+         PROFIL SAYA
+    ================================================== -->
+
+    <div class="menu-title">
+        Akun Saya
+    </div>
+
+
+    <!-- PROFIL -->
+    <a href="index.php?page=profil"
+       class="nav-link <?= in_array($menuAktif, ['profil', 'editprofil']) ? 'active' : '' ?>">
+
+        <i class="bi bi-person-vcard"></i>
+        Profil Saya
+
+    </a>
+
+
+    <!-- EDIT PROFIL -->
+    <a href="index.php?page=editprofil"
+       class="nav-link <?= $menuAktif == 'editprofil' ? 'active' : '' ?>">
+
+        <i class="bi bi-pencil-square"></i>
+        Edit Profil
+
+    </a>
+
+
+
+<!-- =================================================
+     INFORMASI KLINIK
+================================================== -->
+
+<div class="menu-title">
+    Informasi Klinik
+</div>
+
+<!-- DAFTAR DOKTER -->
+<a href="index.php?page=daftardokter"
+   class="nav-link <?= in_array($menuAktif, ['daftardokter']) ? 'active' : '' ?>">
+
+    <i class="bi bi-person-badge"></i>
+    Daftar Dokter
+
+</a>
+
+<!-- INFORMASI OBAT -->
+<a href="index.php?page=informasiobat"
+   class="nav-link <?= in_array($menuAktif, ['informasiobat']) ? 'active' : '' ?>">
+
+    <i class="bi bi-capsule"></i>
+    Informasi Obat
+
+</a>
+
+
+
+</div>

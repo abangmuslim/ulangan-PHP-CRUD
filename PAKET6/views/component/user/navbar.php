@@ -1,118 +1,196 @@
-<!-- Navbar -->
-<nav class="main-header navbar navbar-expand navbar-white navbar-light">
-    <!-- Tombol Sidebar -->
-    <ul class="navbar-nav">
-        <li class="nav-item">
-            <a class="nav-link" data-widget="pushmenu" href="#" role="button">
-                <i class="fas fa-bars"></i>
-            </a>
-        </li>
-        <li class="nav-item d-none d-md-inline-block">
-            <a href="index.php?page=dashboard<?= ($_SESSION['role'] ?? '') == 'admin' ? 'admin' : 'petugas'; ?>" class="nav-link">
-                <i class="fas fa-hospital mr-1"></i>
-                Rumah Sakit Ahmadi
-            </a>
-        </li>
-    </ul>
 
-    <!-- Menu Cepat -->
-    <ul class="navbar-nav">
-        <li class="nav-item d-none d-md-inline-block">
-            <a href="index.php?page=pasien" class="nav-link">
-                <i class="fas fa-user-injured mr-1"></i>
-                Pasien
-            </a>
-        </li>
-        <li class="nav-item d-none d-md-inline-block">
-            <a href="index.php?page=kunjungan" class="nav-link">
-                <i class="fas fa-notes-medical mr-1"></i>
-                Kunjungan
-            </a>
-        </li>
-        <li class="nav-item d-none d-md-inline-block">
-            <a href="index.php?page=antrian" class="nav-link">
-                <i class="fas fa-list-ol mr-1"></i>
-                Antrian
-            </a>
-        </li>
-        <li class="nav-item dropdown d-none d-md-inline-block">
-            <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">
-                <i class="fas fa-file-medical-alt mr-1"></i>
-                Laporan
-            </a>
-            <div class="dropdown-menu">
-                <a href="index.php?page=laporanharian" class="dropdown-item">
-                    <i class="fas fa-calendar-day mr-2"></i>
-                    Laporan Harian
-                </a>
-                <a href="index.php?page=laporanbulanan" class="dropdown-item">
-                    <i class="fas fa-calendar-alt mr-2"></i>
-                    Laporan Bulanan
-                </a>
-                <a href="index.php?page=laporantahunan" class="dropdown-item">
-                    <i class="fas fa-chart-line mr-2"></i>
-                    Laporan Tahunan
-                </a>
-                <div class="dropdown-divider"></div>
-                <a href="index.php?page=laporanobat" class="dropdown-item">
-                    <i class="fas fa-pills mr-2"></i>
-                    Laporan Obat
-                </a>
-                <a href="index.php?page=laporanantrian" class="dropdown-item">
-                    <i class="fas fa-clipboard-list mr-2"></i>
-                    Laporan Antrian
-                </a>
-            </div>
-        </li>
-    </ul>
+<?php
+$namauser = htmlspecialchars($_SESSION['namauser'] ?? 'Admin', ENT_QUOTES, 'UTF-8');
+?>
 
-    <!-- User Menu -->
-    <ul class="navbar-nav ml-auto">
-        <li class="nav-item dropdown user-menu">
-            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
-                <img
-                    src="assets/images/user/<?= htmlspecialchars($_SESSION['foto'] ?? 'default.png'); ?>"
-                    class="user-image img-circle elevation-2"
-                    alt="User">
-                <span class="d-none d-md-inline">
-                    <?= htmlspecialchars($_SESSION['namauser'] ?? 'User'); ?>
-                </span>
-            </a>
-            <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-                <li class="user-header bg-primary">
-                    <img
-                        src="assets/images/user/<?= htmlspecialchars($_SESSION['foto'] ?? 'default.png'); ?>"
-                        class="img-circle elevation-2"
-                        alt="User">
-                    <p>
-                        <?= htmlspecialchars($_SESSION['namauser'] ?? 'User'); ?>
-                        <small>
-                            <?= ucfirst(htmlspecialchars($_SESSION['role'] ?? 'User')); ?>
-                            - Rumah Sakit Ahmadi
-                        </small>
-                    </p>
-                </li>
-                <li class="user-body">
-                    <div class="row">
-                        <div class="col-12 text-center">
-                            <a href="index.php?page=showuser&id=<?= (int)($_SESSION['iduser'] ?? 0); ?>">
-                                <i class="fas fa-user-circle mr-1"></i>
-                                Profil Saya
-                            </a>
-                        </div>
-                    </div>
-                </li>
-                <li class="user-footer">
-                    <span class="btn btn-default btn-flat">
-                        <?= ucfirst(htmlspecialchars($_SESSION['role'] ?? 'User')); ?>
-                    </span>
-                    <a href="index.php?page=logout" class="btn btn-danger btn-flat float-right"
-                        onclick="return confirm('Apakah Anda yakin ingin logout?');">
-                        Logout
+<nav class="navbar navbar-expand-lg navbar-dark navbar-admin shadow-sm">
+
+    <div class="container-fluid">
+
+        <!-- TOMBOL PUSH MENU -->
+        <button type="button"
+            class="btn btn-pushmenu"
+            id="toggleSidebar"
+            title="Tampilkan / sembunyikan sidebar"
+            aria-label="Tampilkan atau sembunyikan sidebar">
+
+            <i class="bi bi-list"></i>
+
+        </button>
+
+
+        <!-- BRAND -->
+        <a class="navbar-brand fw-bold me-3"
+            href="index.php?page=dashboarduser">
+
+            <i class="bi bi-hospital me-2"></i>
+            Rumah Sakit Ahmadi
+
+        </a>
+
+
+        <!-- TOGGLER NAVBAR MOBILE -->
+        <button class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarAdmin"
+            aria-controls="navbarAdmin"
+            aria-expanded="false"
+            aria-label="Buka navigasi">
+
+            <span class="navbar-toggler-icon"></span>
+
+        </button>
+
+
+        <!-- ISI NAVBAR -->
+        <div class="collapse navbar-collapse" id="navbarAdmin">
+
+
+            <!-- MENU UTAMA -->
+            <ul class="navbar-nav me-auto">
+
+
+                <!-- MENU OBAT -->
+                <li class="nav-item">
+
+                    <a class="nav-link"
+                        href="index.php?page=obat">
+
+                        <i class="bi bi-capsule me-1"></i>
+                        Obat
+
                     </a>
+
                 </li>
+
+
+                <!-- MENU KUNJUNGAN -->
+                <li class="nav-item">
+
+                    <a class="nav-link"
+                        href="index.php?page=kunjungan">
+
+                        <i class="bi bi-clipboard2-pulse me-1"></i>
+                        Kunjungan
+
+                    </a>
+
+                </li>
+
+
+                <!-- DROPDOWN LAPORAN -->
+                <li class="nav-item dropdown">
+
+                    <a class="nav-link dropdown-toggle"
+                        href="#"
+                        id="menuLaporan"
+                        role="button"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false">
+
+                        <i class="bi bi-file-earmark-bar-graph me-1"></i>
+                        Laporan
+
+                    </a>
+
+
+                    <ul class="dropdown-menu shadow"
+                        aria-labelledby="menuLaporan">
+
+                        <li>
+                            <a class="dropdown-item"
+                                href="index.php?page=laporanharian">
+
+                                <i class="bi bi-calendar-day me-2"></i>
+                                Laporan Harian
+
+                            </a>
+                        </li>
+
+
+                        <li>
+                            <a class="dropdown-item"
+                                href="index.php?page=laporanbulanan">
+
+                                <i class="bi bi-calendar-month me-2"></i>
+                                Laporan Bulanan
+
+                            </a>
+                        </li>
+
+
+                        <li>
+                            <a class="dropdown-item"
+                                href="index.php?page=laporantahunan">
+
+                                <i class="bi bi-calendar3 me-2"></i>
+                                Laporan Tahunan
+
+                            </a>
+                        </li>
+
+
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+
+
+                        <li>
+                            <a class="dropdown-item"
+                                href="index.php?page=laporanobat">
+
+                                <i class="bi bi-capsule me-2"></i>
+                                Laporan Obat
+
+                            </a>
+                        </li>
+
+                    </ul>
+
+                </li>
+
+
             </ul>
-        </li>
-    </ul>
+
+
+            <!-- MENU PENGGUNA -->
+            <ul class="navbar-nav ms-auto align-items-lg-center">
+
+
+                <!-- SAPAAN PENGGUNA -->
+                <li class="nav-item">
+
+                    <span class="nav-link user-greeting">
+
+                        <i class="bi bi-person-circle me-1"></i>
+                        Halo, <?= $namauser; ?>
+
+                    </span>
+
+                </li>
+
+
+                <!-- LOGOUT -->
+                <li class="nav-item ms-lg-2">
+
+                    <a href="index.php?page=logout"
+                        class="btn btn-outline-light btn-logout"
+                        onclick="return confirm('Apakah Anda yakin ingin logout?')">
+
+                        <i class="bi bi-box-arrow-right"></i>
+                        Logout
+
+                    </a>
+
+                </li>
+
+
+            </ul>
+
+
+        </div>
+
+    </div>
+
 </nav>
-<!-- /.navbar -->
