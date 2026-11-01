@@ -11,200 +11,189 @@ $query = mysqli_query($koneksi, "
     ORDER BY o.idobat DESC
 ");
 
-$total = mysqli_num_rows($query);
+$totalobat = mysqli_num_rows($query);
 ?>
 
-<div class="content-header">
+<section class="content-header">
     <div class="container-fluid">
         <div class="row mb-2 align-items-center">
 
             <div class="col-sm-6">
                 <h1 class="mb-0">
-                    <i class="bi bi-capsule"></i>
-                    Data Obat
+                    <i class="fas fa-capsules"></i> Data Obat
                 </h1>
             </div>
 
             <div class="col-sm-6">
-                <div class="d-flex justify-content-end">
-                    <span class="btn btn-outline-primary">
-                        <i class="bi bi-capsule me-1"></i>
+                <div class="d-flex justify-content-end align-items-center">
+
+                    <span class="btn btn-outline-primary me-2">
+                        <i class="fas fa-capsules"></i>
                         Total Obat:
-                        <strong><?= $total; ?></strong>
+                        <strong><?= $totalobat; ?></strong>
                     </span>
+
+                    <a href="index.php?page=createobat"
+                        class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Tambah Obat
+                    </a>
+
                 </div>
             </div>
 
         </div>
     </div>
-</div>
+</section>
 
-<div class="content">
+<section class="content">
     <div class="container-fluid">
 
         <div class="card card-primary card-outline">
 
             <div class="card-header">
                 <h3 class="card-title">
-                    <i class="bi bi-list-ul me-1"></i>
-                    Daftar Obat
+                    Manajemen Obat Sistem
                 </h3>
-
-                <div class="card-tools">
-                    <a href="index.php?page=createobat" class="btn btn-primary btn-sm">
-                        <i class="bi bi-plus-circle me-1"></i>
-                        Tambah Obat
-                    </a>
-                </div>
             </div>
 
             <div class="card-body">
 
-                <div class="table-responsive">
+                <table id="example1"
+                    class="table table-bordered table-hover table-striped">
 
-                    <table id="example1"
-                        class="table table-bordered table-hover table-striped table-sm align-middle">
+                    <thead>
+                        <tr>
+                            <th width="5%">No</th>
+                            <th width="10%">Foto</th>
+                            <th>Nama Obat</th>
+                            <th>Merk</th>
+                            <th>Kategori</th>
+                            <th>Harga</th>
+                            <th>Stok</th>
+                            <th width="15%">Aksi</th>
+                        </tr>
+                    </thead>
 
-                        <thead>
+                    <tbody>
+
+                        <?php
+                        $no = 1;
+
+                        while ($data = mysqli_fetch_assoc($query)) {
+
+                            $foto = empty($data['foto'])
+                                ? 'default.png'
+                                : $data['foto'];
+
+                            $pathfoto = "assets/images/obat/" . $foto;
+                        ?>
+
                             <tr>
-                                <th width="5%" class="text-center">No</th>
-                                <th width="9%" class="text-center">Foto</th>
-                                <th>Nama Obat</th>
-                                <th>Merk</th>
-                                <th>Kategori</th>
-                                <th width="13%" class="text-end">Harga</th>
-                                <th width="9%" class="text-center">Stok</th>
-                                <th width="13%" class="text-center">Aksi</th>
+
+                                <td>
+                                    <?= $no++; ?>
+                                </td>
+
+                                <td class="text-center">
+
+                                    <?php if (
+                                        !empty($data['foto']) &&
+                                        file_exists($pathfoto)
+                                    ) { ?>
+
+                                        <img
+                                            src="<?= htmlspecialchars($pathfoto); ?>"
+                                            class="img-circle elevation-2"
+                                            width="50"
+                                            height="50"
+                                            style="object-fit: cover;">
+
+                                    <?php } else { ?>
+
+                                        <i class="fas fa-capsules text-secondary"
+                                            style="font-size: 30px;"></i>
+
+                                    <?php } ?>
+
+                                </td>
+
+                                <td>
+                                    <?= htmlspecialchars($data['namaobat']); ?>
+                                </td>
+
+                                <td>
+                                    <?= htmlspecialchars($data['namamerk']); ?>
+                                </td>
+
+                                <td>
+                                    <?= htmlspecialchars($data['namakategori']); ?>
+                                </td>
+
+                                <td>
+                                    Rp <?= number_format($data['harga'], 0, ',', '.'); ?>
+                                </td>
+
+                                <td class="text-center">
+
+                                    <?php if ($data['stok'] > 0) { ?>
+
+                                        <span class="badge bg-success">
+                                            <?= $data['stok']; ?>
+                                        </span>
+
+                                    <?php } else { ?>
+
+                                        <span class="badge bg-danger">
+                                            Habis
+                                        </span>
+
+                                    <?php } ?>
+
+                                </td>
+
+                                <td>
+
+                                    <a href="index.php?page=showobat&id=<?= $data['idobat']; ?>"
+                                        class="btn btn-info btn-sm"
+                                        title="Detail">
+                                        <i class="bi bi-eye-fill"></i>
+                                    </a>
+
+                                    <a href="index.php?page=editobat&id=<?= $data['idobat']; ?>"
+                                        class="btn btn-warning btn-sm"
+                                        title="Edit">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+
+                                    <form action="proses/prosesobat.php?aksi=hapus"
+                                        method="POST"
+                                        class="d-inline"
+                                        onsubmit="return confirm('Yakin ingin menghapus obat ini?')">
+
+                                        <input type="hidden"
+                                            name="idobat"
+                                            value="<?= $data['idobat']; ?>">
+
+                                        <button type="submit"
+                                            class="btn btn-danger btn-sm"
+                                            title="Hapus">
+                                            <i class="bi bi-trash-fill"></i>
+                                        </button>
+
+                                    </form>
+
+                                </td>
+
                             </tr>
-                        </thead>
 
-                        <tbody>
+                        <?php } ?>
 
-                            <?php
-                            $no = 1;
+                    </tbody>
 
-                            if ($total > 0) {
-                                while ($data = mysqli_fetch_assoc($query)) {
-                            ?>
-
-                                    <tr>
-
-                                        <td class="text-center">
-                                            <?= $no++; ?>
-                                        </td>
-
-                                        <td class="text-center">
-
-                                            <?php
-                                            $foto = $data['foto'];
-                                            $pathfoto = "assets/images/obat/" . $foto;
-
-                                            if (!empty($foto) && file_exists($pathfoto)) {
-                                            ?>
-                                                <img src="<?= $pathfoto; ?>"
-                                                    alt="Foto Obat"
-                                                    width="55"
-                                                    height="60"
-                                                    class="rounded border"
-                                                    style="object-fit: cover;">
-                                            <?php
-                                            } else {
-                                            ?>
-                                                <i class="bi bi-capsule text-secondary"
-                                                    style="font-size: 35px;"></i>
-                                            <?php } ?>
-
-                                        </td>
-
-                                        <td>
-                                            <strong>
-                                                <?= htmlspecialchars($data['namaobat']); ?>
-                                            </strong>
-                                        </td>
-
-                                        <td>
-                                            <?= htmlspecialchars($data['namamerk']); ?>
-                                        </td>
-
-                                        <td>
-                                            <?= htmlspecialchars($data['namakategori']); ?>
-                                        </td>
-
-                                        <td class="text-end">
-                                            Rp <?= number_format($data['harga'], 0, ',', '.'); ?>
-                                        </td>
-
-                                        <td class="text-center">
-
-                                            <?php if ($data['stok'] > 0) { ?>
-                                                <span class="badge bg-success">
-                                                    <?= $data['stok']; ?>
-                                                </span>
-                                            <?php } else { ?>
-                                                <span class="badge bg-danger">
-                                                    Habis
-                                                </span>
-                                            <?php } ?>
-
-                                        </td>
-
-                                        <td class="text-center">
-
-                                            <a href="index.php?page=showobat&id=<?= $data['idobat']; ?>"
-                                                class="btn btn-info btn-sm"
-                                                title="Detail">
-                                                <i class="bi bi-eye-fill"></i>
-                                            </a>
-
-                                            <a href="index.php?page=editobat&id=<?= $data['idobat']; ?>"
-                                                class="btn btn-warning btn-sm"
-                                                title="Edit">
-                                                <i class="bi bi-pencil-square"></i>
-                                            </a>
-
-                                            <form action="proses/prosesobat.php?aksi=hapus"
-                                                method="POST"
-                                                class="d-inline"
-                                                onsubmit="return confirm('Yakin ingin menghapus obat ini?')">
-
-                                                <input type="hidden"
-                                                    name="idobat"
-                                                    value="<?= $data['idobat']; ?>">
-
-                                                <button type="submit"
-                                                    class="btn btn-danger btn-sm"
-                                                    title="Hapus">
-                                                    <i class="bi bi-trash-fill"></i>
-                                                </button>
-
-                                            </form>
-
-                                        </td>
-
-                                    </tr>
-
-                                <?php
-                                }
-                            } else {
-                                ?>
-
-                                <tr>
-                                    <td colspan="8" class="text-center text-muted">
-                                        Belum ada data obat.
-                                    </td>
-                                </tr>
-
-                            <?php } ?>
-
-                        </tbody>
-
-                    </table>
-
-                </div>
+                </table>
 
             </div>
-
         </div>
 
     </div>
-</div>
+</section>

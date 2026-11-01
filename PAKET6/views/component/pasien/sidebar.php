@@ -35,8 +35,8 @@ $menuAktif = $page ?? '';
 
 
     <!-- PENDAFTARAN CHECKUP -->
-    <a href="index.php?page=pendaftarancheckup"
-       class="nav-link <?= in_array($menuAktif, ['pendaftarancheckup']) ? 'active' : '' ?>">
+    <a href="index.php?page=pendaftarancheckuppasien"
+       class="nav-link <?= in_array($menuAktif, ['pendaftarancheckuppasien']) ? 'active' : '' ?>">
 
         <i class="bi bi-calendar2-plus"></i>
         Pendaftaran Checkup

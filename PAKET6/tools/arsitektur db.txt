@@ -254,3 +254,149 @@ CREATE TABLE pendaftarancheckup (
 -- =====================================================
 
 SHOW TABLES;
+
+
+
+mysql> use rumahsakitahmadi6;
+mysql> show tables;
++-----------------------------+
+| Tables_in_rumahsakitahmadi6 |
++-----------------------------+
+| detilkunjungan              |
+| dokter                      |
+| jadwaldokter                |
+| kategori                    |
+| kunjungan                   |
+| merk                        |
+| obat                        |
+| pasien                      |
+| pendaftarancheckup          |
+| user                        |
++-----------------------------+
+
+mysql> desc user
+    -> ;
++----------+--------------+------+-----+---------+----------------+
+| Field    | Type         | Null | Key | Default | Extra          |
++----------+--------------+------+-----+---------+----------------+
+| iduser   | int          | NO   | PRI | NULL    | auto_increment |
+| namauser | varchar(100) | NO   |     | NULL    |                |
+| username | varchar(50)  | NO   | UNI | NULL    |                |
+| password | varchar(255) | NO   |     | NULL    |                |
+| nohp     | varchar(15)  | YES  |     | NULL    |                |
+| alamat   | text         | YES  |     | NULL    |                |
+| foto     | varchar(255) | YES  |     | NULL    |                |
++----------+--------------+------+-----+---------+----------------+
+
+mysql> desc pasien;
++------------+--------------+------+-----+---------+----------------+
+| Field      | Type         | Null | Key | Default | Extra          |
++------------+--------------+------+-----+---------+----------------+
+| idpasien   | int          | NO   | PRI | NULL    | auto_increment |
+| namapasien | varchar(100) | NO   |     | NULL    |                |
+| username   | varchar(50)  | YES  | UNI | NULL    |                |
+| password   | varchar(255) | YES  |     | NULL    |                |
+| nohp       | varchar(15)  | YES  |     | NULL    |                |
+| alamat     | text         | YES  |     | NULL    |                |
+| foto       | varchar(255) | YES  |     | NULL    |                |
++------------+--------------+------+-----+---------+----------------+
+
+mysql> desc merk;
++----------+--------------+------+-----+---------+----------------+
+| Field    | Type         | Null | Key | Default | Extra          |
++----------+--------------+------+-----+---------+----------------+
+| idmerk   | int          | NO   | PRI | NULL    | auto_increment |
+| namamerk | varchar(100) | NO   |     | NULL    |                |
++----------+--------------+------+-----+---------+----------------+
+
+mysql> desc kategori;
++--------------+--------------+------+-----+---------+----------------+
+| Field        | Type         | Null | Key | Default | Extra          |
++--------------+--------------+------+-----+---------+----------------+
+| idkategori   | int          | NO   | PRI | NULL    | auto_increment |
+| namakategori | varchar(100) | NO   |     | NULL    |                |
++--------------+--------------+------+-----+---------+----------------+
+
+mysql> desc obat;
++-------------+--------------+------+-----+---------+----------------+
+| Field       | Type         | Null | Key | Default | Extra          |
++-------------+--------------+------+-----+---------+----------------+
+| idobat      | int          | NO   | PRI | NULL    | auto_increment |
+| idmerk      | int          | NO   | MUL | NULL    |                |
+| idkategori  | int          | NO   | MUL | NULL    |                |
+| namaobat    | varchar(100) | NO   |     | NULL    |                |
+| harga       | int          | YES  |     | 0       |                |
+| tanggalstok | date         | YES  |     | NULL    |                |
+| stok        | int          | YES  |     | 0       |                |
+| foto        | varchar(255) | YES  |     | NULL    |                |
++-------------+--------------+------+-----+---------+----------------+
+
+mysql> desc jadwaldokter;
++-------------+-------------+------+-----+---------+----------------+
+| Field       | Type        | Null | Key | Default | Extra          |
++-------------+-------------+------+-----+---------+----------------+
+| idjadwal    | int         | NO   | PRI | NULL    | auto_increment |
+| iddokter    | int         | NO   | MUL | NULL    |                |
+| haripraktik | varchar(15) | NO   |     | NULL    |                |
+| jam_mulai   | time        | NO   |     | NULL    |                |
+| jam_selesai | time        | NO   |     | NULL    |                |
++-------------+-------------+------+-----+---------+----------------+
+
+mysql> desc dokter;
++------------+--------------+------+-----+---------+----------------+
+| Field      | Type         | Null | Key | Default | Extra          |
++------------+--------------+------+-----+---------+----------------+
+| iddokter   | int          | NO   | PRI | NULL    | auto_increment |
+| namadokter | varchar(100) | NO   |     | NULL    |                |
+| spesialis  | varchar(100) | YES  |     | NULL    |                |
+| nohp       | varchar(15)  | YES  |     | NULL    |                |
+| alamat     | text         | YES  |     | NULL    |                |
+| foto       | varchar(255) | YES  |     | NULL    |                |
++------------+--------------+------+-----+---------+----------------+
+
+mysql> desc kunjungan;
++------------------+-----------------------------+------+-----+-------------+----------------+
+| Field            | Type                        | Null | Key | Default     | Extra          |
++------------------+-----------------------------+------+-----+-------------+----------------+
+| idkunjungan      | int                         | NO   | PRI | NULL        | auto_increment |
+| iduser           | int                         | NO   | MUL | NULL        |                |
+| idpasien         | int                         | NO   | MUL | NULL        |                |
+| iddokter         | int                         | NO   | MUL | NULL        |                |
+| idjadwal         | int                         | NO   | MUL | NULL        |                |
+| tanggalkunjungan | date                        | NO   |     | NULL        |                |
+| keluhan          | text                        | YES  |     | NULL        |                |
+| diagnosis        | text                        | YES  |     | NULL        |                |
+| totalkunjungan   | int                         | YES  |     | 0           |                |
+| jumlahbayar      | int                         | NO   |     | 0           |                |
+| kembalian        | int                         | NO   |     | 0           |                |
+| statuspembayaran | enum('Belum Bayar','Lunas') | NO   |     | Belum Bayar |                |
+| statuskunjungan  | enum('Proses','Selesai')    | NO   |     | Proses      |                |
++------------------+-----------------------------+------+-----+-------------+----------------+
+
+mysql> desc detilkunjungan;
++------------------+--------------+------+-----+---------+----------------+
+| Field            | Type         | Null | Key | Default | Extra          |
++------------------+--------------+------+-----+---------+----------------+
+| iddetilkunjungan | int          | NO   | PRI | NULL    | auto_increment |
+| idkunjungan      | int          | NO   | MUL | NULL    |                |
+| idobat           | int          | NO   | MUL | NULL    |                |
+| jumlah           | int          | NO   |     | 1       |                |
+| harga            | int          | NO   |     | 0       |                |
+| subtotal         | int          | NO   |     | 0       |                |
+| aturanpakai      | varchar(255) | YES  |     | NULL    |                |
++------------------+--------------+------+-----+---------+----------------+
+
+mysql> desc pendaftarancheckup;
++------------------+----------------------------------------+------+-----+-------------------+-------------------+
+| Field            | Type                                   | Null | Key | Default           | Extra             |
++------------------+----------------------------------------+------+-----+-------------------+-------------------+
+| idpendaftaran    | int                                    | NO   | PRI | NULL              | auto_increment    |
+| idpasien         | int                                    | NO   | MUL | NULL              |                   |
+| idjadwal         | int                                    | NO   | MUL | NULL              |                   |
+| idkunjungan      | int                                    | YES  | UNI | NULL              |                   |
+| tanggalperiksa   | date                                   | NO   |     | NULL              |                   |
+| keluhan          | text                                   | NO   |     | NULL              |                   |
+| status           | enum('Menunggu','Disetujui','Ditolak') | NO   |     | Menunggu          |                   |
+| catatanadmin     | text                                   | YES  |     | NULL              |                   |
+| tanggalpengajuan | datetime                               | NO   |     | CURRENT_TIMESTAMP | DEFAULT_GENERATED |
++------------------+----------------------------------------+------+-----+-------------------+-------------------+

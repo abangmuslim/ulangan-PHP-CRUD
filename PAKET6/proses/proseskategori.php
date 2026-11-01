@@ -1,48 +1,88 @@
+
 <?php
-$proses = $_GET['proses'];
-include "koneksi.php";
+require_once __DIR__ . "/koneksi.php";
 session_start();
 
-if ($proses == 'insert') {
-    $namapasien     = $_POST['namapasien'];
-    $jeniskelamin   = $_POST['jeniskelamin'];
-    $alamat         = $_POST['alamat'];
-    $nohp           = $_POST['nohp'];
+$aksi = $_GET['aksi'];
 
-    mysqli_query($koneksi, "INSERT INTO pasien SET
-    namapasien     ='$namapasien',
-    jeniskelamin   ='$jeniskelamin',
-    alamat         ='$alamat',
-    nohp           ='$nohp'");
 
-} elseif ($proses == 'update') {
-    $id = $_POST['idpasien'];
-    $namapasien     = $_POST['namapasien'];
-    $jeniskelamin   = $_POST['jeniskelamin'];
-    $alamat         = $_POST['alamat'];
-    $nohp           = $_POST['nohp'];
+// ========================================
+// TAMBAH KATEGORI
+// ========================================
+if ($aksi == "tambah") {
 
-    mysqli_query($koneksi, "UPDATE pasien SET
-    namapasien     ='$namapasien',
-    jeniskelamin   ='$jeniskelamin',
-    alamat         ='$alamat',
-    nohp           ='$nohp'
-    WHERE idpasien='$id'");
+    $namakategori = $_POST['namakategori'];
 
-} elseif ($proses == 'hapus') {
-    $id = $_POST['idpasien'];
-
-    $cek = mysqli_query($koneksi, "SELECT * FROM kunjungan
-    WHERE idpasien='$id'");
+    // Cek nama kategori
+    $cek = mysqli_query($koneksi, "SELECT * FROM kategori WHERE namakategori='$namakategori'");
 
     if (mysqli_num_rows($cek) > 0) {
-        header("location:../index.php?page=pasien&pesan=gagalhapus");
+        header("location:../index.php?page=createkategori&status=duplikat");
         exit;
     }
 
-    mysqli_query($koneksi, "DELETE FROM pasien
-    WHERE idpasien='$id'");
+    mysqli_query($koneksi, "INSERT INTO kategori SET
+        namakategori='$namakategori'
+    ");
+
+    header("location:../index.php?page=kategori");
 }
 
-header("location:../index.php?page=pasien");
+
+// ========================================
+// UBAH KATEGORI
+// ========================================
+elseif ($aksi == "ubah") {
+
+    $idkategori = $_POST['idkategori'];
+    $namakategori = $_POST['namakategori'];
+
+    // Cek nama kategori
+    $cek = mysqli_query($koneksi, "
+        SELECT * FROM kategori
+        WHERE namakategori='$namakategori' AND idkategori!='$idkategori'
+    ");
+
+    if (mysqli_num_rows($cek) > 0) {
+        header("location:../index.php?page=editkategori&idkategori=$idkategori&status=duplikat");
+        exit;
+    }
+
+    mysqli_query($koneksi, "UPDATE kategori SET
+        namakategori='$namakategori'
+        WHERE idkategori='$idkategori'
+    ");
+
+    header("location:../index.php?page=kategori");
+}
+
+
+// ========================================
+// HAPUS KATEGORI
+// ========================================
+elseif ($aksi == "hapus") {
+
+    $idkategori = $_POST['idkategori'];
+
+    // Cek apakah kategori masih digunakan oleh obat
+    $cek = mysqli_query($koneksi, "SELECT * FROM obat WHERE idkategori='$idkategori'");
+
+    if (mysqli_num_rows($cek) > 0) {
+        header("location:../index.php?page=kategori&status=masihdigunakan");
+        exit;
+    }
+
+    mysqli_query($koneksi, "DELETE FROM kategori WHERE idkategori='$idkategori'");
+
+    header("location:../index.php?page=kategori");
+}
+
+
+// ========================================
+// AKSI TIDAK DIKENAL
+// ========================================
+else {
+    header("location:../index.php?page=kategori");
+}
+
 ?>

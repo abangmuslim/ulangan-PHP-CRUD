@@ -98,7 +98,7 @@ if (isset($_POST['daftar'])) {
                     echo "
                         <script>
                             alert('Permohonan checkup berhasil dikirim. Silakan menunggu konfirmasi admin.');
-                            window.location='?page=pendaftarancheckup';
+                            window.location='?page=pendaftarancheckuppasien';
                         </script>
                     ";
 

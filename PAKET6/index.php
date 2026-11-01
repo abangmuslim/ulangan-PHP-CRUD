@@ -308,6 +308,19 @@ switch ($page) {
 
 
     // ----------------------------------------
+    // CRUD ADMIN: pendaftarancheckup
+    // ----------------------------------------
+    case 'pendaftarancheckupadmin':
+        $view = "views/user/pendaftarancheckup/index.php";
+        $akses = "admin";
+        break;
+
+    case 'showpendaftarancheckupadmin':
+        $view = "views/user/pendaftarancheckup/show.php";
+        $akses = "admin";
+        break;
+
+    // ----------------------------------------
     // CRUD ADMIN: KUNJUNGAN
     // ----------------------------------------
     case 'kunjungan':
@@ -393,7 +406,7 @@ switch ($page) {
         $akses = "pasien";
         break;
 
-    case 'pendaftarancheckup':
+    case 'pendaftarancheckuppasien':
         $view = "views/pasien/pendaftarancheckup.php";
         $akses = "pasien";
         break;

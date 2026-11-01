@@ -65,6 +65,9 @@ rumahsakitahmadi5/
 │   │   │   ├── create.php
 │   │   │   ├── edit.php
 │   │   │   └── show.php
+│   │   ├── pendaftarancheckup/
+│   │   │   ├── index.php
+│   │   │   └── show.php
 │   │   ├── kunjungan/
 │   │   │   ├── index.php
 │   │   │   ├── create.php
@@ -128,6 +131,7 @@ rumahsakitahmadi5/
     ├── proseskategori.php
     ├── prosesobat.php
     ├── prosesjadwaldokter.php
+    ├── prosespendaftarancheckup.php
     ├── proseskunjungan.php
     ├── prosesdetilkunjungan.php
     ├── prosesdashboarduser.php
