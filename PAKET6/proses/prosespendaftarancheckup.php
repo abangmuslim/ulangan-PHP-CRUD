@@ -22,7 +22,7 @@ if (!isset($_SESSION['iduser'])) {
 $aksi = $_GET['aksi'] ?? '';
 
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
-    header("location: ../index.php?page=pendaftarancheckup");
+    header("location: ../index.php?page=pendaftarancheckupadmin");
     exit;
 }
 
@@ -35,7 +35,7 @@ $idpendaftaran = isset($_POST['idpendaftaran'])
     : 0;
 
 if ($idpendaftaran <= 0) {
-    header("location: ../index.php?page=pendaftarancheckup&status=datatidakada");
+    header("location: ../index.php?page=pendaftarancheckupadmin&status=datatidakada");
     exit;
 }
 
@@ -71,19 +71,19 @@ mysqli_stmt_close($query);
 // ========================================
 
 if (!$data) {
-    header("location: ../index.php?page=pendaftarancheckup&status=datatidakada");
+    header("location: ../index.php?page=pendaftarancheckupadmin&status=datatidakada");
     exit;
 }
 
 // Pendaftaran harus masih menunggu
 if ($data['status'] != 'Menunggu') {
-    header("location: ../index.php?page=showpendaftarancheckup&idpendaftaran=$idpendaftaran&status=sudahdiproses");
+    header("location: ../index.php?page=showpendaftarancheckupadmin&idpendaftaran=$idpendaftaran&status=sudahdiproses");
     exit;
 }
 
 // Pendaftaran belum boleh memiliki kunjungan
 if (!empty($data['idkunjungan'])) {
-    header("location: ../index.php?page=showpendaftarancheckup&idpendaftaran=$idpendaftaran&status=sudahdiproses");
+    header("location: ../index.php?page=showpendaftarancheckupadmin&idpendaftaran=$idpendaftaran&status=sudahdiproses");
     exit;
 }
 
@@ -102,7 +102,7 @@ if ($aksi == 'setujui') {
     // Tanggal pemeriksaan tidak boleh lewat
     if ($tanggalperiksa < date('Y-m-d')) {
 
-        header("location: ../index.php?page=showpendaftarancheckup&idpendaftaran=$idpendaftaran&status=tanggallewat");
+        header("location: ../index.php?page=showpendaftarancheckupadmin&idpendaftaran=$idpendaftaran&status=tanggallewat");
         exit;
     }
 
@@ -129,7 +129,7 @@ if ($aksi == 'setujui') {
 
     if (strcasecmp(trim($data['haripraktik']), $hariPeriksa) != 0) {
 
-        header("location: ../index.php?page=showpendaftarancheckup&idpendaftaran=$idpendaftaran&status=jadwaltidakcocok");
+        header("location: ../index.php?page=showpendaftarancheckupadmin&idpendaftaran=$idpendaftaran&status=jadwaltidakcocok");
         exit;
     }
 
@@ -169,11 +169,11 @@ if ($aksi == 'setujui') {
 
     if ($berhasil && $jumlahubah > 0) {
 
-        header("location: ../index.php?page=showpendaftarancheckup&idpendaftaran=$idpendaftaran&status=disetujui");
+        header("location: ../index.php?page=showpendaftarancheckupadmin&idpendaftaran=$idpendaftaran&status=disetujui");
 
     } else {
 
-        header("location: ../index.php?page=showpendaftarancheckup&idpendaftaran=$idpendaftaran&status=gagal");
+        header("location: ../index.php?page=showpendaftarancheckupadmin&idpendaftaran=$idpendaftaran&status=gagal");
 
     }
 
@@ -195,7 +195,7 @@ elseif ($aksi == 'tolak') {
     // Catatan wajib diisi
     if ($catatanadmin == '') {
 
-        header("location: ../index.php?page=showpendaftarancheckup&idpendaftaran=$idpendaftaran&status=catatankosong#form-penolakan");
+        header("location: ../index.php?page=showpendaftarancheckupadmin&idpendaftaran=$idpendaftaran&status=catatankosong#form-penolakan");
         exit;
     }
 
@@ -233,11 +233,11 @@ elseif ($aksi == 'tolak') {
 
     if ($berhasil && $jumlahubah > 0) {
 
-        header("location: ../index.php?page=showpendaftarancheckup&idpendaftaran=$idpendaftaran&status=ditolak");
+        header("location: ../index.php?page=showpendaftarancheckupadmin&idpendaftaran=$idpendaftaran&status=ditolak");
 
     } else {
 
-        header("location: ../index.php?page=showpendaftarancheckup&idpendaftaran=$idpendaftaran&status=gagal");
+        header("location: ../index.php?page=showpendaftarancheckupadmin&idpendaftaran=$idpendaftaran&status=gagal");
 
     }
 
@@ -250,7 +250,7 @@ elseif ($aksi == 'tolak') {
 
 else {
 
-    header("location: ../index.php?page=pendaftarancheckup&status=aksiinvalid");
+    header("location: ../index.php?page=pendaftarancheckupadmin&status=aksiinvalid");
     exit;
 
 }
