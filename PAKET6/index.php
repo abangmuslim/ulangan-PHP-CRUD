@@ -49,6 +49,50 @@ if ($page === 'logout') {
 }
 
 
+// ========================================
+// 5. ROUTING KHUSUS HALAMAN CETAK LAPORAN
+// ========================================
+
+switch ($page) {
+
+    case 'cetaklaporanharian':
+        if ($role !== 'admin') {
+            http_response_code(403);
+            exit("Akses ditolak.");
+        }
+
+        include 'views/user/laporan/cetaklaporanharian.php';
+        exit;
+
+    case 'cetaklaporanbulanan':
+        if ($role !== 'admin') {
+            http_response_code(403);
+            exit("Akses ditolak.");
+        }
+
+        include 'views/user/laporan/cetaklaporanbulanan.php';
+        exit;
+
+    case 'cetaklaporantahunan':
+        if ($role !== 'admin') {
+            http_response_code(403);
+            exit("Akses ditolak.");
+        }
+
+        include 'views/user/laporan/cetaklaporantahunan.php';
+        exit;
+
+    case 'cetaklaporanobat':
+        if ($role !== 'admin') {
+            http_response_code(403);
+            exit("Akses ditolak.");
+        }
+
+        include 'views/user/laporan/cetaklaporanobat.php';
+        exit;
+}
+
+
 // ============================================
 // 5. MENENTUKAN HALAMAN DENGAN SWITCH CASE
 // ============================================

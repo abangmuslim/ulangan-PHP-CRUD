@@ -1,13 +1,62 @@
 
 <?php
-$namauser = htmlspecialchars($_SESSION['namauser'] ?? 'Admin', ENT_QUOTES, 'UTF-8');
+// ========================================
+// DATA USER
+// ========================================
+
+$namauser = htmlspecialchars(
+    $_SESSION['namauser'] ?? 'Admin',
+    ENT_QUOTES,
+    'UTF-8'
+);
+
+
+// ========================================
+// MENENTUKAN HALAMAN AKTIF
+// ========================================
+
+$menuAktif = $page ?? ($_GET['page'] ?? '');
+
+
+// ========================================
+// KONDISI MENU AKTIF
+// ========================================
+
+// MENU OBAT
+$aktifObat = in_array($menuAktif, [
+    'obat'
+]);
+
+// MENU PENDAFTARAN CHECKUP
+$aktifPendaftaran = in_array($menuAktif, [
+    'pendaftarancheckupadmin'
+]);
+
+// MENU KUNJUNGAN
+$aktifKunjungan = in_array($menuAktif, [
+    'kunjungan'
+]);
+
+// MENU LAPORAN
+$halamanLaporan = [
+    'laporanharian',
+    'laporanbulanan',
+    'laporantahunan',
+    'laporanobat'
+];
+
+$aktifLaporan = in_array($menuAktif, $halamanLaporan);
+
 ?>
 
 <nav class="navbar navbar-expand-lg navbar-dark navbar-admin shadow-sm">
 
     <div class="container-fluid">
 
-        <!-- TOMBOL PUSH MENU -->
+        <!-- ========================================
+             TOMBOL PUSH MENU
+        ========================================= -->
+
         <button type="button"
             class="btn btn-pushmenu"
             id="toggleSidebar"
@@ -19,7 +68,10 @@ $namauser = htmlspecialchars($_SESSION['namauser'] ?? 'Admin', ENT_QUOTES, 'UTF-
         </button>
 
 
-        <!-- BRAND -->
+        <!-- ========================================
+             BRAND
+        ========================================= -->
+
         <a class="navbar-brand fw-bold me-3"
             href="index.php?page=dashboarduser">
 
@@ -29,7 +81,10 @@ $namauser = htmlspecialchars($_SESSION['namauser'] ?? 'Admin', ENT_QUOTES, 'UTF-
         </a>
 
 
-        <!-- TOGGLER NAVBAR MOBILE -->
+        <!-- ========================================
+             TOGGLER NAVBAR MOBILE
+        ========================================= -->
+
         <button class="navbar-toggler"
             type="button"
             data-bs-toggle="collapse"
@@ -43,19 +98,29 @@ $namauser = htmlspecialchars($_SESSION['namauser'] ?? 'Admin', ENT_QUOTES, 'UTF-
         </button>
 
 
-        <!-- ISI NAVBAR -->
+        <!-- ========================================
+             ISI NAVBAR
+        ========================================= -->
+
         <div class="collapse navbar-collapse" id="navbarAdmin">
 
 
-            <!-- MENU UTAMA -->
+            <!-- ========================================
+                 MENU UTAMA
+            ========================================= -->
+
             <ul class="navbar-nav me-auto">
 
 
-                <!-- MENU OBAT -->
+                <!-- ====================================
+                     MENU OBAT
+                ===================================== -->
+
                 <li class="nav-item">
 
-                    <a class="nav-link"
-                        href="index.php?page=obat">
+                    <a class="nav-link <?= $aktifObat ? 'active' : '' ?>"
+                       href="index.php?page=obat"
+                       <?= $aktifObat ? 'aria-current="page"' : '' ?>>
 
                         <i class="bi bi-capsule me-1"></i>
                         Obat
@@ -65,11 +130,33 @@ $namauser = htmlspecialchars($_SESSION['namauser'] ?? 'Admin', ENT_QUOTES, 'UTF-
                 </li>
 
 
-                <!-- MENU KUNJUNGAN -->
+                <!-- ====================================
+                     PENDAFTARAN CHECKUP
+                ===================================== -->
+
                 <li class="nav-item">
 
-                    <a class="nav-link"
-                        href="index.php?page=kunjungan">
+                    <a class="nav-link <?= $aktifPendaftaran ? 'active' : '' ?>"
+                       href="index.php?page=pendaftarancheckupadmin"
+                       <?= $aktifPendaftaran ? 'aria-current="page"' : '' ?>>
+
+                        <i class="bi bi-clipboard2-pulse me-1"></i>
+                        Pendaftaran Checkup
+
+                    </a>
+
+                </li>
+
+
+                <!-- ====================================
+                     MENU KUNJUNGAN
+                ===================================== -->
+
+                <li class="nav-item">
+
+                    <a class="nav-link <?= $aktifKunjungan ? 'active' : '' ?>"
+                       href="index.php?page=kunjungan"
+                       <?= $aktifKunjungan ? 'aria-current="page"' : '' ?>>
 
                         <i class="bi bi-clipboard2-pulse me-1"></i>
                         Kunjungan
@@ -79,15 +166,19 @@ $namauser = htmlspecialchars($_SESSION['namauser'] ?? 'Admin', ENT_QUOTES, 'UTF-
                 </li>
 
 
-                <!-- DROPDOWN LAPORAN -->
+                <!-- ====================================
+                     DROPDOWN LAPORAN
+                ===================================== -->
+
                 <li class="nav-item dropdown">
 
-                    <a class="nav-link dropdown-toggle"
-                        href="#"
-                        id="menuLaporan"
-                        role="button"
-                        data-bs-toggle="dropdown"
-                        aria-expanded="false">
+                    <a class="nav-link dropdown-toggle <?= $aktifLaporan ? 'active' : '' ?>"
+                       href="#"
+                       id="menuLaporan"
+                       role="button"
+                       data-bs-toggle="dropdown"
+                       aria-expanded="false"
+                       <?= $aktifLaporan ? 'aria-current="page"' : '' ?>>
 
                         <i class="bi bi-file-earmark-bar-graph me-1"></i>
                         Laporan
@@ -98,36 +189,52 @@ $namauser = htmlspecialchars($_SESSION['namauser'] ?? 'Admin', ENT_QUOTES, 'UTF-
                     <ul class="dropdown-menu shadow"
                         aria-labelledby="menuLaporan">
 
+
+                        <!-- LAPORAN HARIAN -->
+
                         <li>
-                            <a class="dropdown-item"
-                                href="index.php?page=laporanharian">
+
+                            <a class="dropdown-item <?= $menuAktif == 'laporanharian' ? 'active' : '' ?>"
+                               href="index.php?page=laporanharian"
+                               <?= $menuAktif == 'laporanharian' ? 'aria-current="page"' : '' ?>>
 
                                 <i class="bi bi-calendar-day me-2"></i>
                                 Laporan Harian
 
                             </a>
+
                         </li>
 
 
+                        <!-- LAPORAN BULANAN -->
+
                         <li>
-                            <a class="dropdown-item"
-                                href="index.php?page=laporanbulanan">
+
+                            <a class="dropdown-item <?= $menuAktif == 'laporanbulanan' ? 'active' : '' ?>"
+                               href="index.php?page=laporanbulanan"
+                               <?= $menuAktif == 'laporanbulanan' ? 'aria-current="page"' : '' ?>>
 
                                 <i class="bi bi-calendar-month me-2"></i>
                                 Laporan Bulanan
 
                             </a>
+
                         </li>
 
 
+                        <!-- LAPORAN TAHUNAN -->
+
                         <li>
-                            <a class="dropdown-item"
-                                href="index.php?page=laporantahunan">
+
+                            <a class="dropdown-item <?= $menuAktif == 'laporantahunan' ? 'active' : '' ?>"
+                               href="index.php?page=laporantahunan"
+                               <?= $menuAktif == 'laporantahunan' ? 'aria-current="page"' : '' ?>>
 
                                 <i class="bi bi-calendar3 me-2"></i>
                                 Laporan Tahunan
 
                             </a>
+
                         </li>
 
 
@@ -136,15 +243,21 @@ $namauser = htmlspecialchars($_SESSION['namauser'] ?? 'Admin', ENT_QUOTES, 'UTF-
                         </li>
 
 
+                        <!-- LAPORAN OBAT -->
+
                         <li>
-                            <a class="dropdown-item"
-                                href="index.php?page=laporanobat">
+
+                            <a class="dropdown-item <?= $menuAktif == 'laporanobat' ? 'active' : '' ?>"
+                               href="index.php?page=laporanobat"
+                               <?= $menuAktif == 'laporanobat' ? 'aria-current="page"' : '' ?>>
 
                                 <i class="bi bi-capsule me-2"></i>
                                 Laporan Obat
 
                             </a>
+
                         </li>
+
 
                     </ul>
 
@@ -154,11 +267,15 @@ $namauser = htmlspecialchars($_SESSION['namauser'] ?? 'Admin', ENT_QUOTES, 'UTF-
             </ul>
 
 
-            <!-- MENU PENGGUNA -->
+            <!-- ========================================
+                 MENU PENGGUNA
+            ========================================= -->
+
             <ul class="navbar-nav ms-auto align-items-lg-center">
 
 
                 <!-- SAPAAN PENGGUNA -->
+
                 <li class="nav-item">
 
                     <span class="nav-link user-greeting">
@@ -172,11 +289,12 @@ $namauser = htmlspecialchars($_SESSION['namauser'] ?? 'Admin', ENT_QUOTES, 'UTF-
 
 
                 <!-- LOGOUT -->
+
                 <li class="nav-item ms-lg-2">
 
                     <a href="index.php?page=logout"
-                        class="btn btn-outline-light btn-logout"
-                        onclick="return confirm('Apakah Anda yakin ingin logout?')">
+                       class="btn btn-outline-light btn-logout"
+                       onclick="return confirm('Apakah Anda yakin ingin logout?')">
 
                         <i class="bi bi-box-arrow-right"></i>
                         Logout

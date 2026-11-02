@@ -396,6 +396,99 @@ body {
 
 }
 
+
+/* =========================================
+   STICKY FOOTER - LAYOUT UTAMA
+========================================= */
+
+/* Tinggi minimal halaman mengikuti layar */
+html,
+body {
+    min-height: 100%;
+    margin: 0;
+}
+
+/* Wrapper utama */
+.wrapper {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Area konten */
+.content-wrapper {
+    flex: 1 0 auto;
+}
+
+/* Footer selalu terdorong ke bawah */
+footer {
+    margin-top: auto;
+    width: 100%;
+    flex-shrink: 0;
+}
+
+/* ========================================
+   NAVBAR PASIEN - MENU AKTIF
+======================================== */
+
+/* Menu tidak aktif */
+.navbar-admin .navbar-nav .nav-link {
+    color: rgba(255, 255, 255, 0.85);
+    transition: all 0.2s ease;
+    border-bottom: 3px solid transparent;
+}
+
+/* Hover menu */
+.navbar-admin .navbar-nav .nav-link:hover {
+    color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.10);
+}
+
+/* Menu aktif */
+.navbar-admin .navbar-nav .nav-link.active {
+    color: #ffffff;
+    font-weight: 700;
+    border-bottom: 3px solid #ffffff;
+    background-color: rgba(255, 255, 255, 0.12);
+}
+
+/* Menu aktif ketika diarahkan mouse */
+.navbar-admin .navbar-nav .nav-link.active:hover {
+    color: #ffffff;
+}
+
+/* ========================================
+   NAVBAR ADMIN - MENU
+======================================== */
+
+/* Menu tidak aktif */
+.navbar-admin .navbar-nav .nav-link {
+    color: rgba(255, 255, 255, 0.85);
+    transition: all 0.2s ease;
+    border-bottom: 3px solid transparent;
+}
+
+/* Efek hover */
+.navbar-admin .navbar-nav .nav-link:hover {
+    color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.10);
+}
+
+/* Menu aktif */
+.navbar-admin .navbar-nav .nav-link.active {
+    color: #ffffff;
+    font-weight: 700;
+    border-bottom: 3px solid #ffffff;
+    background-color: rgba(255, 255, 255, 0.12);
+}
+
+/* Dropdown item aktif */
+.navbar-admin .dropdown-menu .dropdown-item.active {
+    color: #ffffff;
+    background-color: #198754;
+    font-weight: 600;
+}
+
 </style>
 
 </head>

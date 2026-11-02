@@ -59,11 +59,5 @@ $menuAktif = $page ?? '';
         <i class="bi bi-capsule"></i>
         Data Obat
     </a>
-    <a href="index.php?page=pendaftarancheckupadmin"
-       class="nav-link <?= in_array($menuAktif, ['pendaftarancheckupadmin', 'showpendaftarancheckupadmin']) ? 'active' : ''; ?>">
-        <i class="bi bi-clipboard2-pulse"></i>
-        <span>Pendaftaran Checkup</span>
-    </a>
-
 
 </div>

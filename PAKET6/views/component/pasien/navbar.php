@@ -1,17 +1,64 @@
 
 <?php
+// ========================================
+// DATA PASIEN
+// ========================================
+
 $namapasien = htmlspecialchars(
     $_SESSION['namapasien'] ?? 'Pasien',
     ENT_QUOTES,
     'UTF-8'
 );
+
+
+// ========================================
+// MENENTUKAN HALAMAN AKTIF
+// ========================================
+
+$menuAktif = $page ?? ($_GET['page'] ?? '');
+
+
+// ========================================
+// KONDISI MENU AKTIF
+// ========================================
+
+// Dokter
+$aktifDokter = in_array($menuAktif, [
+    'daftardokter',
+    'detildokter'
+]);
+
+// Obat
+$aktifObat = in_array($menuAktif, [
+    'informasiobat',
+    'daftarobat',
+    'detilobat',
+    'daftarkategori',
+    'detilkategori'
+]);
+
+// Pendaftaran Checkup
+$aktifPendaftaran = in_array($menuAktif, [
+    'pendaftarancheckuppasien',
+    'pendaftarancheckup'
+]);
+
+// Riwayat Kunjungan
+$aktifRiwayat = in_array($menuAktif, [
+    'riwayatkunjungan',
+    'detilkunjungan'
+]);
+
 ?>
 
 <nav class="navbar navbar-expand-lg navbar-dark navbar-admin shadow-sm">
 
     <div class="container-fluid">
 
-        <!-- TOMBOL PUSH MENU -->
+        <!-- ========================================
+             TOMBOL PUSH MENU
+        ========================================= -->
+
         <button type="button"
             class="btn btn-pushmenu"
             id="toggleSidebar"
@@ -23,7 +70,10 @@ $namapasien = htmlspecialchars(
         </button>
 
 
-        <!-- BRAND -->
+        <!-- ========================================
+             BRAND
+        ========================================= -->
+
         <a class="navbar-brand fw-bold me-3"
             href="index.php?page=dashboardpasien">
 
@@ -33,7 +83,10 @@ $namapasien = htmlspecialchars(
         </a>
 
 
-        <!-- TOGGLER NAVBAR MOBILE -->
+        <!-- ========================================
+             TOGGLER NAVBAR MOBILE
+        ========================================= -->
+
         <button class="navbar-toggler"
             type="button"
             data-bs-toggle="collapse"
@@ -47,19 +100,27 @@ $namapasien = htmlspecialchars(
         </button>
 
 
-        <!-- ISI NAVBAR -->
+        <!-- ========================================
+             ISI NAVBAR
+        ========================================= -->
+
         <div class="collapse navbar-collapse" id="navbarPasien">
 
 
-            <!-- MENU UTAMA -->
+            <!-- ========================================
+                 MENU UTAMA
+            ========================================= -->
+
             <ul class="navbar-nav me-auto">
 
 
-                <!-- JADWAL DOKTER -->
+                <!-- DOKTER -->
+
                 <li class="nav-item">
 
-                    <a class="nav-link"
-                        href="index.php?page=daftardokter">
+                    <a class="nav-link <?= $aktifDokter ? 'active' : '' ?>"
+                       href="index.php?page=daftardokter"
+                       <?= $aktifDokter ? 'aria-current="page"' : '' ?>>
 
                         <i class="bi bi-calendar-week me-1"></i>
                         Dokter
@@ -69,11 +130,13 @@ $namapasien = htmlspecialchars(
                 </li>
 
 
-                <!-- INFORMASI OBAT -->
+                <!-- OBAT -->
+
                 <li class="nav-item">
 
-                    <a class="nav-link"
-                        href="index.php?page=daftarobat">
+                    <a class="nav-link <?= $aktifObat ? 'active' : '' ?>"
+                       href="index.php?page=informasiobat"
+                       <?= $aktifObat ? 'aria-current="page"' : '' ?>>
 
                         <i class="bi bi-capsule me-1"></i>
                         Obat
@@ -84,10 +147,12 @@ $namapasien = htmlspecialchars(
 
 
                 <!-- PENDAFTARAN CHECKUP -->
+
                 <li class="nav-item">
 
-                    <a class="nav-link"
-                        href="index.php?page=pendaftarancheckup">
+                    <a class="nav-link <?= $aktifPendaftaran ? 'active' : '' ?>"
+                       href="index.php?page=pendaftarancheckuppasien"
+                       <?= $aktifPendaftaran ? 'aria-current="page"' : '' ?>>
 
                         <i class="bi bi-calendar2-plus me-1"></i>
                         Pendaftaran Checkup
@@ -98,10 +163,12 @@ $namapasien = htmlspecialchars(
 
 
                 <!-- RIWAYAT KUNJUNGAN -->
+
                 <li class="nav-item">
 
-                    <a class="nav-link"
-                        href="index.php?page=riwayatkunjungan">
+                    <a class="nav-link <?= $aktifRiwayat ? 'active' : '' ?>"
+                       href="index.php?page=riwayatkunjungan"
+                       <?= $aktifRiwayat ? 'aria-current="page"' : '' ?>>
 
                         <i class="bi bi-clock-history me-1"></i>
                         Riwayat
@@ -114,11 +181,15 @@ $namapasien = htmlspecialchars(
             </ul>
 
 
-            <!-- MENU PENGGUNA -->
+            <!-- ========================================
+                 MENU PENGGUNA
+            ========================================= -->
+
             <ul class="navbar-nav ms-auto align-items-lg-center">
 
 
                 <!-- SAPAAN PASIEN -->
+
                 <li class="nav-item">
 
                     <span class="nav-link user-greeting">
@@ -132,11 +203,12 @@ $namapasien = htmlspecialchars(
 
 
                 <!-- LOGOUT -->
+
                 <li class="nav-item ms-lg-2">
 
                     <a href="index.php?page=logout"
-                        class="btn btn-outline-light btn-logout"
-                        onclick="return confirm('Apakah Anda yakin ingin logout?')">
+                       class="btn btn-outline-light btn-logout"
+                       onclick="return confirm('Apakah Anda yakin ingin logout?')">
 
                         <i class="bi bi-box-arrow-right"></i>
                         Logout
