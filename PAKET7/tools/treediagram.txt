@@ -1,14 +1,19 @@
-STRUKTUR APK
-
-
-klinik/
+klinikahmadi7/
 │
-├── index.php
+├── index.php                         <- INDUK ROUTING APLIKASI
 │
 ├── assets/
 │   ├── css/
+│   │   ├── bootstrap.min.css
+│   │   └── style.css
+│   │
 │   ├── js/
+│   │   ├── bootstrap.bundle.min.js
+│   │   └── script.js
+│   │
 │   ├── plugins/
+│   │   └── adminlte/
+│   │
 │   └── images/
 │       ├── slider/
 │       ├── obat/
@@ -18,82 +23,109 @@ klinik/
 │
 ├── views/
 │   │
-│   ├── component/
+│   ├── component/                    <- KOMPONEN TAMPILAN
 │   │   ├── tamu/
 │   │   │   ├── navbar.php
-│   │   │   └── footer.php  <- memuat footer halaman case tertentu dalam wrapper
-│   │   ├── user/
+│   │   │   └── footer.php
+│   │   │
+│   │   ├── user/                     <- ADMIN & PETUGAS
 │   │   │   ├── navbaradmin.php
 │   │   │   ├── navbarpetugas.php
 │   │   │   ├── sidebaradmin.php
 │   │   │   ├── sidebarpetugas.php
-│   │   │   └── footer.php  <- memuat footer halaman case tertentu dalam wrapper
+│   │   │   └── footer.php
+│   │   │
 │   │   ├── pasien/
 │   │   │   ├── navbar.php
 │   │   │   ├── sidebar.php
-│   │   │   └── footer.php  <- memuat footer halaman case tertentu dalam wrapper
+│   │   │   └── footer.php
+│   │   │
 │   │   ├── dokter/
 │   │   │   ├── navbar.php
 │   │   │   ├── sidebar.php
-│   │   │   └── footer.php  <- memuat footer halaman case tertentu dalam wrapper
-│   │   ├── header.php      <- memuat header awal doc html yang berisi asset css
-│   │   └── footerjs.php    <- memuat footer yang berisi asset js
+│   │   │   └── footer.php
+│   │   │
+│   │   ├── header.php
+│   │   └── footerjs.php
 │   │
-│   ├── user/                         ← ZONA ADMIN & PETUGAS
+│   ├── user/                         <- ZONA ADMIN & PETUGAS
+│   │   │
 │   │   ├── dashboard/
 │   │   │   ├── dashboardadmin.php
 │   │   │   └── dashboardpetugas.php
-│   │   ├── user/
+│   │   │
+│   │   ├── user/                     <- CRUD USER
 │   │   │   ├── index.php
 │   │   │   ├── create.php
 │   │   │   ├── edit.php
 │   │   │   └── show.php
-│   │   ├── pasien/
+│   │   │
+│   │   ├── pasien/                   <- CRUD PASIEN
 │   │   │   ├── index.php
 │   │   │   ├── create.php
 │   │   │   ├── edit.php
 │   │   │   └── show.php
-│   │   ├── dokter/
+│   │   │
+│   │   ├── dokter/                   <- CRUD DOKTER & AKUN
 │   │   │   ├── index.php
 │   │   │   ├── create.php
 │   │   │   ├── edit.php
 │   │   │   └── show.php
-│   │   ├── merk/
+│   │   │
+│   │   ├── merk/                     <- CRUD MERK OBAT
 │   │   │   ├── index.php
 │   │   │   ├── create.php
 │   │   │   ├── edit.php
 │   │   │   └── show.php
-│   │   ├── kategori/
+│   │   │
+│   │   ├── kategori/                 <- CRUD KATEGORI OBAT
 │   │   │   ├── index.php
 │   │   │   ├── create.php
 │   │   │   ├── edit.php
 │   │   │   └── show.php
-│   │   ├── obat/
+│   │   │
+│   │   ├── obat/                     <- CRUD OBAT
 │   │   │   ├── index.php
 │   │   │   ├── create.php
 │   │   │   ├── edit.php
 │   │   │   └── show.php
-│   │   ├── jadwaldokter/
+│   │   │
+│   │   ├── jadwaldokter/             <- CRUD JADWAL DOKTER
 │   │   │   ├── index.php
 │   │   │   ├── create.php
 │   │   │   ├── edit.php
 │   │   │   └── show.php
-│   │   ├── kunjungan/
+│   │   │
+│   │   ├── pendaftarancheckup/       <- PENDAFTARAN ONLINE & LANGSUNG
+│   │   │   ├── index.php
+│   │   │   ├── create.php
+│   │   │   ├── show.php
+│   │   │   ├── setujui.php
+│   │   │   └── tolak.php
+│   │   │
+│   │   ├── antrian/                  <- CHECK-IN & ANTRIAN
+│   │   │   ├── index.php
+│   │   │   ├── show.php
+│   │   │   └── panggilan.php
+│   │   │
+│   │   ├── kunjungan/                <- PEMERIKSAAN PASIEN
 │   │   │   ├── index.php
 │   │   │   ├── create.php
 │   │   │   ├── edit.php
 │   │   │   └── show.php
-│   │   ├── detilkunjungan/
+│   │   │
+│   │   ├── detilkunjungan/           <- RINCIAN RESEP OBAT
 │   │   │   ├── index.php
 │   │   │   ├── create.php
 │   │   │   ├── edit.php
 │   │   │   └── show.php
-│   │   ├── antrian/
+│   │   │
+│   │   ├── kasir/                    <- PEMBAYARAN PASIEN
 │   │   │   ├── index.php
-│   │   │   ├── create.php
-│   │   │   ├── edit.php
-│   │   │   └── show.php
-│   │   └── laporan/
+│   │   │   ├── show.php
+│   │   │   └── cetakstruk.php
+│   │   │
+│   │   └── laporan/                  <- LAPORAN KLINIK
 │   │       ├── laporanharian.php
 │   │       ├── cetaklaporanharian.php
 │   │       ├── laporanbulanan.php
@@ -105,22 +137,46 @@ klinik/
 │   │       ├── laporanantrian.php
 │   │       └── cetaklaporanantrian.php
 │   │
-│   ├── pasien/                       ← ZONA LOGIN PASIEN
+│   ├── dokter/                       <- ZONA LOGIN DOKTER
+│   │   ├── dashboarddokter.php
+│   │   ├── profil.php
+│   │   ├── editprofil.php
+│   │   ├── jadwalkunjungan.php
+│   │   │
+│   │   ├── antrian/
+│   │   │   ├── index.php
+│   │   │   └── show.php
+│   │   │
+│   │   ├── pemeriksaan/
+│   │   │   ├── index.php
+│   │   │   ├── create.php
+│   │   │   └── show.php
+│   │   │
+│   │   └── resep/
+│   │       ├── index.php
+│   │       ├── create.php
+│   │       └── edit.php
+│   │
+│   ├── pasien/                       <- ZONA LOGIN PASIEN
 │   │   ├── dashboardpasien.php
 │   │   ├── profil.php
 │   │   ├── editprofil.php
-│   │   ├── antrian.php
+│   │   │
+│   │   ├── pendaftaran/
+│   │   │   ├── index.php
+│   │   │   ├── create.php
+│   │   │   └── show.php
+│   │   │
+│   │   ├── antrian/
+│   │   │   ├── index.php
+│   │   │   └── show.php
+│   │   │
 │   │   ├── riwayatkunjungan.php
-│   │   └── detailkunjungan.php
+│   │   ├── detilkunjungan.php
+│   │   ├── daftardokter.php
+│   │   └── informasiobat.php
 │   │
-│   ├── dokter/                       ← ZONA LOGIN DOKTER
-│   │   ├── dashboarddokter.php
-│   │   ├── profil.php
-│   │   ├── jadwalkunjungan.php
-│   │   ├── antrianpasien.php
-│   │   └── detailkunjungan.php
-│   │
-│   ├── landing/                      ← ZONA TAMU / PUBLIK
+│   ├── landing/                      <- ZONA TAMU / PUBLIK
 │   │   ├── home.php
 │   │   ├── daftardokter.php
 │   │   ├── detildokter.php
@@ -132,37 +188,59 @@ klinik/
 │   │   ├── layanan.php
 │   │   └── kontak.php
 │   │
-│   ├── auth/
+│   ├── auth/                         <- TAMPILAN LOGIN & REGISTER
 │   │   ├── loginuser.php
 │   │   ├── loginpasien.php
 │   │   ├── logindokter.php
-│   │   ├── registerpasien.php
-│   │   └── logout.php
+│   │   └── registerpasien.php
 │   │
-│   └── errors/
+│   └── errors/                       <- HALAMAN KESALAHAN
 │       ├── 403.php
 │       ├── 404.php
 │       └── 500.php
 │
-└── proses/
-    ├── koneksi.php
-    ├── session.php
-    ├── helper.php
-    ├── proseslogout.php
-    ├── prosesdashboarduser.php
-    ├── prosesdashboardpasien.php
-    ├── prosesdashboarddokter.php
-    ├── prosesloginuser.php
-    ├── prosesloginpasien.php
-    ├── proseslogindokter.php
-    ├── prosesregisterpasien.php
-    ├── prosesuser.php
-    ├── prosespasien.php
-    ├── prosesdokter.php
-    ├── prosesmerk.php
-    ├── proseskategori.php
-    ├── prosesobat.php
-    ├── prosesjadwaldokter.php
-    ├── proseskunjungan.php
-    ├── prosesantrian.php
-    └── proseslaporan.php
+└── proses/                           <- SELURUH PEMROSESAN DATA
+    │
+    ├── main/                         <- KONFIGURASI UTAMA
+    │   ├── koneksi.php
+    │   ├── session.php
+    │   ├── helper.php
+    │   └── logout.php
+    │
+    ├── dashboard/                    <- PROSES DASHBOARD
+    │   ├── dashboarduser.php
+    │   ├── dashboardpasien.php
+    │   └── dashboarddokter.php
+    │
+    ├── auth/                         <-  PROSES LOGIN & REGISTER
+    │   ├── loginuser.php
+    │   ├── loginpasien.php
+    │   ├── logindokter.php
+    │   └── registerpasien.php
+    │
+    ├── user/                         <-  PROSES MASTER DATA & TRANSAKSI
+    │   ├── user.php
+    │   ├── pasien.php
+    │   ├── dokter.php
+    │   ├── merk.php
+    │   ├── kategori.php
+    │   ├── obat.php
+    │   ├── jadwaldokter.php
+    │   ├── pendaftarancheckup.php
+    │   ├── antrian.php
+    │   ├── kunjungan.php
+    │   ├── detilkunjungan.php
+    │   └── kasir.php
+    │
+    ├── dokter/                       <-  PROSES KHUSUS DOKTER
+    │   └── profil.php
+    │
+    ├── pasien/                       <-  PROSES KHUSUS PASIEN
+    │   └── profil.php
+    │
+    └── laporan/                      <-  PROSES LAPORAN
+        ├── laporanharian.php
+        ├── laporanbulanan.php
+        ├── laporantahunan.php
+        ├── laporanobat.php
+        └── laporanantrian.php

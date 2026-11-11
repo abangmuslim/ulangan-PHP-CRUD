@@ -1,29 +1,31 @@
-<?php
-if (!isset($judul)) {
-    $judul = 'Klinik';
-}
-?>
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#087f5b">
-    <title><?= e($judul) ?> | Klinik</title>
 
+    <title>Klinik Ahmadi</title>
+
+    <!-- FONT AWESOME -->
     <link rel="stylesheet" href="assets/plugins/fontawesome-free/css/all.min.css">
+
+    <!-- ADMINLTE 3.2 -->
     <link rel="stylesheet" href="assets/css/adminlte.min.css">
+
+    <!-- CUSTOM CSS -->
     <link rel="stylesheet" href="assets/css/style.css">
 
-
-
+    <?php
+    // MENENTUKAN BODY CLASS SESUAI ZONA
+    if ($zona === 'public' || $zona === 'auth') {
+        $bodyClass = 'hold-transition layout-top-nav';
+    } else {
+        $bodyClass = 'hold-transition sidebar-mini layout-fixed';
+    }
+    ?>
 </head>
 
-<?php
-$classBody = 'hold-transition';
+<body class="<?= $bodyClass; ?>">
 
-if (isset($zona) && $zona === 'tamu') {
-    $classBody .= ' layout-top-nav';
-}
-?>
-<body class="<?= e($classBody) ?>">
+<div class="wrapper">

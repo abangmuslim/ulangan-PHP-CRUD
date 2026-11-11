@@ -1,8 +1,43 @@
 
-STRUKTUR DB
+-- =====================================================
+-- DATABASE PAKET 7
+-- APLIKASI KLINIK AHMADI
+-- PHP NATIVE + MYSQLI PROSEDURAL
+-- 10 TABEL + 4 ROLE + SISTEM ANTRIAN
+-- =====================================================
 
-CREATE DATABASE IF NOT EXISTS rumahsakitahmadi5;
-USE rumahsakitahmadi5;
+-- =====================================================
+-- 1. MEMBUAT DATABASE
+-- =====================================================
+
+CREATE DATABASE IF NOT EXISTS klinikahmadi7;
+USE klinikahmadi7;
+
+
+-- =====================================================
+-- 2. MENGHAPUS SELURUH TABEL JIKA SUDAH ADA
+-- =====================================================
+
+SET FOREIGN_KEY_CHECKS = 0;
+
+DROP TABLE IF EXISTS detilkunjungan;
+DROP TABLE IF EXISTS pendaftarancheckup;
+DROP TABLE IF EXISTS kunjungan;
+DROP TABLE IF EXISTS obat;
+DROP TABLE IF EXISTS merk;
+DROP TABLE IF EXISTS kategori;
+DROP TABLE IF EXISTS jadwaldokter;
+DROP TABLE IF EXISTS dokter;
+DROP TABLE IF EXISTS pasien;
+DROP TABLE IF EXISTS `user`;
+
+SET FOREIGN_KEY_CHECKS = 1;
+
+
+-- =====================================================
+-- 3. TABEL USER
+-- LOGIN ADMIN DAN PETUGAS
+-- =====================================================
 
 CREATE TABLE `user` (
     iduser INT AUTO_INCREMENT PRIMARY KEY,
@@ -12,8 +47,14 @@ CREATE TABLE `user` (
     nohp VARCHAR(15),
     alamat TEXT,
     foto VARCHAR(255),
-    role ENUM('admin', 'petugas') NOT NULL DEFAULT 'petugas'
+    level VARCHAR(20) NOT NULL DEFAULT 'petugas'
 ) ENGINE=InnoDB;
+
+
+-- =====================================================
+-- 4. TABEL PASIEN
+-- DATA DAN LOGIN PASIEN
+-- =====================================================
 
 CREATE TABLE pasien (
     idpasien INT AUTO_INCREMENT PRIMARY KEY,
@@ -25,26 +66,50 @@ CREATE TABLE pasien (
     foto VARCHAR(255)
 ) ENGINE=InnoDB;
 
+
+-- =====================================================
+-- 5. TABEL DOKTER
+-- DATA DAN LOGIN DOKTER
+-- =====================================================
+
 CREATE TABLE dokter (
     iddokter INT AUTO_INCREMENT PRIMARY KEY,
     namadokter VARCHAR(100) NOT NULL,
+    spesialis VARCHAR(100),
     username VARCHAR(50) UNIQUE,
     password VARCHAR(255),
-    spesialis VARCHAR(100),
     nohp VARCHAR(15),
     alamat TEXT,
-    foto VARCHAR(25)
+    foto VARCHAR(255)
 ) ENGINE=InnoDB;
+
+
+-- =====================================================
+-- 6. TABEL MERK
+-- DATA MEREK OBAT
+-- =====================================================
 
 CREATE TABLE merk (
     idmerk INT AUTO_INCREMENT PRIMARY KEY,
     namamerk VARCHAR(100) NOT NULL
 ) ENGINE=InnoDB;
 
+
+-- =====================================================
+-- 7. TABEL KATEGORI
+-- KATEGORI OBAT
+-- =====================================================
+
 CREATE TABLE kategori (
     idkategori INT AUTO_INCREMENT PRIMARY KEY,
     namakategori VARCHAR(100) NOT NULL
 ) ENGINE=InnoDB;
+
+
+-- =====================================================
+-- 8. TABEL OBAT
+-- DATA OBAT, HARGA, DAN STOK
+-- =====================================================
 
 CREATE TABLE obat (
     idobat INT AUTO_INCREMENT PRIMARY KEY,
@@ -55,21 +120,42 @@ CREATE TABLE obat (
     tanggalstok DATE,
     stok INT DEFAULT 0,
     foto VARCHAR(255),
-    FOREIGN KEY (idmerk) REFERENCES merk(idmerk)
-        ON UPDATE CASCADE ON DELETE RESTRICT,
-    FOREIGN KEY (idkategori) REFERENCES kategori(idkategori)
-        ON UPDATE CASCADE ON DELETE RESTRICT
+
+    FOREIGN KEY (idmerk)
+        REFERENCES merk(idmerk)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT,
+
+    FOREIGN KEY (idkategori)
+        REFERENCES kategori(idkategori)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT
 ) ENGINE=InnoDB;
+
+
+-- =====================================================
+-- 9. TABEL JADWAL DOKTER
+-- JADWAL PRAKTIK DOKTER
+-- =====================================================
 
 CREATE TABLE jadwaldokter (
     idjadwal INT AUTO_INCREMENT PRIMARY KEY,
     iddokter INT NOT NULL,
-    haripraktik VARCHAR(10) NOT NULL,
+    haripraktik VARCHAR(15) NOT NULL,
     jam_mulai TIME NOT NULL,
     jam_selesai TIME NOT NULL,
-    FOREIGN KEY (iddokter) REFERENCES dokter(iddokter)
-        ON UPDATE CASCADE ON DELETE RESTRICT
+
+    FOREIGN KEY (iddokter)
+        REFERENCES dokter(iddokter)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT
 ) ENGINE=InnoDB;
+
+
+-- =====================================================
+-- 10. TABEL KUNJUNGAN
+-- PEMERIKSAAN PASIEN
+-- =====================================================
 
 CREATE TABLE kunjungan (
     idkunjungan INT AUTO_INCREMENT PRIMARY KEY,
@@ -77,19 +163,52 @@ CREATE TABLE kunjungan (
     idpasien INT NOT NULL,
     iddokter INT NOT NULL,
     idjadwal INT NOT NULL,
+
     tanggalkunjungan DATE NOT NULL,
     keluhan TEXT,
     diagnosis TEXT,
+
     totalkunjungan INT DEFAULT 0,
-    FOREIGN KEY (iduser) REFERENCES `user`(iduser)
-        ON UPDATE CASCADE ON DELETE RESTRICT,
-    FOREIGN KEY (idpasien) REFERENCES pasien(idpasien)
-        ON UPDATE CASCADE ON DELETE RESTRICT,
-    FOREIGN KEY (iddokter) REFERENCES dokter(iddokter)
-        ON UPDATE CASCADE ON DELETE RESTRICT,
-    FOREIGN KEY (idjadwal) REFERENCES jadwaldokter(idjadwal)
-        ON UPDATE CASCADE ON DELETE RESTRICT
+
+    jumlahbayar INT NOT NULL DEFAULT 0,
+    kembalian INT NOT NULL DEFAULT 0,
+
+    statuspembayaran ENUM(
+        'Belum Bayar',
+        'Lunas'
+    ) NOT NULL DEFAULT 'Belum Bayar',
+
+    statuskunjungan ENUM(
+        'Proses',
+        'Selesai'
+    ) NOT NULL DEFAULT 'Proses',
+
+    FOREIGN KEY (iduser)
+        REFERENCES `user`(iduser)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT,
+
+    FOREIGN KEY (idpasien)
+        REFERENCES pasien(idpasien)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT,
+
+    FOREIGN KEY (iddokter)
+        REFERENCES dokter(iddokter)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT,
+
+    FOREIGN KEY (idjadwal)
+        REFERENCES jadwaldokter(idjadwal)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT
 ) ENGINE=InnoDB;
+
+
+-- =====================================================
+-- 11. TABEL DETIL KUNJUNGAN
+-- RINCIAN OBAT DAN RESEP PASIEN
+-- =====================================================
 
 CREATE TABLE detilkunjungan (
     iddetilkunjungan INT AUTO_INCREMENT PRIMARY KEY,
@@ -99,57 +218,118 @@ CREATE TABLE detilkunjungan (
     harga INT NOT NULL DEFAULT 0,
     subtotal INT NOT NULL DEFAULT 0,
     aturanpakai VARCHAR(255),
-    FOREIGN KEY (idkunjungan) REFERENCES kunjungan(idkunjungan)
-        ON UPDATE CASCADE ON DELETE RESTRICT,
-    FOREIGN KEY (idobat) REFERENCES obat(idobat)
-        ON UPDATE CASCADE ON DELETE RESTRICT
+
+    FOREIGN KEY (idkunjungan)
+        REFERENCES kunjungan(idkunjungan)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT,
+
+    FOREIGN KEY (idobat)
+        REFERENCES obat(idobat)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT
 ) ENGINE=InnoDB;
 
-CREATE TABLE antrian (
-    idantrian INT AUTO_INCREMENT PRIMARY KEY,
-    idkunjungan INT NOT NULL UNIQUE,
-    nomorantrian INT NOT NULL,
-    tanggalantrian DATE NOT NULL,
-    statusantrian ENUM(
-        'menunggu', 'dipanggil', 'dilayani', 'selesai', 'batal'
-    ) NOT NULL DEFAULT 'menunggu',
-    FOREIGN KEY (idkunjungan) REFERENCES kunjungan(idkunjungan)
-        ON UPDATE CASCADE ON DELETE RESTRICT
+
+-- =====================================================
+-- 12. TABEL PENDAFTARAN CHECKUP
+-- PENDAFTARAN ONLINE, LANGSUNG, DAN ANTRIAN
+-- =====================================================
+
+CREATE TABLE pendaftarancheckup (
+    idpendaftaran INT AUTO_INCREMENT PRIMARY KEY,
+
+    idpasien INT NOT NULL,
+    idjadwal INT NOT NULL,
+
+    idkunjungan INT UNIQUE DEFAULT NULL,
+
+    tanggalperiksa DATE NOT NULL,
+    keluhan TEXT NOT NULL,
+
+    -- JENIS PENDAFTARAN
+    jenispendaftaran VARCHAR(20)
+        NOT NULL DEFAULT 'Online',
+
+    -- NOMOR ANTRIAN
+    nomorantrian INT DEFAULT NULL,
+
+    -- STATUS PERSETUJUAN PENDAFTARAN
+    status ENUM(
+        'Menunggu',
+        'Disetujui',
+        'Ditolak'
+    ) NOT NULL DEFAULT 'Menunggu',
+
+    -- STATUS PROSES ANTRIAN
+    statusantrian VARCHAR(20)
+        NOT NULL DEFAULT 'Belum Antri',
+
+    catatanadmin TEXT,
+
+    tanggalpengajuan DATETIME
+        NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (idpasien)
+        REFERENCES pasien(idpasien)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT,
+
+    FOREIGN KEY (idjadwal)
+        REFERENCES jadwaldokter(idjadwal)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT,
+
+    FOREIGN KEY (idkunjungan)
+        REFERENCES kunjungan(idkunjungan)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT,
+
+    -- NOMOR ANTRIAN TIDAK BOLEH SAMA
+    -- PADA JADWAL DAN TANGGAL YANG SAMA
+
+    UNIQUE KEY unik_nomor_antrian
+    (idjadwal, tanggalperiksa, nomorantrian)
+
 ) ENGINE=InnoDB;
+
+
+-- =====================================================
+-- 13. MEMERIKSA SELURUH TABEL
+-- =====================================================
 
 SHOW TABLES;
 
 
+-- =====================================================
+-- 14. MEMERIKSA STRUKTUR TABEL PENTING
+-- =====================================================
+
+DESC `user`;
+DESC pasien;
+DESC dokter;
+DESC jadwaldokter;
+DESC kunjungan;
+DESC detilkunjungan;
+DESC pendaftarancheckup;
 
 
-mysql> use rumahsakitahmadi5;
-Database changed
+========================================================
 mysql> show tables;
-+-----------------------------+
-| Tables_in_rumahsakitahmadi5 |
-+-----------------------------+
-| antrian                     |
-| detilkunjungan              |
-| dokter                      |
-| jadwaldokter                |
-| kategori                    |
-| kunjungan                   |
-| merk                        |
-| obat                        |
-| pasien                      |
-| user                        |
-+-----------------------------+
-
-mysql> desc antrian;
-+----------------+-----------------------------------------------------------+------+-----+----------+----------------+
-| Field          | Type                                                      | Null | Key | Default  | Extra          |
-+----------------+-----------------------------------------------------------+------+-----+----------+----------------+
-| idantrian      | int                                                       | NO   | PRI | NULL     | auto_increment |
-| idkunjungan    | int                                                       | NO   | UNI | NULL     |                |
-| nomorantrian   | int                                                       | NO   |     | NULL     |                |
-| tanggalantrian | date                                                      | NO   |     | NULL     |                |
-| statusantrian  | enum('menunggu','dipanggil','dilayani','selesai','batal') | NO   |     | menunggu |                |
-+----------------+-----------------------------------------------------------+------+-----+----------+----------------+
++-------------------------+
+| Tables_in_klinikahmadi7 |
++-------------------------+
+| detilkunjungan          |
+| dokter                  |
+| jadwaldokter            |
+| kategori                |
+| kunjungan               |
+| merk                    |
+| obat                    |
+| pasien                  |
+| pendaftarancheckup      |
+| user                    |
++-------------------------+
 
 mysql> desc detilkunjungan;
 +------------------+--------------+------+-----+---------+----------------+
@@ -170,12 +350,12 @@ mysql> desc dokter;
 +------------+--------------+------+-----+---------+----------------+
 | iddokter   | int          | NO   | PRI | NULL    | auto_increment |
 | namadokter | varchar(100) | NO   |     | NULL    |                |
+| spesialis  | varchar(100) | YES  |     | NULL    |                |
 | username   | varchar(50)  | YES  | UNI | NULL    |                |
 | password   | varchar(255) | YES  |     | NULL    |                |
-| spesialis  | varchar(100) | YES  |     | NULL    |                |
 | nohp       | varchar(15)  | YES  |     | NULL    |                |
 | alamat     | text         | YES  |     | NULL    |                |
-| foto       | varchar(250) | NO   |     | NULL    |                |
+| foto       | varchar(255) | YES  |     | NULL    |                |
 +------------+--------------+------+-----+---------+----------------+
 
 mysql> desc jadwaldokter;
@@ -184,7 +364,7 @@ mysql> desc jadwaldokter;
 +-------------+-------------+------+-----+---------+----------------+
 | idjadwal    | int         | NO   | PRI | NULL    | auto_increment |
 | iddokter    | int         | NO   | MUL | NULL    |                |
-| haripraktik | varchar(10) | NO   |     | NULL    |                |
+| haripraktik | varchar(15) | NO   |     | NULL    |                |
 | jam_mulai   | time        | NO   |     | NULL    |                |
 | jam_selesai | time        | NO   |     | NULL    |                |
 +-------------+-------------+------+-----+---------+----------------+
@@ -198,19 +378,23 @@ mysql> desc kategori;
 +--------------+--------------+------+-----+---------+----------------+
 
 mysql> desc kunjungan;
-+------------------+------+------+-----+---------+----------------+
-| Field            | Type | Null | Key | Default | Extra          |
-+------------------+------+------+-----+---------+----------------+
-| idkunjungan      | int  | NO   | PRI | NULL    | auto_increment |
-| iduser           | int  | NO   | MUL | NULL    |                |
-| idpasien         | int  | NO   | MUL | NULL    |                |
-| iddokter         | int  | NO   | MUL | NULL    |                |
-| idjadwal         | int  | NO   | MUL | NULL    |                |
-| tanggalkunjungan | date | NO   |     | NULL    |                |
-| keluhan          | text | YES  |     | NULL    |                |
-| diagnosis        | text | YES  |     | NULL    |                |
-| totalkunjungan   | int  | YES  |     | 0       |                |
-+------------------+------+------+-----+---------+----------------+
++------------------+-----------------------------+------+-----+-------------+----------------+
+| Field            | Type                        | Null | Key | Default     | Extra          |
++------------------+-----------------------------+------+-----+-------------+----------------+
+| idkunjungan      | int                         | NO   | PRI | NULL        | auto_increment |
+| iduser           | int                         | NO   | MUL | NULL        |                |
+| idpasien         | int                         | NO   | MUL | NULL        |                |
+| iddokter         | int                         | NO   | MUL | NULL        |                |
+| idjadwal         | int                         | NO   | MUL | NULL        |                |
+| tanggalkunjungan | date                        | NO   |     | NULL        |                |
+| keluhan          | text                        | YES  |     | NULL        |                |
+| diagnosis        | text                        | YES  |     | NULL        |                |
+| totalkunjungan   | int                         | YES  |     | 0           |                |
+| jumlahbayar      | int                         | NO   |     | 0           |                |
+| kembalian        | int                         | NO   |     | 0           |                |
+| statuspembayaran | enum('Belum Bayar','Lunas') | NO   |     | Belum Bayar |                |
+| statuskunjungan  | enum('Proses','Selesai')    | NO   |     | Proses      |                |
++------------------+-----------------------------+------+-----+-------------+----------------+
 
 mysql> desc merk;
 +----------+--------------+------+-----+---------+----------------+
@@ -247,18 +431,34 @@ mysql> desc pasien;
 | foto       | varchar(255) | YES  |     | NULL    |                |
 +------------+--------------+------+-----+---------+----------------+
 
-mysql> desc user;
-+----------+-------------------------+------+-----+---------+----------------+
-| Field    | Type                    | Null | Key | Default | Extra          |
-+----------+-------------------------+------+-----+---------+----------------+
-| iduser   | int                     | NO   | PRI | NULL    | auto_increment |
-| namauser | varchar(100)            | NO   |     | NULL    |                |
-| username | varchar(50)             | NO   | UNI | NULL    |                |
-| password | varchar(255)            | NO   |     | NULL    |                |
-| nohp     | varchar(15)             | YES  |     | NULL    |                |
-| alamat   | text                    | YES  |     | NULL    |                |
-| foto     | varchar(255)            | YES  |     | NULL    |                |
-| role     | enum('admin','petugas') | NO   |     | petugas |                |
-+----------+-------------------------+------+-----+---------+----------------+
+mysql> desc pendaftarancheckup;
++------------------+----------------------------------------+------+-----+-------------------+-------------------+
+| Field            | Type                                   | Null | Key | Default           | Extra             |
++------------------+----------------------------------------+------+-----+-------------------+-------------------+
+| idpendaftaran    | int                                    | NO   | PRI | NULL              | auto_increment    |
+| idpasien         | int                                    | NO   | MUL | NULL              |                   |
+| idjadwal         | int                                    | NO   | MUL | NULL              |                   |
+| idkunjungan      | int                                    | YES  | UNI | NULL              |                   |
+| tanggalperiksa   | date                                   | NO   |     | NULL              |                   |
+| keluhan          | text                                   | NO   |     | NULL              |                   |
+| jenispendaftaran | varchar(20)                            | NO   |     | Online            |                   |
+| nomorantrian     | int                                    | YES  |     | NULL              |                   |
+| status           | enum('Menunggu','Disetujui','Ditolak') | NO   |     | Menunggu          |                   |
+| statusantrian    | varchar(20)                            | NO   |     | Belum Antri       |                   |
+| catatanadmin     | text                                   | YES  |     | NULL              |                   |
+| tanggalpengajuan | datetime                               | NO   |     | CURRENT_TIMESTAMP | DEFAULT_GENERATED |
++------------------+----------------------------------------+------+-----+-------------------+-------------------+
 
-mysql>
+mysql> desc user;
++----------+--------------+------+-----+---------+----------------+
+| Field    | Type         | Null | Key | Default | Extra          |
++----------+--------------+------+-----+---------+----------------+
+| iduser   | int          | NO   | PRI | NULL    | auto_increment |
+| namauser | varchar(100) | NO   |     | NULL    |                |
+| username | varchar(50)  | NO   | UNI | NULL    |                |
+| password | varchar(255) | NO   |     | NULL    |                |
+| nohp     | varchar(15)  | YES  |     | NULL    |                |
+| alamat   | text         | YES  |     | NULL    |                |
+| foto     | varchar(255) | YES  |     | NULL    |                |
+| level    | varchar(20)  | NO   |     | petugas |                |
++----------+--------------+------+-----+---------+----------------+
