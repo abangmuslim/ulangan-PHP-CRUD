@@ -165,8 +165,8 @@ $menuAktif = function ($halaman) use ($halamanAktif) {
     transform: scale(.96);
 }
 
-/* LOGIN ADMIN */
-.main-header .nav-login-admin {
+/* LOGIN user */
+.main-header .nav-login-user {
     background: linear-gradient(135deg, #334155, #0f172a) !important;
     border-color: #334155 !important;
     box-shadow: 0 4px 12px rgba(15, 23, 42, .18);
@@ -187,7 +187,7 @@ $menuAktif = function ($halaman) use ($halamanAktif) {
 }
 
 /* HOVER LOGIN */
-.main-header .nav-login-admin:hover {
+.main-header .nav-login-user:hover {
     background: linear-gradient(135deg, #475569, #1e293b) !important;
     box-shadow: 0 8px 22px rgba(15, 23, 42, .27) !important;
 }
@@ -455,12 +455,12 @@ $menuAktif = function ($halaman) use ($halamanAktif) {
 
             <ul class="navbar-nav ms-auto align-items-lg-center">
 
-                <!-- LOGIN ADMIN -->
+                <!-- LOGIN user -->
                 <li class="nav-item nav-item-login">
                     <a href="index.php?page=loginuser"
-                       class="nav-link nav-login nav-login-admin <?= $menuAktif('loginuser') ?>">
+                       class="nav-link nav-login nav-login-user <?= $menuAktif('loginuser') ?>">
                         <i class="fas fa-user-shield"></i>
-                        <span>Login Admin</span>
+                        <span>Login User</span>
                     </a>
                 </li>
 

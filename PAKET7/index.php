@@ -1,5 +1,8 @@
 
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
 // ============================================
 // 1. MEMANGGIL FILE DASAR
 // ============================================
@@ -59,6 +62,25 @@ $page = $_GET['page'] ?? 'home';
 
 if (!is_string($page)) {
     $page = '';
+}
+
+
+// ============================================
+// 3A. DISPATCHER PROSES AUTENTIKASI
+// ============================================
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+    $prosesAuth = [
+        'loginuser'      => 'proses/auth/loginuser.php',
+        'loginpasien'    => 'proses/auth/loginpasien.php',
+        'logindokter'    => 'proses/auth/logindokter.php',
+        'registerpasien' => 'proses/auth/registerpasien.php'
+    ];
+
+    if (isset($prosesAuth[$page])) {
+        require $prosesAuth[$page];
+        exit;
+    }
 }
 
 // ============================================
@@ -128,6 +150,7 @@ foreach ($halamanAuth as $nama => $file) {
         'auth'
     );
 }
+
 
 // ============================================
 // 8. DASHBOARD ADMIN DAN PETUGAS
@@ -505,6 +528,17 @@ if ($zona === 'auth' && $role !== 'tamu') {
     }
 
     exit;
+}
+// ============================================
+// 20A. PROSES DASHBOARD ADMIN DAN PETUGAS
+// ============================================
+
+if (
+    $zona === 'user' &&
+    in_array($page, ['dashboardadmin', 'dashboardpetugas'], true) &&
+    in_array($role, $akses, true)
+) {
+    require_once "proses/dashboard/dashboarduser.php";
 }
 
 // ============================================

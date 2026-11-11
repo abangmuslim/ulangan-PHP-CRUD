@@ -1,8 +1,9 @@
 
+
 <?php
 /*
 |--------------------------------------------------------------------------
-| DETAIL OBAT - RUMAH SAKIT AHMADI
+| DETAIL OBAT - KLINIK AHMADI PAKET 7
 | PHP Native + MySQLi + AdminLTE 3.2
 |--------------------------------------------------------------------------
 */
@@ -10,57 +11,17 @@
 // =====================================================
 // 1. AMBIL ID OBAT
 // =====================================================
-$idobat = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+$idobat = isset($_GET['id']) ? (int) $_GET['id'] : 0;
+
 $obat = null;
 $errorObat = '';
 
 if ($idobat > 0) {
-    // Deteksi nama kolom kategori dan merek
-    $kolomKategori = [];
-    $kolomMerk = [];
-
-    $resultKolom = mysqli_query($koneksi, "SHOW COLUMNS FROM kategori");
-    if ($resultKolom) {
-        while ($kolom = mysqli_fetch_assoc($resultKolom)) {
-            $kolomKategori[] = $kolom['Field'];
-        }
-    }
-
-    $resultKolom = mysqli_query($koneksi, "SHOW COLUMNS FROM merk");
-    if ($resultKolom) {
-        while ($kolom = mysqli_fetch_assoc($resultKolom)) {
-            $kolomMerk[] = $kolom['Field'];
-        }
-    }
-
-    $namaKolomKategori = null;
-    foreach (['namakategori', 'nama_kategori', 'nama', 'kategori'] as $calon) {
-        if (in_array($calon, $kolomKategori, true)) {
-            $namaKolomKategori = $calon;
-            break;
-        }
-    }
-
-    $namaKolomMerk = null;
-    foreach (['namamerk', 'nama_merk', 'nama', 'merk'] as $calon) {
-        if (in_array($calon, $kolomMerk, true)) {
-            $namaKolomMerk = $calon;
-            break;
-        }
-    }
-
-    $selectKategori = $namaKolomKategori
-        ? "k.`$namaKolomKategori`"
-        : "NULL";
-
-    $selectMerk = $namaKolomMerk
-        ? "m.`$namaKolomMerk`"
-        : "NULL";
 
     $query = "SELECT
                   o.*,
-                  $selectKategori AS namakategori,
-                  $selectMerk AS namamerk
+                  k.namakategori,
+                  m.namamerk
               FROM obat o
               LEFT JOIN kategori k ON o.idkategori = k.idkategori
               LEFT JOIN merk m ON o.idmerk = m.idmerk
@@ -70,14 +31,23 @@ if ($idobat > 0) {
     $stmt = mysqli_prepare($koneksi, $query);
 
     if ($stmt) {
+
         mysqli_stmt_bind_param($stmt, 'i', $idobat);
         mysqli_stmt_execute($stmt);
+
         $resultObat = mysqli_stmt_get_result($stmt);
         $obat = mysqli_fetch_assoc($resultObat) ?: null;
+
         mysqli_stmt_close($stmt);
+
+        if (!$obat) {
+            $errorObat = 'Data obat tidak ditemukan.';
+        }
+
     } else {
         $errorObat = 'Data obat belum dapat ditampilkan.';
     }
+
 } else {
     $errorObat = 'ID obat tidak valid.';
 }
@@ -86,29 +56,55 @@ if ($idobat > 0) {
 // 2. SIAPKAN DATA TAMPILAN
 // =====================================================
 if ($obat) {
+
     $namaObat = trim($obat['namaobat'] ?? 'Obat');
+
     $namaKategori = trim($obat['namakategori'] ?? '');
     $namaMerk = trim($obat['namamerk'] ?? '');
-    $namaKategori = $namaKategori !== '' ? $namaKategori : 'Belum dikategorikan';
-    $namaMerk = $namaMerk !== '' ? $namaMerk : 'Tidak dicantumkan';
-    $hargaObat = (float)($obat['harga'] ?? 0);
-    $stokObat = (int)($obat['stok'] ?? 0);
+
+    $namaKategori = $namaKategori !== ''
+        ? $namaKategori
+        : 'Belum dikategorikan';
+
+    $namaMerk = $namaMerk !== ''
+        ? $namaMerk
+        : 'Tidak dicantumkan';
+
+    $hargaObat = (float) ($obat['harga'] ?? 0);
+    $stokObat = (int) ($obat['stok'] ?? 0);
+
     $tanggalStok = trim($obat['tanggalstok'] ?? '');
 
+    // =================================================
+    // 3. SIAPKAN FOTO OBAT
+    // =================================================
     $foto = trim($obat['foto'] ?? '');
+
     $fileFoto = basename($foto);
+
     $pathFoto = 'assets/images/obat/' . $fileFoto;
+
     $pathFotoFisik = __DIR__ . '/../../assets/images/obat/' . $fileFoto;
+
     $fotoTersedia = $fileFoto !== '' && is_file($pathFotoFisik);
 
+    // =================================================
+    // 4. FORMAT TANGGAL STOK
+    // =================================================
     $tanggalTampil = '-';
+
     if ($tanggalStok !== '' && $tanggalStok !== '0000-00-00') {
+
         $timestamp = strtotime($tanggalStok);
+
         if ($timestamp !== false) {
             $tanggalTampil = date('d-m-Y', $timestamp);
         }
     }
 
+    // =================================================
+    // 5. STATUS KETERSEDIAAN STOK
+    // =================================================
     $statusStok = $stokObat > 10
         ? 'Tersedia'
         : ($stokObat > 0 ? 'Stok Terbatas' : 'Stok Habis');
@@ -118,6 +114,7 @@ if ($obat) {
         : ($stokObat > 0 ? 'terbatas' : 'habis');
 }
 ?>
+
 
 <style>
 .detailobat-section{position:relative;min-height:75vh;overflow:hidden;padding:28px 0 45px;background:radial-gradient(ellipse at 10% 5%,rgba(16,185,129,.12),transparent 35%),radial-gradient(ellipse at 95% 30%,rgba(59,130,246,.08),transparent 30%),#f4f7fb}

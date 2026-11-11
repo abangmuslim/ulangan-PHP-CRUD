@@ -1,83 +1,74 @@
-<?php
-// Proses ini hanya boleh dipanggil melalui index.php
-if (basename($_SERVER['SCRIPT_NAME']) !== 'index.php') {
-    http_response_code(403);
-    exit('Akses langsung tidak diizinkan.');
-}
 
-// Login hanya menerima POST
+<?php
+// ============================================
+// PROSES LOGIN USER - ADMIN DAN PETUGAS
+// ============================================
+
+// Pastikan request POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     redirect('index.php?page=loginuser');
-    exit;
 }
 
 // Validasi CSRF
-if (!csrfValid()) {
-    http_response_code(403);
-    exit('Permintaan login tidak valid. Silakan muat ulang halaman.');
-}
+csrfCheck();
 
-// Ambil data formulir
+// Ambil data form
 $username = trim($_POST['username'] ?? '');
 $password = $_POST['password'] ?? '';
 
+// Validasi input
 if ($username === '' || $password === '') {
-    redirect('index.php?page=loginuser&status=kosong');
-    exit;
+    $_SESSION['error_login'] = 'Username dan password wajib diisi.';
+    redirect('index.php?page=loginuser');
 }
 
-// Cari akun berdasarkan username
-$stmt = mysqli_prepare(
-    $koneksi,
-    "SELECT iduser, namauser, username, password, role, foto
-     FROM user
-     WHERE username = ?
-     LIMIT 1"
-);
+// Cari akun user
+$query = "SELECT iduser, namauser, username, password, level
+          FROM user
+          WHERE username = ?
+          LIMIT 1";
+
+$stmt = mysqli_prepare($koneksi, $query);
 
 if (!$stmt) {
-    error_log('Gagal menyiapkan query login user: ' . mysqli_error($koneksi));
-    redirect('index.php?page=loginuser&status=gagal');
-    exit;
+    $_SESSION['error_login'] = 'Terjadi kesalahan pada sistem login.';
+    redirect('index.php?page=loginuser');
 }
 
-mysqli_stmt_bind_param($stmt, 's', $username);
+mysqli_stmt_bind_param($stmt, "s", $username);
 mysqli_stmt_execute($stmt);
+
 $result = mysqli_stmt_get_result($stmt);
-$dataUser = mysqli_fetch_assoc($result);
+$user = mysqli_fetch_assoc($result);
+
 mysqli_stmt_close($stmt);
 
-// Verifikasi akun dan password
-if (
-    !$dataUser ||
-    !password_verify($password, $dataUser['password']) ||
-    !in_array($dataUser['role'], ['admin', 'petugas'], true)
-) {
-    redirect('index.php?page=loginuser&status=gagal');
-    exit;
+// Periksa akun dan password
+if (!$user || !password_verify($password, $user['password'])) {
+    $_SESSION['error_login'] = 'Username atau password salah.';
+    redirect('index.php?page=loginuser');
 }
 
-// Buat ID sesi baru setelah login berhasil
-if (!session_regenerate_id(true)) {
-    error_log('Gagal memperbarui ID sesi login user.');
-    http_response_code(500);
-    exit('Login belum dapat diproses. Silakan coba kembali.');
+// Periksa hak akses
+$level = strtolower(trim($user['level']));
+
+if (!in_array($level, ['admin', 'petugas'], true)) {
+    $_SESSION['error_login'] = 'Level akun tidak memiliki akses.';
+    redirect('index.php?page=loginuser');
 }
 
-// Simpan identitas akun ke sesi
-$_SESSION['login'] = true;
-$_SESSION['jenis_akun'] = 'user';
-$_SESSION['iduser'] = (int) $dataUser['iduser'];
-$_SESSION['namauser'] = $dataUser['namauser'];
-$_SESSION['username'] = $dataUser['username'];
-$_SESSION['role'] = $dataUser['role'];
-$_SESSION['foto'] = $dataUser['foto'] ?? '';
-$_SESSION['aktivitas_terakhir'] = time();
+// Buat session baru
+session_regenerate_id(true);
 
-// Arahkan sesuai role
-if ($dataUser['role'] === 'admin') {
+// Simpan identitas user
+$_SESSION['iduser'] = $user['iduser'];
+$_SESSION['namauser'] = $user['namauser'];
+$_SESSION['username'] = $user['username'];
+$_SESSION['level'] = $level;
+
+// Redirect sesuai level
+if ($level === 'admin') {
     redirect('index.php?page=dashboardadmin');
 } else {
     redirect('index.php?page=dashboardpetugas');
 }
-exit;

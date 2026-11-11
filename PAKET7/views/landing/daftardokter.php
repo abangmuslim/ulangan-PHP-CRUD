@@ -40,8 +40,14 @@ if ($resultRingkasan && $dataRingkasan = mysqli_fetch_assoc($resultRingkasan)) {
 // =====================================================
 // 2. DATA DOKTER DAN JUMLAH JADWAL
 // =====================================================
+
 $queryDokter = "SELECT
-                    d.*,
+                    d.iddokter,
+                    d.namadokter,
+                    d.spesialis,
+                    d.nohp,
+                    d.alamat,
+                    d.foto,
                     COALESCE(j.totaljadwal, 0) AS totaljadwal
                 FROM dokter d
                 LEFT JOIN (
