@@ -1,60 +1,191 @@
 <?php
-$data = mysqli_query($koneksi, "SELECT * FROM dokter ORDER BY iddokter DESC");
+// ============================================
+// AMBIL DATA DOKTER
+// ============================================
+$queryDokter = mysqli_query($koneksi, "SELECT * FROM dokter ORDER BY iddokter DESC");
+
+$totalDokter = mysqli_num_rows(
+    mysqli_query($koneksi, "SELECT iddokter FROM dokter")
+);
+
+$totalAkun = mysqli_num_rows(
+    mysqli_query($koneksi, "SELECT iddokter FROM dokter WHERE username IS NOT NULL AND username != ''")
+);
+
+$belumAkun = $totalDokter - $totalAkun;
 ?>
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <div>
-        <h3 class="mb-1">Data Dokter</h3>
-        <p class="text-muted mb-0">Daftar dokter Rumah Sakit Ahmadi</p>
-    </div>
-    <a href="index.php?page=createdokter" class="btn btn-primary">+ Tambah Dokter</a>
-</div>
+<section class="content">
+    <div class="container-fluid">
 
-<?php if (isset($_GET['pesan']) && $_GET['pesan'] == 'gagalhapus') { ?>
-    <div class="alert alert-warning">Dokter tidak dapat dihapus karena sudah memiliki data kunjungan.</div>
-<?php } ?>
+        <div class="card card-primary card-outline shadow-sm">
 
-<div class="card shadow-sm">
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-bordered table-striped table-hover align-middle mb-0">
-                <thead class="table-primary">
-                    <tr>
-                        <th width="60">No.</th>
-                        <th>Nama Dokter</th>
-                        <th>Spesialis</th>
-                        <th>No. HP</th>
-                        <th width="230">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php
-                    $no = 1;
-                    while ($dokter = mysqli_fetch_assoc($data)) {
-                    ?>
-                    <tr>
-                        <td><?= $no++; ?></td>
-                        <td><?= $dokter['namadokter']; ?></td>
-                        <td><?= $dokter['spesialis'] ?? '-'; ?></td>
-                        <td><?= $dokter['nohp'] ?? '-'; ?></td>
-                        <td>
-                            <a href="index.php?page=showdokter&id=<?= $dokter['iddokter']; ?>" class="btn btn-info btn-sm">Detail</a>
-                            <a href="index.php?page=editdokter&id=<?= $dokter['iddokter']; ?>" class="btn btn-warning btn-sm">Edit</a>
-                            <form action="proses/prosesdokter.php?proses=hapus" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus dokter ini?')">
-                                <input type="hidden" name="iddokter" value="<?= $dokter['iddokter']; ?>">
-                                <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
-                            </form>
-                        </td>
-                    </tr>
-                    <?php } ?>
+            <div class="card-header">
+                <div class="row align-items-center">
 
-                    <?php if (mysqli_num_rows($data) == 0) { ?>
-                    <tr>
-                        <td colspan="5" class="text-center text-muted">Belum ada data dokter.</td>
-                    </tr>
-                    <?php } ?>
-                </tbody>
-            </table>
+                    <div class="col-md-4">
+                        <h3 class="card-title">
+                            <i class="fas fa-user-md me-1"></i>
+                            Daftar Dokter
+                        </h3>
+                    </div>
+
+                    <div class="col-md-8">
+                        <div class="d-flex justify-content-md-end flex-wrap">
+
+                            <span class="btn btn-sm btn-primary me-1 mb-1">
+                                Total Dokter: <?= $totalDokter ?>
+                            </span>
+
+                            <span class="btn btn-sm btn-success me-1 mb-1">
+                                Memiliki Akun: <?= $totalAkun ?>
+                            </span>
+
+                            <span class="btn btn-sm btn-secondary me-2 mb-1">
+                                Belum Memiliki Akun: <?= $belumAkun ?>
+                            </span>
+
+                            <a href="index.php?page=createdokter"
+                               class="btn btn-sm btn-primary mb-1">
+                                <i class="fas fa-plus me-1"></i>
+                                Tambah Dokter
+                            </a>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="card-body">
+
+                <!-- NOTIFIKASI -->
+                <?php if (isset($_SESSION['success_dokter'])) { ?>
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle me-1"></i>
+                        <?= e($_SESSION['success_dokter']) ?>
+                    </div>
+                    <?php unset($_SESSION['success_dokter']); ?>
+                <?php } ?>
+
+                <?php if (isset($_SESSION['error_dokter'])) { ?>
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-circle me-1"></i>
+                        <?= e($_SESSION['error_dokter']) ?>
+                    </div>
+                    <?php unset($_SESSION['error_dokter']); ?>
+                <?php } ?>
+
+                <div class="table-responsive">
+
+                    <table class="table table-bordered table-hover">
+
+                        <thead class="bg-light">
+                            <tr>
+                                <th width="50">No.</th>
+                                <th width="70">Foto</th>
+                                <th>Nama Dokter</th>
+                                <th>Spesialis</th>
+                                <th>Username</th>
+                                <th>No. HP</th>
+                                <th width="160">Aksi</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            <?php if (mysqli_num_rows($queryDokter) > 0) { ?>
+
+                                <?php $no = 1; ?>
+
+                                <?php while ($data = mysqli_fetch_assoc($queryDokter)) { ?>
+
+                                    <tr>
+
+                                        <td><?= $no++ ?></td>
+
+                                        <td>
+                                            <img src="<?= e(!empty($data['foto'])
+                                                ? 'assets/images/dokter/' . $data['foto']
+                                                : 'assets/images/dokter/default.png') ?>"
+                                                 width="50"
+                                                 height="50"
+                                                 style="object-fit: cover; border-radius: 5px;"
+                                                 alt="Foto Dokter">
+                                        </td>
+
+                                        <td><?= e($data['namadokter']) ?></td>
+
+                                        <td><?= e($data['spesialis']) ?></td>
+
+                                        <td>
+                                            <?= !empty($data['username'])
+                                                ? e($data['username'])
+                                                : '-' ?>
+                                        </td>
+
+                                        <td>
+                                            <?= !empty($data['nohp'])
+                                                ? e($data['nohp'])
+                                                : '-' ?>
+                                        </td>
+
+                                        <td>
+
+                                            <a href="index.php?page=showdokter&iddokter=<?= (int) $data['iddokter'] ?>"
+                                               class="btn btn-sm btn-info"
+                                               title="Detail Dokter">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+
+                                            <a href="index.php?page=editdokter&iddokter=<?= (int) $data['iddokter'] ?>"
+                                               class="btn btn-sm btn-warning"
+                                               title="Edit Dokter">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+
+                                            <form action="index.php"
+                                                  method="POST"
+                                                  class="d-inline"
+                                                  onsubmit="return confirm('Yakin ingin menghapus data dokter ini?')">
+
+                                                <input type="hidden" name="page" value="prosesdokter">
+                                                <input type="hidden" name="aksi" value="hapus">
+                                                <input type="hidden" name="iddokter" value="<?= (int) $data['iddokter'] ?>">
+
+                                                <button type="submit"
+                                                        class="btn btn-sm btn-danger"
+                                                        title="Hapus Dokter">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+
+                                            </form>
+
+                                        </td>
+
+                                    </tr>
+
+                                <?php } ?>
+
+                            <?php } else { ?>
+
+                                <tr>
+                                    <td colspan="7" class="text-center">
+                                        Belum ada data dokter.
+                                    </td>
+                                </tr>
+
+                            <?php } ?>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
         </div>
+
     </div>
-</div>
+</section>

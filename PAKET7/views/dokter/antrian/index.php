@@ -1,31 +1,41 @@
 
 <?php
 // ============================================
-// DAFTAR ANTRIAN PASIEN DOKTER
+// DAFTAR ANTREAN PASIEN DOKTER
 // ============================================
 
+// Ambil ID dokter dari session
 $iddokter = (int) ($_SESSION['iddokter'] ?? 0);
 
 // Pastikan dokter sudah login
 if ($iddokter <= 0) {
-    echo '<div class="alert alert-danger">Sesi dokter tidak ditemukan. Silakan login kembali.</div>';
+    echo '<div class="alert alert-danger">
+        Sesi dokter tidak ditemukan. Silakan login kembali.
+    </div>';
     return;
 }
 
-// Ambil daftar pendaftaran yang disetujui untuk dokter hari ini
+// ============================================
+// AMBIL DATA ANTREAN HARI INI
+// ============================================
+
 $queryAntrian = mysqli_query($koneksi, "
     SELECT
         pc.idpendaftaran,
         pc.idpasien,
         pc.idjadwal,
+        pc.idkunjungan,
         pc.tanggalperiksa,
         pc.keluhan,
         pc.jenispendaftaran,
         pc.nomorantrian,
         pc.status,
         pc.statusantrian,
+        pc.catatanadmin,
+        pc.tanggalpengajuan,
         p.namapasien,
         p.nohp,
+        p.alamat,
         j.haripraktik,
         j.jam_mulai,
         j.jam_selesai
@@ -33,25 +43,85 @@ $queryAntrian = mysqli_query($koneksi, "
     INNER JOIN pasien p ON pc.idpasien = p.idpasien
     INNER JOIN jadwaldokter j ON pc.idjadwal = j.idjadwal
     WHERE j.iddokter = '$iddokter'
-    AND pc.status = 'Disetujui'
     AND pc.tanggalperiksa = CURDATE()
+    AND pc.status = 'Disetujui'
+    AND pc.nomorantrian IS NOT NULL
+    AND pc.statusantrian NOT IN ('Belum Antri', 'Tidak Hadir')
     ORDER BY
-        pc.nomorantrian IS NULL,
         pc.nomorantrian ASC,
         pc.tanggalpengajuan ASC
 ");
 
+// Periksa query
 if (!$queryAntrian) {
-    echo '<div class="alert alert-danger">Gagal mengambil data antrean: ' . e(mysqli_error($koneksi)) . '</div>';
+    echo '<div class="alert alert-danger">
+        Gagal mengambil data antrean:
+        ' . e(mysqli_error($koneksi)) . '
+    </div>';
     return;
 }
 
-$totalAntrian = mysqli_num_rows($queryAntrian);
+// ============================================
+// HITUNG JUMLAH ANTREAN
+// ============================================
+
+$daftarAntrian = [];
+
+$totalAntrian = 0;
+$totalMenunggu = 0;
+$totalDipanggil = 0;
+$totalDiperiksa = 0;
+$totalSelesai = 0;
+$totalBatal = 0;
+
+while ($data = mysqli_fetch_assoc($queryAntrian)) {
+
+    $daftarAntrian[] = $data;
+
+    $totalAntrian++;
+
+    switch ($data['statusantrian']) {
+
+        case 'Menunggu':
+            $totalMenunggu++;
+            break;
+
+        case 'Dipanggil':
+            $totalDipanggil++;
+            break;
+
+        case 'Diperiksa':
+            $totalDiperiksa++;
+            break;
+
+        case 'Selesai':
+            $totalSelesai++;
+            break;
+
+        case 'Batal':
+        case 'Tidak Dilayani':
+            $totalBatal++;
+            break;
+    }
+}
+
+// ============================================
+// WARNA STATUS ANTREAN
+// ============================================
+
+$warnaStatus = [
+    'Menunggu'       => 'warning',
+    'Dipanggil'      => 'info',
+    'Diperiksa'      => 'primary',
+    'Selesai'        => 'success',
+    'Batal'          => 'danger',
+    'Tidak Dilayani' => 'danger'
+];
 ?>
 
 <div class="container-fluid">
 
-    <!-- Judul Halaman -->
+    <!-- JUDUL HALAMAN -->
     <div class="row mb-3">
         <div class="col-md-8">
             <h4 class="mb-1">
@@ -59,33 +129,107 @@ $totalAntrian = mysqli_num_rows($queryAntrian);
                 Antrean Pasien
             </h4>
             <p class="text-muted mb-0">
-                Daftar pasien yang terdaftar pada jadwal praktik Anda hari ini.
+                Daftar pasien yang telah disetujui dan mendapatkan nomor antrean hari ini.
             </p>
         </div>
+
         <div class="col-md-4 text-md-right">
             <span class="badge badge-primary p-2">
+                <i class="fas fa-calendar-alt mr-1"></i>
                 <?= date('d-m-Y'); ?>
             </span>
         </div>
     </div>
 
-    <!-- Informasi Jumlah Antrean -->
-    <div class="row mb-3">
-        <div class="col-md-4">
+    <!-- RINGKASAN ANTREAN -->
+    <div class="row">
+
+        <div class="col-lg-3 col-6">
             <div class="small-box bg-info">
                 <div class="inner">
                     <h3><?= $totalAntrian; ?></h3>
-                    <p>Total Pendaftaran Hari Ini</p>
+                    <p>Total Antrean</p>
                 </div>
                 <div class="icon">
                     <i class="fas fa-users"></i>
                 </div>
             </div>
         </div>
+
+        <div class="col-lg-3 col-6">
+            <div class="small-box bg-warning">
+                <div class="inner">
+                    <h3><?= $totalMenunggu; ?></h3>
+                    <p>Menunggu</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-6">
+            <div class="small-box bg-primary">
+                <div class="inner">
+                    <h3><?= $totalDiperiksa; ?></h3>
+                    <p>Sedang Diperiksa</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-stethoscope"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-6">
+            <div class="small-box bg-success">
+                <div class="inner">
+                    <h3><?= $totalSelesai; ?></h3>
+                    <p>Selesai</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+            </div>
+        </div>
+
     </div>
 
-    <!-- Tabel Antrean -->
-    <div class="card">
+    <!-- RINGKASAN TAMBAHAN -->
+    <div class="row mb-3">
+
+        <div class="col-md-6">
+            <div class="info-box">
+                <span class="info-box-icon bg-info">
+                    <i class="fas fa-bullhorn"></i>
+                </span>
+                <div class="info-box-content">
+                    <span class="info-box-text">Pasien Dipanggil</span>
+                    <span class="info-box-number">
+                        <?= $totalDipanggil; ?> Pasien
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="info-box">
+                <span class="info-box-icon bg-danger">
+                    <i class="fas fa-ban"></i>
+                </span>
+                <div class="info-box-content">
+                    <span class="info-box-text">Batal / Tidak Dilayani</span>
+                    <span class="info-box-number">
+                        <?= $totalBatal; ?> Pasien
+                    </span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- TABEL ANTREAN -->
+    <div class="card card-outline card-primary">
+
         <div class="card-header">
             <h3 class="card-title">
                 <i class="fas fa-list mr-1"></i>
@@ -94,57 +238,59 @@ $totalAntrian = mysqli_num_rows($queryAntrian);
         </div>
 
         <div class="card-body table-responsive">
+
             <table class="table table-bordered table-striped table-hover">
+
                 <thead class="bg-light">
                     <tr>
-                        <th width="50">No.</th>
+                        <th width="45">No.</th>
                         <th width="90">Antrean</th>
                         <th>Nama Pasien</th>
                         <th>No. HP</th>
                         <th>Jam Praktik</th>
                         <th>Jenis Pendaftaran</th>
                         <th>Status Antrean</th>
-                        <th width="100">Aksi</th>
+                        <th width="80">Aksi</th>
                     </tr>
                 </thead>
+
                 <tbody>
+
                     <?php if ($totalAntrian > 0): ?>
+
                         <?php $no = 1; ?>
-                        <?php while ($antrian = mysqli_fetch_assoc($queryAntrian)): ?>
+
+                        <?php foreach ($daftarAntrian as $antrian): ?>
 
                             <?php
-                            $statusAntrian = $antrian['statusantrian'] ?: 'Belum Antri';
-
-                            $warnaStatus = [
-                                'Belum Antri' => 'secondary',
-                                'Menunggu'    => 'warning',
-                                'Dipanggil'   => 'info',
-                                'Diperiksa'   => 'primary',
-                                'Selesai'     => 'success',
-                                'Batal'       => 'danger'
-                            ];
+                            $statusAntrian = $antrian['statusantrian'];
 
                             $badgeStatus = $warnaStatus[$statusAntrian] ?? 'secondary';
+
+                            $warnaJenis = ($antrian['jenispendaftaran'] == 'Online')
+                                ? 'primary'
+                                : 'success';
                             ?>
 
                             <tr>
+
                                 <td><?= $no++; ?></td>
 
                                 <td class="text-center">
-                                    <?php if (!empty($antrian['nomorantrian'])): ?>
-                                        <span class="badge badge-dark p-2">
-                                            <?= e($antrian['nomorantrian']); ?>
-                                        </span>
-                                    <?php else: ?>
-                                        <span class="text-muted">-</span>
-                                    <?php endif; ?>
+                                    <span class="badge badge-dark p-2">
+                                        <?= e($antrian['nomorantrian']); ?>
+                                    </span>
                                 </td>
 
                                 <td>
-                                    <strong><?= e($antrian['namapasien']); ?></strong>
+                                    <strong>
+                                        <?= e($antrian['namapasien']); ?>
+                                    </strong>
                                 </td>
 
-                                <td><?= e($antrian['nohp']); ?></td>
+                                <td>
+                                    <?= e($antrian['nohp'] ?? '-'); ?>
+                                </td>
 
                                 <td>
                                     <?= e(substr($antrian['jam_mulai'], 0, 5)); ?>
@@ -153,7 +299,9 @@ $totalAntrian = mysqli_num_rows($queryAntrian);
                                 </td>
 
                                 <td>
-                                    <?= e($antrian['jenispendaftaran']); ?>
+                                    <span class="badge badge-<?= $warnaJenis; ?>">
+                                        <?= e($antrian['jenispendaftaran']); ?>
+                                    </span>
                                 </td>
 
                                 <td>
@@ -169,26 +317,36 @@ $totalAntrian = mysqli_num_rows($queryAntrian);
                                         <i class="fas fa-eye"></i>
                                     </a>
                                 </td>
+
                             </tr>
 
-                        <?php endwhile; ?>
+                        <?php endforeach; ?>
+
                     <?php else: ?>
+
                         <tr>
                             <td colspan="8" class="text-center text-muted p-4">
-                                <i class="fas fa-calendar-times fa-2x mb-2"></i>
+                                <i class="fas fa-calendar-times fa-3x mb-3"></i>
                                 <br>
-                                Belum ada pendaftaran pasien untuk jadwal praktik hari ini.
+                                <strong>Belum Ada Antrean Pasien</strong>
+                                <br>
+                                Belum ada pasien yang disetujui dan mendapatkan nomor antrean hari ini.
                             </td>
                         </tr>
-                    <?php endif; ?>
-                </tbody>
-            </table>
-        </div>
-    </div>
 
-    <div class="alert alert-info">
-        <i class="fas fa-info-circle mr-1"></i>
-        Halaman ini menampilkan pendaftaran yang sudah disetujui dan sesuai dengan jadwal dokter yang sedang login.
+                    <?php endif; ?>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        <div class="card-footer text-muted">
+            <i class="fas fa-info-circle mr-1"></i>
+            Hanya pasien yang sudah disetujui admin/petugas dan mendapatkan nomor antrean yang ditampilkan.
+        </div>
+
     </div>
 
 </div>

@@ -1,60 +1,179 @@
+
 <?php
-$data = mysqli_query($koneksi, "SELECT * FROM dokter ORDER BY iddokter DESC");
+// ============================================
+// DATA RINGKASAN JADWAL DOKTER
+// ============================================
+$queryTotal = mysqli_query($koneksi, "
+    SELECT COUNT(*) AS total FROM jadwaldokter
+");
+$totalJadwal = mysqli_fetch_assoc($queryTotal)['total'] ?? 0;
+
+$queryDokter = mysqli_query($koneksi, "
+    SELECT COUNT(DISTINCT iddokter) AS total
+    FROM jadwaldokter
+");
+$totalDokter = mysqli_fetch_assoc($queryDokter)['total'] ?? 0;
+
+// ============================================
+// DATA JADWAL DOKTER
+// ============================================
+$query = mysqli_query($koneksi, "
+    SELECT
+        j.idjadwal,
+        j.iddokter,
+        j.haripraktik,
+        j.jam_mulai,
+        j.jam_selesai,
+        d.namadokter,
+        d.spesialis
+    FROM jadwaldokter j
+    INNER JOIN dokter d ON j.iddokter = d.iddokter
+    ORDER BY
+        d.namadokter,
+        FIELD(j.haripraktik, 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'),
+        j.jam_mulai
+");
 ?>
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <div>
-        <h3 class="mb-1">Data Dokter</h3>
-        <p class="text-muted mb-0">Daftar dokter Rumah Sakit Ahmadi</p>
-    </div>
-    <a href="index.php?page=createdokter" class="btn btn-primary">+ Tambah Dokter</a>
-</div>
-
-<?php if (isset($_GET['pesan']) && $_GET['pesan'] == 'gagalhapus') { ?>
-    <div class="alert alert-warning">Dokter tidak dapat dihapus karena sudah memiliki data kunjungan.</div>
-<?php } ?>
-
-<div class="card shadow-sm">
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-bordered table-striped table-hover align-middle mb-0">
-                <thead class="table-primary">
-                    <tr>
-                        <th width="60">No.</th>
-                        <th>Nama Dokter</th>
-                        <th>Spesialis</th>
-                        <th>No. HP</th>
-                        <th width="230">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php
-                    $no = 1;
-                    while ($dokter = mysqli_fetch_assoc($data)) {
-                    ?>
-                    <tr>
-                        <td><?= $no++; ?></td>
-                        <td><?= $dokter['namadokter']; ?></td>
-                        <td><?= $dokter['spesialis'] ?? '-'; ?></td>
-                        <td><?= $dokter['nohp'] ?? '-'; ?></td>
-                        <td>
-                            <a href="index.php?page=showdokter&id=<?= $dokter['iddokter']; ?>" class="btn btn-info btn-sm">Detail</a>
-                            <a href="index.php?page=editdokter&id=<?= $dokter['iddokter']; ?>" class="btn btn-warning btn-sm">Edit</a>
-                            <form action="proses/prosesdokter.php?proses=hapus" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus dokter ini?')">
-                                <input type="hidden" name="iddokter" value="<?= $dokter['iddokter']; ?>">
-                                <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
-                            </form>
-                        </td>
-                    </tr>
-                    <?php } ?>
-
-                    <?php if (mysqli_num_rows($data) == 0) { ?>
-                    <tr>
-                        <td colspan="5" class="text-center text-muted">Belum ada data dokter.</td>
-                    </tr>
-                    <?php } ?>
-                </tbody>
-            </table>
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0">Jadwal Dokter</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item">
+                        <a href="index.php?page=dashboarduser">Dashboard</a>
+                    </li>
+                    <li class="breadcrumb-item active">Jadwal Dokter</li>
+                </ol>
+            </div>
         </div>
     </div>
 </div>
+
+<section class="content">
+    <div class="container-fluid">
+
+        <!-- RINGKASAN -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="small-box bg-success">
+                    <div class="inner">
+                        <h3><?= (int) $totalJadwal ?></h3>
+                        <p>Total Jadwal Praktik</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="small-box bg-info">
+                    <div class="inner">
+                        <h3><?= (int) $totalDokter ?></h3>
+                        <p>Dokter Memiliki Jadwal</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-user-md"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PESAN -->
+        <?php if (isset($_SESSION['success_jadwaldokter'])) : ?>
+            <div class="alert alert-success alert-dismissible fade show">
+                <i class="fas fa-check-circle mr-1"></i>
+                <?= e($_SESSION['success_jadwaldokter']) ?>
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+            </div>
+            <?php unset($_SESSION['success_jadwaldokter']); ?>
+        <?php endif; ?>
+
+        <?php if (isset($_SESSION['error_jadwaldokter'])) : ?>
+            <div class="alert alert-danger alert-dismissible fade show">
+                <i class="fas fa-exclamation-circle mr-1"></i>
+                <?= e($_SESSION['error_jadwaldokter']) ?>
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+            </div>
+            <?php unset($_SESSION['error_jadwaldokter']); ?>
+        <?php endif; ?>
+
+        <!-- TABEL JADWAL -->
+        <div class="card card-success card-outline">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-calendar-alt mr-1"></i>
+                    Daftar Jadwal Praktik Dokter
+                </h3>
+                <div class="card-tools">
+                    <a href="index.php?page=createjadwaldokter" class="btn btn-success btn-sm">
+                        <i class="fas fa-plus mr-1"></i> Tambah Jadwal
+                    </a>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped table-hover">
+                        <thead class="text-center">
+                            <tr>
+                                <th width="55">No.</th>
+                                <th>Nama Dokter</th>
+                                <th>Spesialis</th>
+                                <th>Hari Praktik</th>
+                                <th>Jam Mulai</th>
+                                <th>Jam Selesai</th>
+                                <th width="130">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php if ($query && mysqli_num_rows($query) > 0) : ?>
+                                <?php $no = 1; ?>
+                                <?php while ($jadwal = mysqli_fetch_assoc($query)) : ?>
+                                    <tr>
+                                        <td class="text-center"><?= $no++ ?></td>
+                                        <td><?= e($jadwal['namadokter']) ?></td>
+                                        <td><?= e($jadwal['spesialis'] ?: '-') ?></td>
+                                        <td><?= e($jadwal['haripraktik']) ?></td>
+                                        <td class="text-center">
+                                            <?= e(substr($jadwal['jam_mulai'], 0, 5)) ?>
+                                        </td>
+                                        <td class="text-center">
+                                            <?= e(substr($jadwal['jam_selesai'], 0, 5)) ?>
+                                        </td>
+                                        <td class="text-center">
+                                            <a href="index.php?page=showjadwaldokter&idjadwal=<?= (int) $jadwal['idjadwal'] ?>"
+                                               class="btn btn-info btn-xs" title="Detail">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="index.php?page=editjadwaldokter&idjadwal=<?= (int) $jadwal['idjadwal'] ?>"
+                                               class="btn btn-warning btn-xs" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                <?php endwhile; ?>
+                            <?php else : ?>
+                                <tr>
+                                    <td colspan="7" class="text-center text-muted">
+                                        Belum ada jadwal praktik dokter.
+                                    </td>
+                                </tr>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card-footer text-muted">
+                <i class="fas fa-info-circle mr-1"></i>
+                Halaman ini menampilkan seluruh jadwal praktik dokter yang terdaftar di klinik.
+            </div>
+        </div>
+
+    </div>
+</section>

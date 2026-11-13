@@ -26,6 +26,7 @@ klinikahmadi7/
 ├── views/
 │   │
 │   ├── component/                    <- KOMPONEN TAMPILAN
+│   │   │
 │   │   ├── tamu/
 │   │   │   ├── navbar.php
 │   │   │   └── footer.php
@@ -86,7 +87,7 @@ klinikahmadi7/
 │   │   │   ├── edit.php
 │   │   │   └── show.php
 │   │   │
-│   │   ├── obat/                     <- CRUD OBAT
+│   │   ├── obat/                     <- CRUD OBAT & PERSEDIAAN
 │   │   │   ├── index.php
 │   │   │   ├── create.php
 │   │   │   ├── edit.php
@@ -98,7 +99,7 @@ klinikahmadi7/
 │   │   │   ├── edit.php
 │   │   │   └── show.php
 │   │   │
-│   │   ├── pendaftarancheckup/       <- PENDAFTARAN ONLINE & LANGSUNG
+│   │   ├── pendaftarancheckup/       <- PENDAFTARAN KLINIK
 │   │   │   ├── index.php
 │   │   │   ├── create.php
 │   │   │   ├── show.php
@@ -110,24 +111,27 @@ klinikahmadi7/
 │   │   │   ├── show.php
 │   │   │   └── panggilan.php
 │   │   │
-│   │   ├── kunjungan/                <- PEMERIKSAAN PASIEN
+│   │   ├── kunjungan/                <- ADMINISTRASI KUNJUNGAN
 │   │   │   ├── index.php
 │   │   │   ├── create.php
 │   │   │   ├── edit.php
 │   │   │   └── show.php
 │   │   │
-│   │   ├── detilkunjungan/           <- RINCIAN RESEP OBAT
+│   │   ├── transaksi/                <- PUSAT TRANSAKSI KLINIK & APOTEK
 │   │   │   ├── index.php
 │   │   │   ├── create.php
-│   │   │   ├── edit.php
-│   │   │   └── show.php
-│   │   │
-│   │   ├── kasir/                    <- PEMBAYARAN PASIEN
-│   │   │   ├── index.php
 │   │   │   ├── show.php
+│   │   │   ├── pembayaran.php
+│   │   │   ├── riwayat.php
 │   │   │   └── cetakstruk.php
 │   │   │
-│   │   └── laporan/                  <- LAPORAN KLINIK
+│   │   ├── apotek/                   <- PENJUALAN OBAT LANGSUNG
+│   │   │   ├── index.php
+│   │   │   ├── penjualan.php
+│   │   │   ├── resep luar.php
+│   │   │   └── riwayat.php
+│   │   │
+│   │   └── laporan/                  <- LAPORAN KLINIK & APOTEK
 │   │       ├── laporanharian.php
 │   │       ├── cetaklaporanharian.php
 │   │       ├── laporanbulanan.php
@@ -155,15 +159,15 @@ klinikahmadi7/
 │   │   │   ├── edit.php
 │   │   │   └── show.php
 │   │   │
-│   │   ├── pemeriksaan/
+│   │   ├── pemeriksaan/             <- CRUD JADWAL DOKTER
 │   │   │   ├── index.php
 │   │   │   ├── create.php
 │   │   │   └── show.php
 │   │   │
-│   │   └── resep/
+│   │   └── resep/              <- CHECKUP & RESEP DOKTER
 │   │       ├── index.php
 │   │       ├── create.php
-│   │       └── edit.php
+│   │       └── show.php
 │   │
 │   ├── pasien/                       <- ZONA LOGIN PASIEN
 │   │   ├── dashboardpasien.php
@@ -220,13 +224,13 @@ klinikahmadi7/
     │   ├── dashboardpasien.php
     │   └── dashboarddokter.php
     │
-    ├── auth/                         <-  PROSES LOGIN & REGISTER
+    ├── auth/                         <- PROSES LOGIN & REGISTER
     │   ├── loginuser.php
     │   ├── loginpasien.php
     │   ├── logindokter.php
     │   └── registerpasien.php
     │
-    ├── user/                         <-  PROSES MASTER DATA & TRANSAKSI
+    ├── user/                         <- PROSES ADMINISTRASI & TRANSAKSI
     │   ├── user.php
     │   ├── pasien.php
     │   ├── dokter.php
@@ -237,24 +241,47 @@ klinikahmadi7/
     │   ├── pendaftarancheckup.php
     │   ├── antrian.php
     │   ├── kunjungan.php
-    │   ├── detilkunjungan.php
-    │   └── kasir.php
+    │   ├── transaksi.php
+    │   ├── apotek.php
+    │   └── pembayaran.php
     │
-    ├── dokter/                       <-  PROSES KHUSUS DOKTER
+    ├── dokter/                       <- PROSES KHUSUS DOKTER
+    │   ├── jadwaldokter.php
+    │   ├── pemeriksaan.php
+    │   ├── resep.php
     │   └── profil.php
     │
-    ├── pasien/                       <-  PROSES KHUSUS PASIEN
+    ├── pasien/                       <- PROSES KHUSUS PASIEN
     │   └── profil.php
     │
-    └── laporan/                      <-  PROSES LAPORAN
+    └── laporan/                      <- PROSES LAPORAN
         ├── laporanharian.php
         ├── laporanbulanan.php
         ├── laporantahunan.php
         ├── laporanobat.php
         └── laporanantrian.php
 
-
 STRUKTUR DB
+
+mysql> show tables;
++-------------------------+
+| Tables_in_klinikahmadi7 |
++-------------------------+
+| detilkunjungan          |
+| detiltransaksi          |
+| dokter                  |
+| jadwaldokter            |
+| kategori                |
+| kunjungan               |
+| merk                    |
+| mutasistok              |
+| obat                    |
+| pasien                  |
+| pembayaran              |
+| pendaftarancheckup      |
+| transaksi               |
+| user                    |
++-------------------------+
 
 mysql> desc detilkunjungan;
 +------------------+--------------+------+-----+---------+----------------+
@@ -268,6 +295,21 @@ mysql> desc detilkunjungan;
 | subtotal         | int          | NO   |     | 0       |                |
 | aturanpakai      | varchar(255) | YES  |     | NULL    |                |
 +------------------+--------------+------+-----+---------+----------------+
+
+mysql> desc detiltransaksi;
++------------------+---------------------+------+-----+---------+----------------+
+| Field            | Type                | Null | Key | Default | Extra          |
++------------------+---------------------+------+-----+---------+----------------+
+| iddetiltransaksi | int                 | NO   | PRI | NULL    | auto_increment |
+| idtransaksi      | int                 | NO   | MUL | NULL    |                |
+| idobat           | int                 | YES  | MUL | NULL    |                |
+| namaitem         | varchar(150)        | NO   |     | NULL    |                |
+| jenisitem        | enum('Obat','Jasa') | NO   |     | NULL    |                |
+| jumlah           | int                 | NO   |     | 1       |                |
+| harga            | int                 | NO   |     | 0       |                |
+| subtotal         | int                 | NO   |     | 0       |                |
++------------------+---------------------+------+-----+---------+----------------+
+
 mysql> desc dokter;
 +------------+--------------+------+-----+---------+----------------+
 | Field      | Type         | Null | Key | Default | Extra          |
@@ -281,6 +323,7 @@ mysql> desc dokter;
 | alamat     | text         | YES  |     | NULL    |                |
 | foto       | varchar(255) | YES  |     | NULL    |                |
 +------------+--------------+------+-----+---------+----------------+
+
 mysql> desc jadwaldokter;
 +-------------+-------------+------+-----+---------+----------------+
 | Field       | Type        | Null | Key | Default | Extra          |
@@ -291,6 +334,7 @@ mysql> desc jadwaldokter;
 | jam_mulai   | time        | NO   |     | NULL    |                |
 | jam_selesai | time        | NO   |     | NULL    |                |
 +-------------+-------------+------+-----+---------+----------------+
+
 mysql> desc kategori;
 +--------------+--------------+------+-----+---------+----------------+
 | Field        | Type         | Null | Key | Default | Extra          |
@@ -298,6 +342,7 @@ mysql> desc kategori;
 | idkategori   | int          | NO   | PRI | NULL    | auto_increment |
 | namakategori | varchar(100) | NO   |     | NULL    |                |
 +--------------+--------------+------+-----+---------+----------------+
+
 mysql> desc kunjungan;
 +------------------+-----------------------------+------+-----+-------------+----------------+
 | Field            | Type                        | Null | Key | Default     | Extra          |
@@ -316,6 +361,7 @@ mysql> desc kunjungan;
 | statuspembayaran | enum('Belum Bayar','Lunas') | NO   |     | Belum Bayar |                |
 | statuskunjungan  | enum('Proses','Selesai')    | NO   |     | Proses      |                |
 +------------------+-----------------------------+------+-----+-------------+----------------+
+
 mysql> desc merk;
 +----------+--------------+------+-----+---------+----------------+
 | Field    | Type         | Null | Key | Default | Extra          |
@@ -323,6 +369,20 @@ mysql> desc merk;
 | idmerk   | int          | NO   | PRI | NULL    | auto_increment |
 | namamerk | varchar(100) | NO   |     | NULL    |                |
 +----------+--------------+------+-----+---------+----------------+
+
+mysql> desc mutasistok;
++---------------+--------------------------------------+------+-----+-------------------+-------------------+
+| Field         | Type                                 | Null | Key | Default           | Extra             |
++---------------+--------------------------------------+------+-----+-------------------+-------------------+
+| idmutasi      | int                                  | NO   | PRI | NULL              | auto_increment    |
+| idobat        | int                                  | NO   | MUL | NULL              |                   |
+| iduser        | int                                  | NO   | MUL | NULL              |                   |
+| tanggalmutasi | datetime                             | NO   | MUL | CURRENT_TIMESTAMP | DEFAULT_GENERATED |
+| jenismutasi   | enum('Masuk','Keluar','Penyesuaian') | NO   |     | NULL              |                   |
+| jumlah        | int                                  | NO   |     | NULL              |                   |
+| keterangan    | text                                 | YES  |     | NULL              |                   |
++---------------+--------------------------------------+------+-----+-------------------+-------------------+
+
 mysql> desc obat;
 +-------------+--------------+------+-----+---------+----------------+
 | Field       | Type         | Null | Key | Default | Extra          |
@@ -336,6 +396,7 @@ mysql> desc obat;
 | stok        | int          | YES  |     | 0       |                |
 | foto        | varchar(255) | YES  |     | NULL    |                |
 +-------------+--------------+------+-----+---------+----------------+
+
 mysql> desc pasien;
 +------------+--------------+------+-----+---------+----------------+
 | Field      | Type         | Null | Key | Default | Extra          |
@@ -348,6 +409,19 @@ mysql> desc pasien;
 | alamat     | text         | YES  |     | NULL    |                |
 | foto       | varchar(255) | YES  |     | NULL    |                |
 +------------+--------------+------+-----+---------+----------------+
+
+mysql> desc pembayaran;
++-------------------+-------------+------+-----+-------------------+-------------------+
+| Field             | Type        | Null | Key | Default           | Extra             |
++-------------------+-------------+------+-----+-------------------+-------------------+
+| idpembayaran      | int         | NO   | PRI | NULL              | auto_increment    |
+| idtransaksi       | int         | NO   | MUL | NULL              |                   |
+| tanggalpembayaran | datetime    | NO   | MUL | CURRENT_TIMESTAMP | DEFAULT_GENERATED |
+| jumlahbayar       | int         | NO   |     | 0                 |                   |
+| metodepembayaran  | varchar(30) | NO   |     | Tunai             |                   |
+| keterangan        | text        | YES  |     | NULL              |                   |
++-------------------+-------------+------+-----+-------------------+-------------------+
+
 mysql> desc pendaftarancheckup;
 +------------------+----------------------------------------+------+-----+-------------------+-------------------+
 | Field            | Type                                   | Null | Key | Default           | Extra             |
@@ -361,10 +435,28 @@ mysql> desc pendaftarancheckup;
 | jenispendaftaran | varchar(20)                            | NO   |     | Online            |                   |
 | nomorantrian     | int                                    | YES  |     | NULL              |                   |
 | status           | enum('Menunggu','Disetujui','Ditolak') | NO   |     | Menunggu          |                   |
-| statusantrian    | varchar(20)                            | NO   |     | Belum Antri       |                   |
+| statusantrian    | varchar(30)                            | NO   |     | Belum Antri       |                   |
 | catatanadmin     | text                                   | YES  |     | NULL              |                   |
 | tanggalpengajuan | datetime                               | NO   |     | CURRENT_TIMESTAMP | DEFAULT_GENERATED |
+| tanggalcheckin   | datetime                               | YES  |     | NULL              |                   |
 +------------------+----------------------------------------+------+-----+-------------------+-------------------+
+
+mysql> desc transaksi;
++------------------+----------------------------------+------+-----+-------------------+-------------------+
+| Field            | Type                             | Null | Key | Default           | Extra             |
++------------------+----------------------------------+------+-----+-------------------+-------------------+
+| idtransaksi      | int                              | NO   | PRI | NULL              | auto_increment    |
+| idkunjungan      | int                              | YES  | MUL | NULL              |                   |
+| iduser           | int                              | NO   | MUL | NULL              |                   |
+| kodetransaksi    | varchar(30)                      | NO   | UNI | NULL              |                   |
+| jenistransaksi   | enum('Klinik','Apotek')          | NO   | MUL | NULL              |                   |
+| tanggaltransaksi | datetime                         | NO   | MUL | CURRENT_TIMESTAMP | DEFAULT_GENERATED |
+| total            | int                              | NO   |     | 0                 |                   |
+| diskon           | int                              | NO   |     | 0                 |                   |
+| grandtotal       | int                              | NO   |     | 0                 |                   |
+| status           | enum('Menunggu','Lunas','Batal') | NO   | MUL | Menunggu          |                   |
++------------------+----------------------------------+------+-----+-------------------+-------------------+
+
 mysql> desc user;
 +----------+--------------+------+-----+---------+----------------+
 | Field    | Type         | Null | Key | Default | Extra          |

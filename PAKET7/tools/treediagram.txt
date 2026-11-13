@@ -1,3 +1,4 @@
+
 klinikahmadi7/
 │
 ├── index.php                         <- INDUK ROUTING APLIKASI
@@ -24,6 +25,7 @@ klinikahmadi7/
 ├── views/
 │   │
 │   ├── component/                    <- KOMPONEN TAMPILAN
+│   │   │
 │   │   ├── tamu/
 │   │   │   ├── navbar.php
 │   │   │   └── footer.php
@@ -84,7 +86,7 @@ klinikahmadi7/
 │   │   │   ├── edit.php
 │   │   │   └── show.php
 │   │   │
-│   │   ├── obat/                     <- CRUD OBAT
+│   │   ├── obat/                     <- CRUD OBAT & PERSEDIAAN
 │   │   │   ├── index.php
 │   │   │   ├── create.php
 │   │   │   ├── edit.php
@@ -96,7 +98,7 @@ klinikahmadi7/
 │   │   │   ├── edit.php
 │   │   │   └── show.php
 │   │   │
-│   │   ├── pendaftarancheckup/       <- PENDAFTARAN ONLINE & LANGSUNG
+│   │   ├── pendaftarancheckup/       <- PENDAFTARAN KLINIK
 │   │   │   ├── index.php
 │   │   │   ├── create.php
 │   │   │   ├── show.php
@@ -108,24 +110,27 @@ klinikahmadi7/
 │   │   │   ├── show.php
 │   │   │   └── panggilan.php
 │   │   │
-│   │   ├── kunjungan/                <- PEMERIKSAAN PASIEN
+│   │   ├── kunjungan/                <- ADMINISTRASI KUNJUNGAN
 │   │   │   ├── index.php
 │   │   │   ├── create.php
 │   │   │   ├── edit.php
 │   │   │   └── show.php
 │   │   │
-│   │   ├── detilkunjungan/           <- RINCIAN RESEP OBAT
+│   │   ├── transaksi/                <- PUSAT TRANSAKSI KLINIK & APOTEK
 │   │   │   ├── index.php
 │   │   │   ├── create.php
-│   │   │   ├── edit.php
-│   │   │   └── show.php
-│   │   │
-│   │   ├── kasir/                    <- PEMBAYARAN PASIEN
-│   │   │   ├── index.php
 │   │   │   ├── show.php
+│   │   │   ├── pembayaran.php
+│   │   │   ├── riwayat.php
 │   │   │   └── cetakstruk.php
 │   │   │
-│   │   └── laporan/                  <- LAPORAN KLINIK
+│   │   ├── apotek/                   <- PENJUALAN OBAT LANGSUNG
+│   │   │   ├── index.php
+│   │   │   ├── penjualan.php
+│   │   │   ├── resep luar.php
+│   │   │   └── riwayat.php
+│   │   │
+│   │   └── laporan/                  <- LAPORAN KLINIK & APOTEK
 │   │       ├── laporanharian.php
 │   │       ├── cetaklaporanharian.php
 │   │       ├── laporanbulanan.php
@@ -153,15 +158,15 @@ klinikahmadi7/
 │   │   │   ├── edit.php
 │   │   │   └── show.php
 │   │   │
-│   │   ├── pemeriksaan/
+│   │   ├── pemeriksaan/             <- CRUD JADWAL DOKTER
 │   │   │   ├── index.php
 │   │   │   ├── create.php
 │   │   │   └── show.php
 │   │   │
-│   │   └── resep/
+│   │   └── resep/              <- CHECKUP & RESEP DOKTER
 │   │       ├── index.php
 │   │       ├── create.php
-│   │       └── edit.php
+│   │       └── show.php
 │   │
 │   ├── pasien/                       <- ZONA LOGIN PASIEN
 │   │   ├── dashboardpasien.php
@@ -218,13 +223,13 @@ klinikahmadi7/
     │   ├── dashboardpasien.php
     │   └── dashboarddokter.php
     │
-    ├── auth/                         <-  PROSES LOGIN & REGISTER
+    ├── auth/                         <- PROSES LOGIN & REGISTER
     │   ├── loginuser.php
     │   ├── loginpasien.php
     │   ├── logindokter.php
     │   └── registerpasien.php
     │
-    ├── user/                         <-  PROSES MASTER DATA & TRANSAKSI
+    ├── user/                         <- PROSES ADMINISTRASI & TRANSAKSI
     │   ├── user.php
     │   ├── pasien.php
     │   ├── dokter.php
@@ -235,16 +240,20 @@ klinikahmadi7/
     │   ├── pendaftarancheckup.php
     │   ├── antrian.php
     │   ├── kunjungan.php
-    │   ├── detilkunjungan.php
-    │   └── kasir.php
+    │   ├── transaksi.php
+    │   ├── apotek.php
+    │   └── pembayaran.php
     │
-    ├── dokter/                       <-  PROSES KHUSUS DOKTER
+    ├── dokter/                       <- PROSES KHUSUS DOKTER
+    │   ├── jadwaldokter.php
+    │   ├── pemeriksaan.php
+    │   ├── resep.php
     │   └── profil.php
     │
-    ├── pasien/                       <-  PROSES KHUSUS PASIEN
+    ├── pasien/                       <- PROSES KHUSUS PASIEN
     │   └── profil.php
     │
-    └── laporan/                      <-  PROSES LAPORAN
+    └── laporan/                      <- PROSES LAPORAN
         ├── laporanharian.php
         ├── laporanbulanan.php
         ├── laporantahunan.php
