@@ -4,35 +4,43 @@
 // PROSES LOGIN PASIEN
 // ============================================
 
-// Pastikan request POST
+// Hanya menerima request POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    redirect('index.php?page=loginpasien');
+    header('Location: index.php?page=loginpasien');
+    exit;
 }
 
 // Validasi CSRF
 csrfCheck();
 
-// Ambil data form
+// Ambil input
 $username = trim($_POST['username'] ?? '');
 $password = $_POST['password'] ?? '';
 
-// Validasi input
+// Validasi input kosong
 if ($username === '' || $password === '') {
     $_SESSION['error_login'] = 'Username dan password wajib diisi.';
-    redirect('index.php?page=loginpasien');
+    header('Location: index.php?page=loginpasien');
+    exit;
 }
 
-// Cari akun pasien
-$query = "SELECT idpasien, namapasien, username, password
-          FROM pasien
-          WHERE username = ?
-          LIMIT 1";
-
-$stmt = mysqli_prepare($koneksi, $query);
+// Cari akun pasien berdasarkan username
+$stmt = mysqli_prepare($koneksi, "
+    SELECT
+        idpasien,
+        namapasien,
+        username,
+        password,
+        foto
+    FROM pasien
+    WHERE username = ?
+    LIMIT 1
+");
 
 if (!$stmt) {
-    $_SESSION['error_login'] = 'Terjadi kesalahan pada sistem login.';
-    redirect('index.php?page=loginpasien');
+    $_SESSION['error_login'] = 'Terjadi kesalahan sistem. Silakan coba kembali.';
+    header('Location: index.php?page=loginpasien');
+    exit;
 }
 
 mysqli_stmt_bind_param($stmt, "s", $username);
@@ -43,19 +51,37 @@ $pasien = mysqli_fetch_assoc($result);
 
 mysqli_stmt_close($stmt);
 
-// Periksa akun dan password
+// Verifikasi akun dan password
 if (!$pasien || !password_verify($password, $pasien['password'])) {
     $_SESSION['error_login'] = 'Username atau password salah.';
-    redirect('index.php?page=loginpasien');
+    header('Location: index.php?page=loginpasien');
+    exit;
 }
 
-// Buat session baru
+// Regenerasi session untuk keamanan
 session_regenerate_id(true);
 
-// Simpan identitas pasien
+// Bersihkan identitas role sebelumnya
+unset(
+    $_SESSION['iduser'],
+    $_SESSION['namauser'],
+    $_SESSION['level'],
+    $_SESSION['iddokter'],
+    $_SESSION['namadokter'],
+    $_SESSION['idpasien'],
+    $_SESSION['namapasien'],
+    $_SESSION['username'],
+    $_SESSION['foto']
+);
+
+// Simpan identitas pasien ke session
 $_SESSION['idpasien'] = $pasien['idpasien'];
 $_SESSION['namapasien'] = $pasien['namapasien'];
 $_SESSION['username'] = $pasien['username'];
+$_SESSION['foto'] = !empty($pasien['foto'])
+    ? $pasien['foto']
+    : 'default.png';
 
-// Redirect ke dashboard pasien
-redirect('index.php?page=dashboardpasien');
+// Arahkan ke dashboard pasien
+header('Location: index.php?page=dashboardpasien');
+exit;

@@ -1,76 +1,113 @@
-<!-- Navbar -->
+
+<?php
+$namaPasien = $_SESSION['namapasien'] ?? 'Pasien';
+$usernamePasien = $_SESSION['username'] ?? '';
+$fotoPasien = $_SESSION['foto'] ?? 'default.png';
+?>
+
 <nav class="main-header navbar navbar-expand navbar-white navbar-light">
 
-    <!-- Sidebar Toggle -->
+    <!-- MENU KIRI -->
     <ul class="navbar-nav">
+
         <li class="nav-item">
             <a class="nav-link" data-widget="pushmenu" href="#" role="button">
                 <i class="fas fa-bars"></i>
             </a>
         </li>
+
+        <li class="nav-item d-none d-sm-inline-block">
+            <a href="index.php?page=dashboardpasien" class="nav-link">
+                Dashboard Pasien
+            </a>
+        </li>
+
     </ul>
 
-    <!-- Right Navbar -->
+    <!-- MENU KANAN -->
     <ul class="navbar-nav ml-auto">
 
-        <li class="nav-item dropdown user-menu">
+        <li class="nav-item dropdown">
 
-            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
+            <a class="nav-link" data-toggle="dropdown" href="#">
 
-                <img
-                    src="assets/images/pelanggan/<?=
-                        !empty($_SESSION['foto'])
-                        ? $_SESSION['foto']
-                        : 'default.png';
-                    ?>"
-                    class="user-image img-circle elevation-2"
-                    alt="User Image">
+                <img src="assets/images/pasien/<?= e($fotoPasien) ?>"
+                     class="img-circle elevation-2"
+                     alt="Foto Pasien"
+                     style="width:30px;height:30px;object-fit:cover;">
 
-                <span class="d-none d-md-inline">
-                    <?= $_SESSION['namapelanggan'] ?? 'Pelanggan'; ?>
-                </span>
+                <span class="ml-1"><?= e($namaPasien) ?></span>
 
             </a>
 
-            <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+            <div class="dropdown-menu dropdown-menu-right">
 
-                <li class="user-header bg-primary">
+                <!-- INFORMASI PASIEN -->
+                <div class="dropdown-item text-center">
 
-                    <img
-                        src="assets/images/pelanggan/<?=
-                            !empty($_SESSION['foto'])
-                            ? $_SESSION['foto']
-                            : 'default.png';
-                        ?>"
-                        class="img-circle elevation-2"
-                        alt="User Image">
+                    <img src="assets/images/pasien/<?= e($fotoPasien) ?>"
+                         class="img-circle elevation-2 mb-2"
+                         alt="Foto Pasien"
+                         style="width:65px;height:65px;object-fit:cover;">
 
-                    <p>
-                        <?= $_SESSION['namapelanggan'] ?? 'Pelanggan'; ?>
-                        <small>Pelanggan</small>
+                    <p class="mb-0 font-weight-bold">
+                        <?= e($namaPasien) ?>
                     </p>
 
-                </li>
+                    <small class="text-muted">Pasien</small>
+                    <br>
 
-                <li class="user-footer">
+                    <small class="text-muted">
+                        <?= e($usernamePasien) ?>
+                    </small>
 
-                    <a href="index.php?halaman=profil"
-                        class="btn btn-default btn-flat">
-                        Profil
-                    </a>
+                </div>
 
-                    <a href="index.php?halaman=logout"
-                        class="btn btn-danger btn-flat float-right">
+                <div class="dropdown-divider"></div>
+
+                <!-- PROFIL -->
+                <a href="index.php?page=profilpasien" class="dropdown-item">
+                    <i class="fas fa-user mr-2"></i>
+                    Profil Saya
+                </a>
+
+                <!-- EDIT PROFIL -->
+                <a href="index.php?page=editprofilpasien" class="dropdown-item">
+                    <i class="fas fa-user-edit mr-2"></i>
+                    Edit Profil
+                </a>
+
+                <!-- PENDAFTARAN -->
+                <a href="index.php?page=pendaftaranpasien" class="dropdown-item">
+                    <i class="fas fa-calendar-plus mr-2"></i>
+                    Pendaftaran Checkup
+                </a>
+
+                <!-- ANTRIAN -->
+                <a href="index.php?page=antrianpasien" class="dropdown-item">
+                    <i class="fas fa-users mr-2"></i>
+                    Antrian Saya
+                </a>
+
+                <div class="dropdown-divider"></div>
+
+                <!-- LOGOUT -->
+                <form action="index.php?page=logout" method="POST">
+
+                    <?= csrfField() ?>
+                    <input type="hidden" name="page" value="logout">
+
+                    <button type="submit" class="dropdown-item text-danger">
+                        <i class="fas fa-sign-out-alt mr-2"></i>
                         Logout
-                    </a>
+                    </button>
 
-                </li>
+                </form>
 
-            </ul>
+            </div>
 
         </li>
 
     </ul>
 
 </nav>
-<!-- /.navbar -->

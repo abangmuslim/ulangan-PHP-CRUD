@@ -1,8 +1,5 @@
 STRUKTUR APK
 
-STRUKTUR APK
-
-
 klinikahmadi7/
 │
 ├── index.php                         <- INDUK ROUTING APLIKASI
@@ -150,6 +147,12 @@ klinikahmadi7/
 │   │   │
 │   │   ├── antrian/
 │   │   │   ├── index.php
+│   │   │   └── show.php
+│   │   │
+│   │   ├── jadwaldokter/             <- CRUD JADWAL DOKTER
+│   │   │   ├── index.php
+│   │   │   ├── create.php
+│   │   │   ├── edit.php
 │   │   │   └── show.php
 │   │   │
 │   │   ├── pemeriksaan/

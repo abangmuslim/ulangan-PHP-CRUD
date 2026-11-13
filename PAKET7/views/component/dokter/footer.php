@@ -1,14 +1,18 @@
+
 <footer class="main-footer">
-
-    <strong>
-        Copyright &copy; <?= date('Y'); ?>
-        Koperasi Ahmadi.
-    </strong>
-
-    All rights reserved.
-
-    <div class="float-right d-none d-sm-inline-block">
-        <b>Version</b> 1.0
+    <div class="float-right d-none d-sm-inline">
+        <b>Versi</b> 1.0.0
     </div>
 
+    <strong>
+        Copyright &copy; <?= date('Y') ?>
+        <a href="index.php?page=dashboarddokter">Klinik Ahmadi</a>.
+    </strong>
+    All rights reserved.
 </footer>
+
+<!-- Control Sidebar -->
+<aside class="control-sidebar control-sidebar-dark"></aside>
+
+</div>
+<!-- ./wrapper -->

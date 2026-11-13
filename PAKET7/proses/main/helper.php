@@ -74,6 +74,7 @@ function csrfField()
 // ============================================
 // 7. VALIDASI CSRF
 // ============================================
+
 function csrfCheck()
 {
     if (
@@ -82,4 +83,7 @@ function csrfCheck()
     ) {
         die('Token CSRF tidak valid.');
     }
+
+    return true;
 }
+

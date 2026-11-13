@@ -55,6 +55,7 @@ if (isset($_SESSION['iduser'])) {
     $role = 'tamu';
 }
 
+
 // ============================================
 // 3. MEMBACA PARAMETER HALAMAN
 // ============================================
@@ -66,19 +67,63 @@ if (!is_string($page)) {
 
 
 // ============================================
-// 3A. DISPATCHER PROSES AUTENTIKASI
+// 3A. DISPATCHER PROSES POST
 // ============================================
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    $prosesAuth = [
-        'loginuser'      => 'proses/auth/loginuser.php',
-        'loginpasien'    => 'proses/auth/loginpasien.php',
-        'logindokter'    => 'proses/auth/logindokter.php',
-        'registerpasien' => 'proses/auth/registerpasien.php'
+    // Ambil parameter page dari POST, jika tidak ada gunakan GET
+    $proses = $_POST['page'] ?? $page;
+
+    $daftarProses = [
+        'loginuser' => [
+            'file' => 'proses/auth/loginuser.php',
+            'akses' => ['tamu']
+        ],
+        'loginpasien' => [
+            'file' => 'proses/auth/loginpasien.php',
+            'akses' => ['tamu']
+        ],
+        'logindokter' => [
+            'file' => 'proses/auth/logindokter.php',
+            'akses' => ['tamu']
+        ],
+        'registerpasien' => [
+            'file' => 'proses/auth/registerpasien.php',
+            'akses' => ['tamu']
+        ],
+        'profil' => [
+            'file' => 'proses/dokter/profil.php',
+            'akses' => ['dokter']
+        ],
+        'profilpasien' => [
+            'file' => 'proses/pasien/profil.php',
+            'akses' => ['pasien']
+        ],
+        'jadwaldokterdokter' => [
+            'file' => 'proses/dokter/jadwaldokter.php',
+            'akses' => ['dokter']
+        ]
     ];
 
-    if (isset($prosesAuth[$page])) {
-        require $prosesAuth[$page];
+    if (isset($daftarProses[$proses])) {
+
+        $fileProses = $daftarProses[$proses]['file'];
+        $aksesProses = $daftarProses[$proses]['akses'];
+
+        // Validasi hak akses berdasarkan role
+        if (!in_array($role, $aksesProses, true)) {
+            http_response_code(403);
+            exit("Akses ditolak. Anda tidak memiliki hak menjalankan proses ini.");
+        }
+
+        // Pastikan file proses tersedia
+        if (!file_exists($fileProses)) {
+            http_response_code(404);
+            exit("File proses tidak ditemukan.");
+        }
+
+        // Jalankan file proses
+        require $fileProses;
         exit;
     }
 }
@@ -402,6 +447,40 @@ tambahRoute(
     ['dokter'],
     'dokter'
 );
+
+
+// ============================================
+// JADWAL PRAKTIK DOKTER
+// ============================================
+
+tambahRoute(
+    'jadwaldokterdokter',
+    'views/dokter/jadwaldokter/index.php',
+    ['dokter'],
+    'dokter'
+);
+
+tambahRoute(
+    'createjadwaldokterdokter',
+    'views/dokter/jadwaldokter/create.php',
+    ['dokter'],
+    'dokter'
+);
+
+tambahRoute(
+    'editjadwaldokterdokter',
+    'views/dokter/jadwaldokter/edit.php',
+    ['dokter'],
+    'dokter'
+);
+
+tambahRoute(
+    'showjadwaldokterdokter',
+    'views/dokter/jadwaldokter/show.php',
+    ['dokter'],
+    'dokter'
+);
+
 
 // ============================================
 // 16. ZONA PASIEN

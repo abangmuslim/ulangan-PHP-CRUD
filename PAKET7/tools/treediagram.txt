@@ -147,6 +147,12 @@ klinikahmadi7/
 │   │   │   ├── index.php
 │   │   │   └── show.php
 │   │   │
+│   │   ├── jadwaldokter/             <- CRUD JADWAL DOKTER
+│   │   │   ├── index.php
+│   │   │   ├── create.php
+│   │   │   ├── edit.php
+│   │   │   └── show.php
+│   │   │
 │   │   ├── pemeriksaan/
 │   │   │   ├── index.php
 │   │   │   ├── create.php
