@@ -127,11 +127,19 @@ $daftarProses = [
     ],
 
     // ========================================
-    // PENDAFTARAN CHECKUP
+    // PENDAFTARAN CHECKUP - ADMIN/PETUGAS
     // ========================================
     'prosespendaftarancheckup' => [
         'file' => 'proses/user/pendaftarancheckup.php',
-        'akses' => ['admin', 'petugas', 'pasien']
+        'akses' => ['admin', 'petugas']
+    ],
+
+    // ========================================
+    // PENDAFTARAN CHECKUP ONLINE - PASIEN
+    // ========================================
+    'prosespendaftaranpasien' => [
+        'file' => 'proses/pasien/pendaftarancheckup.php',
+        'akses' => ['pasien']
     ],
 
     // ========================================

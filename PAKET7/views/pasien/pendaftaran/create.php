@@ -1,310 +1,262 @@
 
 <?php
-$idpasien = $_SESSION['idpasien'];
-$pesan = "";
+// ============================================
+// FORM PENDAFTARAN CHECKUP ONLINE
+// views/pasien/pendaftaran/create.php
+// ============================================
 
-// Proses pengajuan pendaftaran.
-if (isset($_POST['daftar'])) {
+$idpasien = $_SESSION['idpasien'] ?? 0;
 
-    $idjadwal = mysqli_real_escape_string(
-        $koneksi, $_POST['idjadwal']
-    );
-
-    $tanggalperiksa = mysqli_real_escape_string(
-        $koneksi, $_POST['tanggalperiksa']
-    );
-
-    $keluhan = mysqli_real_escape_string(
-        $koneksi, trim($_POST['keluhan'])
-    );
-
-    if (empty($idjadwal) || empty($tanggalperiksa) || empty($keluhan)) {
-
-        $pesan = "
-            <div class='alert alert-danger'>
-                Semua data pendaftaran wajib diisi.
-            </div>
-        ";
-
-    } elseif (strtotime($tanggalperiksa) < strtotime(date('Y-m-d'))) {
-
-        $pesan = "
-            <div class='alert alert-danger'>
-                Tanggal pemeriksaan tidak boleh sebelum hari ini.
-            </div>
-        ";
-
-    } else {
-
-        // Pastikan jadwal dokter tersedia.
-        $cekjadwal = mysqli_query($koneksi, "
-            SELECT idjadwal
-            FROM jadwaldokter
-            WHERE idjadwal = '$idjadwal'
-        ");
-
-        if (mysqli_num_rows($cekjadwal) == 0) {
-
-            $pesan = "
-                <div class='alert alert-danger'>
-                    Jadwal dokter tidak ditemukan.
-                </div>
-            ";
-
-        } else {
-
-            // Cegah pendaftaran ganda pada jadwal dan tanggal yang sama.
-            $cekdaftar = mysqli_query($koneksi, "
-                SELECT idpendaftaran
-                FROM pendaftarancheckup
-                WHERE idpasien = '$idpasien'
-                AND idjadwal = '$idjadwal'
-                AND tanggalperiksa = '$tanggalperiksa'
-                AND status IN ('Menunggu', 'Disetujui')
-            ");
-
-            if (mysqli_num_rows($cekdaftar) > 0) {
-
-                $pesan = "
-                    <div class='alert alert-warning'>
-                        Anda sudah memiliki permohonan pada jadwal dan tanggal tersebut.
-                    </div>
-                ";
-
-            } else {
-
-                // Simpan permohonan pendaftaran.
-                $simpan = mysqli_query($koneksi, "
-                    INSERT INTO pendaftarancheckup
-                    (
-                        idpasien,
-                        idjadwal,
-                        tanggalperiksa,
-                        keluhan,
-                        jenispendaftaran,
-                        status,
-                        statusantrian
-                    )
-                    VALUES
-                    (
-                        '$idpasien',
-                        '$idjadwal',
-                        '$tanggalperiksa',
-                        '$keluhan',
-                        'Online',
-                        'Menunggu',
-                        'Belum Antri'
-                    )
-                ");
-
-                if ($simpan) {
-
-                    echo "
-                        <script>
-                            alert('Pendaftaran berhasil dikirim. Silakan menunggu konfirmasi admin.');
-                            window.location='index.php?page=pendaftaranpasien';
-                        </script>
-                    ";
-
-                    exit;
-
-                } else {
-
-                    $pesan = "
-                        <div class='alert alert-danger'>
-                            Pendaftaran gagal disimpan.
-                        </div>
-                    ";
-                }
-            }
-        }
-    }
+if (!$idpasien) {
+    echo '<div class="alert alert-danger">Sesi pasien tidak ditemukan. Silakan login kembali.</div>';
+    return;
 }
 
-// Ambil jadwal dokter.
-$queryjadwal = mysqli_query($koneksi, "
-    SELECT
-        jadwaldokter.idjadwal,
-        jadwaldokter.haripraktik,
-        jadwaldokter.jam_mulai,
-        jadwaldokter.jam_selesai,
-        dokter.namadokter,
-        dokter.spesialis
-    FROM jadwaldokter
-    INNER JOIN dokter
-        ON jadwaldokter.iddokter = dokter.iddokter
-    ORDER BY dokter.namadokter ASC, jadwaldokter.haripraktik ASC
+// Data pasien yang sedang login
+$idpasien = (int)$idpasien;
+
+$queryPasien = mysqli_query($koneksi, "
+    SELECT idpasien, namapasien, nohp, alamat
+    FROM pasien
+    WHERE idpasien = $idpasien
 ");
+
+$pasien = mysqli_fetch_assoc($queryPasien);
+
+if (!$pasien) {
+    echo '<div class="alert alert-danger">Data pasien tidak ditemukan.</div>';
+    return;
+}
+
+// Tanggal pemeriksaan
+$tanggal = $_GET['tanggal'] ?? '';
+
+$hariIndonesia = [
+    1 => 'Senin',
+    2 => 'Selasa',
+    3 => 'Rabu',
+    4 => 'Kamis',
+    5 => 'Jumat',
+    6 => 'Sabtu',
+    7 => 'Minggu'
+];
+
+$hariPraktik = '';
+$jadwal = false;
+
+if ($tanggal !== '') {
+
+    $tanggalValid = DateTime::createFromFormat('Y-m-d', $tanggal);
+
+    if ($tanggalValid && $tanggalValid->format('Y-m-d') === $tanggal) {
+
+        $hariAngka = (int)$tanggalValid->format('N');
+        $hariPraktik = $hariIndonesia[$hariAngka];
+
+        $tanggalSQL = mysqli_real_escape_string($koneksi, $tanggal);
+
+        $jadwal = mysqli_query($koneksi, "
+            SELECT
+                j.idjadwal,
+                j.hariPraktik,
+                j.jam_mulai,
+                j.jam_selesai,
+                d.namadokter,
+                d.spesialis
+            FROM jadwaldokter j
+            INNER JOIN dokter d ON j.iddokter = d.iddokter
+            WHERE j.haripraktik = '$hariPraktik'
+            ORDER BY j.jam_mulai ASC, d.namadokter ASC
+        ");
+    } else {
+        $tanggal = '';
+    }
+}
 ?>
 
-<div class="mb-4">
-    <h4 class="fw-bold mb-1">Formulir Pendaftaran Checkup</h4>
-    <p class="text-muted mb-0">
-        Silakan pilih dokter dan jadwal pemeriksaan yang tersedia.
-    </p>
-</div>
+<div class="container-fluid">
 
-<?= $pesan; ?>
+    <div class="mb-3">
+        <a href="index.php?page=pendaftaran" class="btn btn-secondary btn-sm">
+            <i class="fas fa-arrow-left mr-1"></i> Kembali
+        </a>
+    </div>
 
-<div class="row">
+    <div class="card card-primary">
+        <div class="card-header">
+            <h3 class="card-title">
+                <i class="fas fa-calendar-plus mr-1"></i>
+                Form Pendaftaran Checkup Online
+            </h3>
+        </div>
 
-    <div class="col-lg-8">
+        <form action="index.php" method="POST">
 
-        <div class="card border-0 shadow-sm">
+            <input type="hidden" name="page" value="prosespendaftaranpasien">
+            <input type="hidden" name="aksi" value="daftar">
+            <input type="hidden" name="jenispendaftaran" value="Online">
 
-            <div class="card-header bg-success text-white py-3">
-                <h5 class="mb-0">
-                    <i class="fas fa-calendar-plus me-2"></i>
-                    Formulir Pengajuan Pemeriksaan
-                </h5>
-            </div>
+            <?php if (function_exists('csrfField')) {
+                echo csrfField();
+            } ?>
 
-            <div class="card-body p-4">
+            <div class="card-body">
 
-                <form method="POST">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle mr-1"></i>
+                    Silakan pilih tanggal pemeriksaan dan jadwal dokter.
+                    Pendaftaran akan menunggu persetujuan admin atau petugas
+                    sebelum dapat masuk ke antrean.
+                </div>
 
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">
-                            Pilih Dokter dan Jadwal
-                        </label>
+                <h5 class="mb-3">Data Pasien</h5>
 
-                        <select name="idjadwal"
-                                class="form-select"
-                                required>
+                <div class="form-group">
+                    <label>Nama Pasien</label>
+                    <input type="text" class="form-control"
+                           value="<?= htmlspecialchars($pasien['namapasien']); ?>"
+                           readonly>
+                </div>
 
-                            <option value="">
-                                -- Pilih Dokter dan Jadwal --
-                            </option>
+                <div class="form-group">
+                    <label>Nomor HP</label>
+                    <input type="text" class="form-control"
+                           value="<?= htmlspecialchars($pasien['nohp'] ?? '-'); ?>"
+                           readonly>
+                </div>
 
-                            <?php while ($jadwal = mysqli_fetch_assoc($queryjadwal)) { ?>
+                <hr>
 
-                                <option value="<?= $jadwal['idjadwal']; ?>">
+                <h5 class="mb-3">Jadwal Pemeriksaan</h5>
 
-                                    <?= e($jadwal['namadokter']); ?>
-                                    -
-                                    <?= e($jadwal['spesialis']); ?>
-                                    |
-                                    <?= e($jadwal['haripraktik']); ?>
-                                    |
-                                    <?= e($jadwal['jam_mulai']); ?>
-                                    -
-                                    <?= e($jadwal['jam_selesai']); ?>
+                <div class="form-group">
+                    <label for="tanggal">Tanggal Pemeriksaan</label>
 
+                    <div class="input-group">
+                        <input type="date"
+                               name="tanggalperiksa"
+                               id="tanggal"
+                               class="form-control"
+                               min="<?= date('Y-m-d'); ?>"
+                               value="<?= htmlspecialchars($tanggal); ?>"
+                               required>
+
+                        <div class="input-group-append">
+                            <button type="button" class="btn btn-info"
+                                    onclick="lihatJadwal()">
+                                <i class="fas fa-search mr-1"></i>
+                                Lihat Jadwal
+                            </button>
+                        </div>
+                    </div>
+
+                    <small class="text-muted">
+                        Pilih tanggal terlebih dahulu untuk melihat dokter
+                        yang memiliki jadwal praktik pada hari tersebut.
+                    </small>
+                </div>
+
+                <?php if ($tanggal !== '' && $jadwal) { ?>
+
+                    <div class="form-group">
+                        <label>Hari Praktik</label>
+                        <input type="text" class="form-control"
+                               value="<?= htmlspecialchars($hariPraktik); ?>"
+                               readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="idjadwal">Pilih Dokter dan Jam Praktik</label>
+
+                        <select name="idjadwal" id="idjadwal"
+                                class="form-control" required>
+                            <option value="">-- Pilih Jadwal Dokter --</option>
+
+                            <?php if (mysqli_num_rows($jadwal) > 0) { ?>
+                                <?php while ($dataJadwal = mysqli_fetch_assoc($jadwal)) { ?>
+
+                                    <option value="<?= (int)$dataJadwal['idjadwal']; ?>">
+                                        <?= htmlspecialchars($dataJadwal['namadokter']); ?>
+                                        -
+                                        <?= htmlspecialchars($dataJadwal['spesialis'] ?? 'Umum'); ?>
+                                        |
+                                        <?= htmlspecialchars(substr($dataJadwal['jam_mulai'], 0, 5)); ?>
+                                        -
+                                        <?= htmlspecialchars(substr($dataJadwal['jam_selesai'], 0, 5)); ?>
+                                    </option>
+
+                                <?php } ?>
+                            <?php } else { ?>
+                                <option value="" disabled>
+                                    Tidak ada jadwal dokter pada hari ini.
                                 </option>
-
                             <?php } ?>
 
                         </select>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">
-                            Tanggal Pemeriksaan
-                        </label>
+                <?php } elseif ($tanggal !== '') { ?>
 
-                        <input type="date"
-                               name="tanggalperiksa"
-                               class="form-control"
-                               min="<?= date('Y-m-d'); ?>"
-                               required>
+                    <div class="alert alert-warning">
+                        Jadwal dokter gagal dimuat. Silakan coba kembali.
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">
-                            Keluhan
-                        </label>
-
-                        <textarea name="keluhan"
-                                  class="form-control"
-                                  rows="4"
-                                  placeholder="Tuliskan keluhan yang ingin diperiksa..."
-                                  required></textarea>
-                    </div>
-
-                    <div class="alert alert-info">
-                        <i class="fas fa-info-circle me-1"></i>
-                        <strong>Informasi Pendaftaran:</strong>
-                        <ul class="mb-0 mt-2">
-                            <li>Permohonan akan dikonfirmasi oleh admin atau petugas.</li>
-                            <li>Anda harus menunggu sampai pendaftaran disetujui.</li>
-                            <li>Nomor antrean diberikan petugas ketika Anda melakukan check-in di klinik.</li>
-                        </ul>
-                    </div>
-
-                    <div class="d-flex justify-content-between">
-
-                        <a href="index.php?page=pendaftaranpasien"
-                           class="btn btn-secondary">
-                            <i class="fas fa-arrow-left me-1"></i>
-                            Kembali
-                        </a>
-
-                        <button type="submit"
-                                name="daftar"
-                                class="btn btn-success">
-                            <i class="fas fa-paper-plane me-1"></i>
-                            Kirim Pendaftaran
-                        </button>
-
-                    </div>
-
-                </form>
-
-            </div>
-        </div>
-
-    </div>
-
-    <div class="col-lg-4">
-
-        <div class="card border-0 shadow-sm">
-
-            <div class="card-header bg-white py-3">
-                <h5 class="fw-bold mb-0">
-                    <i class="fas fa-info-circle me-2 text-success"></i>
-                    Petunjuk
-                </h5>
-            </div>
-
-            <div class="card-body">
-
-                <div class="mb-3">
-                    <h6 class="fw-bold">1. Pilih Dokter</h6>
-                    <p class="text-muted small mb-0">
-                        Pilih dokter sesuai spesialisasi dan hari praktik.
-                    </p>
-                </div>
+                <?php } ?>
 
                 <hr>
 
-                <div class="mb-3">
-                    <h6 class="fw-bold">2. Tentukan Tanggal</h6>
-                    <p class="text-muted small mb-0">
-                        Tentukan tanggal pemeriksaan sesuai jadwal dokter.
-                    </p>
+                <h5 class="mb-3">Keluhan Pasien</h5>
+
+                <div class="form-group">
+                    <label for="keluhan">Keluhan yang Dirasakan</label>
+
+                    <textarea name="keluhan" id="keluhan"
+                              class="form-control" rows="4"
+                              placeholder="Tuliskan keluhan atau alasan pemeriksaan Anda..."
+                              required></textarea>
                 </div>
 
-                <hr>
-
-                <div class="mb-3">
-                    <h6 class="fw-bold">3. Tuliskan Keluhan</h6>
-                    <p class="text-muted small mb-0">
-                        Jelaskan keluhan kesehatan yang ingin diperiksa.
-                    </p>
-                </div>
-
-                <hr>
-
-                <div>
-                    <h6 class="fw-bold">4. Tunggu Konfirmasi</h6>
-                    <p class="text-muted small mb-0">
-                        Pantau status permohonan melalui menu Pendaftaran Checkup.
-                    </p>
+                <div class="alert alert-warning">
+                    <strong>Informasi:</strong>
+                    <ul class="mb-0 mt-2">
+                        <li>Pendaftaran online belum langsung menjadi antrean.</li>
+                        <li>Admin atau petugas akan memeriksa dan menyetujui pendaftaran.</li>
+                        <li>Setelah disetujui, silakan datang ke klinik untuk proses check-in.</li>
+                        <li>Nomor antrean diberikan oleh petugas sesuai proses antrean klinik.</li>
+                    </ul>
                 </div>
 
             </div>
-        </div>
 
+            <div class="card-footer">
+                <button type="submit" class="btn btn-primary"
+                        <?= ($tanggal === '' || !$jadwal || mysqli_num_rows($jadwal) < 1) ? 'disabled' : ''; ?>>
+                    <i class="fas fa-paper-plane mr-1"></i>
+                    Kirim Pendaftaran
+                </button>
+
+                <a href="index.php?page=pendaftaranpasien"
+                   class="btn btn-secondary">
+                    Batal
+                </a>
+            </div>
+
+        </form>
     </div>
 
 </div>
+
+<script>
+function lihatJadwal() {
+    var tanggal = document.getElementById('tanggal').value;
+
+    if (tanggal === '') {
+        alert('Silakan pilih tanggal pemeriksaan terlebih dahulu.');
+        return;
+    }
+
+window.location.href =
+    'index.php?page=creatependaftaranpasien&tanggal=' +
+    encodeURIComponent(tanggal);
+}
+</script>

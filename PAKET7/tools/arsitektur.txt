@@ -100,9 +100,7 @@ klinikahmadi7/
 │   │   ├── pendaftarancheckup/       <- PENDAFTARAN KLINIK
 │   │   │   ├── index.php
 │   │   │   ├── create.php
-│   │   │   ├── show.php
-│   │   │   ├── setujui.php
-│   │   │   └── tolak.php
+│   │   │   └── show.php
 │   │   │
 │   │   ├── antrian/                  <- CHECK-IN & ANTRIAN
 │   │   │   ├── index.php
