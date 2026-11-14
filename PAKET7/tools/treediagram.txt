@@ -76,13 +76,11 @@ klinikahmadi7/
 │   │   │
 │   │   ├── merk/                     <- CRUD MERK OBAT
 │   │   │   ├── index.php
-│   │   │   ├── create.php
 │   │   │   ├── edit.php
 │   │   │   └── show.php
 │   │   │
 │   │   ├── kategori/                 <- CRUD KATEGORI OBAT
 │   │   │   ├── index.php
-│   │   │   ├── create.php
 │   │   │   ├── edit.php
 │   │   │   └── show.php
 │   │   │
@@ -101,9 +99,7 @@ klinikahmadi7/
 │   │   ├── pendaftarancheckup/       <- PENDAFTARAN KLINIK
 │   │   │   ├── index.php
 │   │   │   ├── create.php
-│   │   │   ├── show.php
-│   │   │   ├── setujui.php
-│   │   │   └── tolak.php
+│   │   │   └── show.php
 │   │   │
 │   │   ├── antrian/                  <- CHECK-IN & ANTRIAN
 │   │   │   ├── index.php

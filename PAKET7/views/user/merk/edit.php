@@ -1,64 +1,245 @@
-<?php
-$id = (int) ($_GET['id'] ?? 0);
-$data = mysqli_query($koneksi, "SELECT * FROM kunjungan WHERE idkunjungan='$id'");
-$kunjungan = mysqli_fetch_assoc($data);
 
-if (!$kunjungan) {
-    echo '<div class="alert alert-warning">Data kunjungan tidak ditemukan.</div>';
-    echo '<a href="index.php?page=kunjungan" class="btn btn-secondary">Kembali</a>';
-    return;
+<?php
+$id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+
+$queryedit = mysqli_query($koneksi, "
+    SELECT * FROM merk
+    WHERE idmerk = '$id'
+");
+
+$dataedit = mysqli_fetch_assoc($queryedit);
+
+if (!$dataedit) {
+    echo "<script>window.location='index.php?page=merk';</script>";
+    exit;
 }
 
-$pasien = mysqli_query($koneksi, "SELECT * FROM pasien ORDER BY namapasien ASC");
-$dokter = mysqli_query($koneksi, "SELECT * FROM dokter ORDER BY namadokter ASC");
-$obat = mysqli_query($koneksi, "SELECT * FROM obat ORDER BY namaobat ASC");
-?>
-<div class="card shadow-sm">
-    <div class="card-header bg-warning">
-        <h5 class="mb-0">Edit Kunjungan</h5>
-    </div>
-    <div class="card-body">
-        <form action="proses/proseskunjungan.php?proses=update" method="POST">
-            <input type="hidden" name="idkunjungan" value="<?= $kunjungan['idkunjungan']; ?>">
+$query = mysqli_query($koneksi, "
+    SELECT
+        m.idmerk,
+        m.namamerk,
+        COUNT(o.idobat) AS jumlahobat
+    FROM merk m
+    LEFT JOIN obat o ON m.idmerk = o.idmerk
+    GROUP BY m.idmerk, m.namamerk
+    ORDER BY m.idmerk DESC
+");
 
-            <div class="mb-3">
-                <label class="form-label">Pasien</label>
-                <select name="idpasien" class="form-select" required>
-                    <?php while ($p = mysqli_fetch_assoc($pasien)) { ?>
-                    <option value="<?= $p['idpasien']; ?>" <?= $p['idpasien'] == $kunjungan['idpasien'] ? 'selected' : ''; ?>><?= $p['namapasien']; ?></option>
-                    <?php } ?>
-                </select>
+$total = mysqli_num_rows($query);
+?>
+
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2 align-items-center">
+
+            <div class="col-sm-6">
+                <h1 class="mb-0">
+                    <i class="bi bi-tags-fill"></i>
+                    Data Merk Obat
+                </h1>
             </div>
-            <div class="mb-3">
-                <label class="form-label">Dokter</label>
-                <select name="iddokter" class="form-select" required>
-                    <?php while ($d = mysqli_fetch_assoc($dokter)) { ?>
-                    <option value="<?= $d['iddokter']; ?>" <?= $d['iddokter'] == $kunjungan['iddokter'] ? 'selected' : ''; ?>><?= $d['namadokter']; ?></option>
-                    <?php } ?>
-                </select>
+
+            <div class="col-sm-6 text-sm-end">
+                <span class="btn btn-outline-primary">
+                    <i class="bi bi-tags-fill me-1"></i>
+                    Total Merk:
+                    <strong><?= $total; ?></strong>
+                </span>
             </div>
-            <div class="mb-3">
-                <label class="form-label">Obat</label>
-                <select name="idobat" class="form-select" required>
-                    <?php while ($o = mysqli_fetch_assoc($obat)) { ?>
-                    <option value="<?= $o['idobat']; ?>" <?= $o['idobat'] == $kunjungan['idobat'] ? 'selected' : ''; ?>><?= $o['namaobat']; ?> (Stok: <?= $o['stok']; ?>)</option>
-                    <?php } ?>
-                </select>
+
+        </div>
+    </div>
+</div>
+
+<div class="content">
+    <div class="container-fluid">
+
+        <div class="row">
+
+            <!-- FORM EDIT MERK -->
+            <div class="col-md-4">
+
+                <div class="card card-warning card-outline">
+
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="bi bi-pencil-square me-1"></i>
+                            Edit Merk
+                        </h3>
+                    </div>
+
+                    <form action="index.php" method="POST">
+
+                        <input type="hidden" name="page" value="prosesmerk">
+                        <input type="hidden" name="aksi" value="ubah">
+                        <input type="hidden" name="idmerk" value="<?= $dataedit['idmerk']; ?>">
+
+                        <?= csrfField(); ?>
+
+                        <div class="card-body">
+
+                            <div class="mb-2">
+
+                                <label for="namamerk" class="form-label">
+                                    Nama Merk
+                                </label>
+
+                                <input type="text"
+                                    name="namamerk"
+                                    id="namamerk"
+                                    class="form-control form-control-sm"
+                                    value="<?= e($dataedit['namamerk']); ?>"
+                                    placeholder="Masukkan nama merk"
+                                    maxlength="100"
+                                    required>
+
+                            </div>
+
+                            <div class="alert alert-light border mt-3 mb-0">
+                                <i class="bi bi-info-circle text-primary me-1"></i>
+                                ID Merk:
+                                <strong><?= $dataedit['idmerk']; ?></strong>
+                            </div>
+
+                        </div>
+
+                        <div class="card-footer text-end">
+
+                            <a href="index.php?page=merk"
+                                class="btn btn-secondary btn-sm">
+                                <i class="bi bi-arrow-left"></i>
+                                Batal
+                            </a>
+
+                            <button type="submit" class="btn btn-primary btn-sm">
+                                <i class="bi bi-save"></i>
+                                Update
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
             </div>
-            <div class="mb-3">
-                <label class="form-label">Tanggal Kunjungan</label>
-                <input type="date" name="tanggal" class="form-control" value="<?= $kunjungan['tanggal']; ?>" required>
+
+            <!-- DAFTAR MERK -->
+            <div class="col-md-8">
+
+                <div class="card card-primary card-outline">
+
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="bi bi-list-ul me-1"></i>
+                            Daftar Merk Obat
+                        </h3>
+                    </div>
+
+                    <div class="card-body">
+
+                        <div class="table-responsive">
+
+                            <table id="example1"
+                                class="table table-bordered table-hover table-striped table-sm align-middle">
+
+                                <thead>
+                                    <tr>
+                                        <th width="8%" class="text-center">No</th>
+                                        <th>Nama Merk</th>
+                                        <th width="18%" class="text-center">Jumlah Obat</th>
+                                        <th width="20%" class="text-center">Aksi</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+
+                                    <?php
+                                    $no = 1;
+
+                                    if ($total > 0) {
+                                        while ($data = mysqli_fetch_assoc($query)) {
+                                    ?>
+
+                                            <tr>
+
+                                                <td class="text-center">
+                                                    <?= $no++; ?>
+                                                </td>
+
+                                                <td>
+                                                    <?= e($data['namamerk']); ?>
+                                                </td>
+
+                                                <td class="text-center">
+                                                    <span class="badge bg-info">
+                                                        <?= $data['jumlahobat']; ?> Obat
+                                                    </span>
+                                                </td>
+
+                                                <td class="text-center">
+
+                                                    <a href="index.php?page=showmerk&id=<?= $data['idmerk']; ?>"
+                                                        class="btn btn-info btn-sm"
+                                                        title="Detail">
+                                                        <i class="bi bi-eye-fill"></i>
+                                                    </a>
+
+                                                    <a href="index.php?page=editmerk&id=<?= $data['idmerk']; ?>"
+                                                        class="btn btn-warning btn-sm"
+                                                        title="Edit">
+                                                        <i class="bi bi-pencil-square"></i>
+                                                    </a>
+
+                                                    <form action="index.php"
+                                                        method="POST"
+                                                        class="d-inline"
+                                                        onsubmit="return confirm('Yakin ingin menghapus merk ini?')">
+
+                                                        <input type="hidden" name="page" value="prosesmerk">
+                                                        <input type="hidden" name="aksi" value="hapus">
+                                                        <input type="hidden" name="idmerk" value="<?= $data['idmerk']; ?>">
+
+                                                        <?= csrfField(); ?>
+
+                                                        <button type="submit"
+                                                            class="btn btn-danger btn-sm"
+                                                            title="Hapus">
+                                                            <i class="bi bi-trash-fill"></i>
+                                                        </button>
+
+                                                    </form>
+
+                                                </td>
+
+                                            </tr>
+
+                                        <?php
+                                        }
+                                    } else {
+                                        ?>
+
+                                        <tr>
+                                            <td colspan="4" class="text-center text-muted">
+                                                Belum ada data merk obat.
+                                            </td>
+                                        </tr>
+
+                                    <?php } ?>
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
             </div>
-            <div class="mb-3">
-                <label class="form-label">Keluhan Pasien</label>
-                <textarea name="keluhan" class="form-control" rows="3"><?= $kunjungan['keluhan'] ?? ''; ?></textarea>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Biaya (Rp)</label>
-                <input type="number" name="biaya" class="form-control" min="0" value="<?= $kunjungan['biaya']; ?>" required>
-            </div>
-            <a href="index.php?page=kunjungan" class="btn btn-secondary">Kembali</a>
-            <button type="submit" class="btn btn-warning">Update Kunjungan</button>
-        </form>
+
+        </div>
+
     </div>
 </div>

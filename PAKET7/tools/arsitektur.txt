@@ -77,13 +77,11 @@ klinikahmadi7/
 │   │   │
 │   │   ├── merk/                     <- CRUD MERK OBAT
 │   │   │   ├── index.php
-│   │   │   ├── create.php
 │   │   │   ├── edit.php
 │   │   │   └── show.php
 │   │   │
 │   │   ├── kategori/                 <- CRUD KATEGORI OBAT
 │   │   │   ├── index.php
-│   │   │   ├── create.php
 │   │   │   ├── edit.php
 │   │   │   └── show.php
 │   │   │
@@ -189,8 +187,7 @@ klinikahmadi7/
 │   │   └── informasiobat.php
 │   │
 │   ├── landing/                      <- ZONA TAMU / PUBLIK
-│   │   ├── home.php
-│   │   ├── daftardokter.php
+,+│   │   ├── daftardokter.php
 │   │   ├── detildokter.php
 │   │   ├── daftarobat.php
 │   │   ├── detilobat.php

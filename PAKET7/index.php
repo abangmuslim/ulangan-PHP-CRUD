@@ -215,20 +215,6 @@ tambahRoute(
     'user'
 );
 
-tambahRoute(
-    'setujuipendaftarancheckup',
-    'views/user/pendaftarancheckup/setujui.php',
-    ['admin', 'petugas'],
-    'user'
-);
-
-tambahRoute(
-    'tolakpendaftarancheckup',
-    'views/user/pendaftarancheckup/tolak.php',
-    ['admin', 'petugas'],
-    'user'
-);
-
 // ============================================
 // 11. ANTRIAN
 // ============================================

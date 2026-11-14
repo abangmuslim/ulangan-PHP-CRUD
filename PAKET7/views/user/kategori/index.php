@@ -1,57 +1,225 @@
+
 <?php
-$data = mysqli_query($koneksi, "SELECT * FROM obat ORDER BY idobat DESC");
+$query = mysqli_query($koneksi, "
+    SELECT
+        k.idkategori,
+        k.namakategori,
+        COUNT(o.idobat) AS jumlahobat
+    FROM kategori k
+    LEFT JOIN obat o ON k.idkategori = o.idkategori
+    GROUP BY k.idkategori, k.namakategori
+    ORDER BY k.idkategori DESC
+");
+
+$total = mysqli_num_rows($query);
 ?>
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <div>
-        <h3 class="mb-1">Data Obat</h3>
-        <p class="text-muted mb-0">Daftar obat Rumah Sakit Ahmadi</p>
+
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2 align-items-center">
+
+            <div class="col-sm-6">
+                <h1 class="mb-0">
+                    <i class="bi bi-collection-fill"></i>
+                    Data Kategori Obat
+                </h1>
+            </div>
+
+            <div class="col-sm-6 text-sm-end">
+                <span class="btn btn-outline-primary">
+                    <i class="bi bi-collection-fill me-1"></i>
+                    Total Kategori:
+                    <strong><?= $total; ?></strong>
+                </span>
+            </div>
+
+        </div>
     </div>
-    <a href="index.php?page=createobat" class="btn btn-primary">+ Tambah Obat</a>
 </div>
 
-<?php if (isset($_GET['pesan']) && $_GET['pesan'] == 'gagalhapus') { ?>
-<div class="alert alert-warning">Obat tidak dapat dihapus karena sudah digunakan dalam data kunjungan.</div>
-<?php } ?>
+<div class="content">
+    <div class="container-fluid">
 
-<div class="card shadow-sm">
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-bordered table-striped table-hover align-middle mb-0">
-                <thead class="table-primary">
-                    <tr>
-                        <th width="60">No.</th>
-                        <th>Nama Obat</th>
-                        <th>Jenis Obat</th>
-                        <th width="100">Stok</th>
-                        <th>Harga</th>
-                        <th width="230">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php $no = 1; while ($obat = mysqli_fetch_assoc($data)) { ?>
-                    <tr>
-                        <td><?= $no++; ?></td>
-                        <td><?= $obat['namaobat']; ?></td>
-                        <td><?= $obat['jenisobat'] ?? '-'; ?></td>
-                        <td><?= $obat['stok']; ?></td>
-                        <td>Rp <?= number_format($obat['harga'], 0, ',', '.'); ?></td>
-                        <td>
-                            <a href="index.php?page=showobat&id=<?= $obat['idobat']; ?>" class="btn btn-info btn-sm">Detail</a>
-                            <a href="index.php?page=editobat&id=<?= $obat['idobat']; ?>" class="btn btn-warning btn-sm">Edit</a>
-                            <form action="proses/prosesobat.php?proses=hapus" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus obat ini?')">
-                                <input type="hidden" name="idobat" value="<?= $obat['idobat']; ?>">
-                                <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
-                            </form>
-                        </td>
-                    </tr>
-                    <?php } ?>
-                    <?php if (mysqli_num_rows($data) == 0) { ?>
-                    <tr>
-                        <td colspan="6" class="text-center text-muted">Belum ada data obat.</td>
-                    </tr>
-                    <?php } ?>
-                </tbody>
-            </table>
+        <div class="row">
+
+            <!-- FORM TAMBAH KATEGORI -->
+            <div class="col-md-4">
+
+                <div class="card card-success card-outline">
+
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="bi bi-plus-circle me-1"></i>
+                            Tambah Kategori
+                        </h3>
+                    </div>
+
+                    <form action="index.php" method="POST">
+
+                        <input type="hidden" name="page" value="proseskategori">
+                        <input type="hidden" name="aksi" value="tambah">
+
+                        <?= csrfField(); ?>
+
+                        <div class="card-body">
+
+                            <div class="mb-2">
+                                <label for="namakategori" class="form-label">
+                                    Nama Kategori
+                                </label>
+
+                                <input type="text"
+                                    name="namakategori"
+                                    id="namakategori"
+                                    class="form-control form-control-sm"
+                                    placeholder="Masukkan nama kategori"
+                                    maxlength="100"
+                                    required>
+                            </div>
+
+                            <div class="alert alert-light border mt-3 mb-0">
+                                <i class="bi bi-info-circle text-primary me-1"></i>
+                                Masukkan nama kategori obat yang akan ditambahkan.
+                            </div>
+
+                        </div>
+
+                        <div class="card-footer text-end">
+
+                            <button type="reset" class="btn btn-warning btn-sm">
+                                <i class="bi bi-arrow-counterclockwise"></i>
+                                Reset
+                            </button>
+
+                            <button type="submit" class="btn btn-primary btn-sm">
+                                <i class="bi bi-save"></i>
+                                Simpan
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+            <!-- DAFTAR KATEGORI -->
+            <div class="col-md-8">
+
+                <div class="card card-primary card-outline">
+
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="bi bi-list-ul me-1"></i>
+                            Daftar Kategori Obat
+                        </h3>
+                    </div>
+
+                    <div class="card-body">
+
+                        <div class="table-responsive">
+
+                            <table id="example1"
+                                class="table table-bordered table-hover table-striped table-sm align-middle">
+
+                                <thead>
+                                    <tr>
+                                        <th width="8%" class="text-center">No</th>
+                                        <th>Nama Kategori</th>
+                                        <th width="18%" class="text-center">Jumlah Obat</th>
+                                        <th width="20%" class="text-center">Aksi</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+
+                                    <?php
+                                    $no = 1;
+
+                                    if ($total > 0) {
+                                        while ($data = mysqli_fetch_assoc($query)) {
+                                    ?>
+
+                                            <tr>
+
+                                                <td class="text-center">
+                                                    <?= $no++; ?>
+                                                </td>
+
+                                                <td>
+                                                    <?= e($data['namakategori']); ?>
+                                                </td>
+
+                                                <td class="text-center">
+                                                    <span class="badge bg-info">
+                                                        <?= $data['jumlahobat']; ?> Obat
+                                                    </span>
+                                                </td>
+
+                                                <td class="text-center">
+
+                                                    <a href="index.php?page=showkategori&id=<?= $data['idkategori']; ?>"
+                                                        class="btn btn-info btn-sm"
+                                                        title="Detail">
+                                                        <i class="bi bi-eye-fill"></i>
+                                                    </a>
+
+                                                    <a href="index.php?page=editkategori&id=<?= $data['idkategori']; ?>"
+                                                        class="btn btn-warning btn-sm"
+                                                        title="Edit">
+                                                        <i class="bi bi-pencil-square"></i>
+                                                    </a>
+
+                                                    <form action="index.php"
+                                                        method="POST"
+                                                        class="d-inline"
+                                                        onsubmit="return confirm('Yakin ingin menghapus kategori ini?')">
+
+                                                        <input type="hidden" name="page" value="proseskategori">
+                                                        <input type="hidden" name="aksi" value="hapus">
+                                                        <input type="hidden" name="idkategori" value="<?= $data['idkategori']; ?>">
+
+                                                        <?= csrfField(); ?>
+
+                                                        <button type="submit"
+                                                            class="btn btn-danger btn-sm"
+                                                            title="Hapus">
+                                                            <i class="bi bi-trash-fill"></i>
+                                                        </button>
+
+                                                    </form>
+
+                                                </td>
+
+                                            </tr>
+
+                                        <?php
+                                        }
+                                    } else {
+                                        ?>
+
+                                        <tr>
+                                            <td colspan="4" class="text-center text-muted">
+                                                Belum ada data kategori obat.
+                                            </td>
+                                        </tr>
+
+                                    <?php } ?>
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
         </div>
+
     </div>
 </div>
